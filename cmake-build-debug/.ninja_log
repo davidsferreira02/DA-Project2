@@ -1,0 +1,15 @@
+# ninja log v5
+3	505	1715441210356858274	CMakeFiles/untitled.dir/Classes/Tourism.cpp.o	292c3e50b9090b4
+606	695	1715441458932520274	untitled	5732d8ee8998c20e
+3	828	1715441210680267744	CMakeFiles/untitled.dir/reader.cpp.o	9254ced7bd75be1f
+4	61	1715441313867255644	CMakeFiles/untitled.dir/Classes/Stadium.cpp.o	897144310afea303
+2	359	1715441261349156139	CMakeFiles/untitled.dir/main.cpp.o	a7c86d559b863cf
+5	61	1715441313867254561	CMakeFiles/untitled.dir/Classes/Shipping.cpp.o	12c23f61605f0931
+2	606	1715441458840784358	CMakeFiles/untitled.dir/App.cpp.o	f90e5f842c04fa79
+2	42	1715441727425618018	CMakeFiles/untitled.dir/Classes/Stadium.cpp.o	7ccaa4c84ae529c
+3	43	1715441727425667688	CMakeFiles/untitled.dir/Classes/Shipping.cpp.o	687ec26546f092df
+2	214	1715441727596510600	CMakeFiles/untitled.dir/Classes/Tourism.cpp.o	79465bd52ad3c6e9
+2	256	1715441727638695045	CMakeFiles/untitled.dir/main.cpp.o	de8492cc86bb6a7b
+2	461	1715441727841100547	CMakeFiles/untitled.dir/App.cpp.o	f8e8bdff7d6561d
+2	501	1715441727881847405	CMakeFiles/untitled.dir/reader.cpp.o	7acb0a0d24ad7e59
+501	531	1715441727914854375	untitled	5732d8ee8998c20e
