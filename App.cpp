@@ -13,10 +13,20 @@
 
 using namespace std;
 
-int bestCost;
-vector<int> bestPath;
 
-bool is_valid(vector<int>& path, int pos, int city) {
+
+using namespace std::chrono;
+
+
+//Backtracking
+
+int n;
+vector<vector<double>> graph;
+vector<double> best_path;
+double best_cost = numeric_limits<double>::infinity();
+
+bool is_valid(vector<double>& path, int pos, int city) {
+    // Check if the city has not been visited in the current path
     for (int i = 0; i < pos; ++i) {
         if (path[i] == city)
             return false;
@@ -24,59 +34,87 @@ bool is_valid(vector<int>& path, int pos, int city) {
     return true;
 }
 
- void recursive_backtracking(vector<int>& path, int pos, int cost,vector<vector<int>>& distance_matrix) {
-    if (pos == distance_matrix.size()) {
+void recursive_backtracking(vector<double>& path, int pos, double cost) {
+    if (pos == n) {
 
-        if (cost + distance_matrix[path[pos - 1]][0] < bestCost) {
-            bestCost = cost + distance_matrix[path[pos - 1]][0];
-            bestPath = path;
+        // Check if the path is a complete solution
+        if (cost + graph[path[pos - 1]][0] < best_cost) {
+            best_cost = cost + graph[path[pos - 1]][0];
+            best_path = path;
+
         }
-       return;
+        return;
     }
-
-    for (int i = 1; i < distance_matrix.size(); ++i) {
+    for (int i = 1; i < n; ++i) {
         if (is_valid(path, pos, i)) {
             path[pos] = i;
-            recursive_backtracking(path, pos + 1, cost + distance_matrix[path[pos - 1]][i],distance_matrix);
+            recursive_backtracking(path, pos + 1, cost + graph[path[pos - 1]][i]);
         }
     }
 }
 
-vector<int> tsp(vector<vector<int>>& distance_matrix) {
-    int n = distance_matrix.size();
-    vector<int> path(n);
-    path[0] = 0; // Começando da cidade 0
-    recursive_backtracking(path, 1, 0,distance_matrix);
-    return bestPath;
-}
+vector<double> tsp(vector<vector<double>>& distance_matrix) {
+    n = distance_matrix.size();
+    graph = distance_matrix;
+    vector<double> path(n);
+    path[0] = 0; // Starting from city 0
+    recursive_backtracking(path, 1, 0);
+    return best_path;
 
+}
 void display4_1menuSmallGraphStadium(){
     Reader reader;
-    reader.readAndParseStadium();
-    int best_cost=99999999;
-    Graph<int*> graph = reader.getGraph();
-    vector<vector<int>> distance_matrix;
-    int i=0;
-    int j=0;
-    for(auto v:graph.getVertexSet()){
-        for(auto e:v->getAdj()){
-            distance_matrix[i][j]=e->getWeight();
-            j++;
-        }
-        i++;
-    }
-    vector<int> solution = tsp(distance_matrix);
-
+    std::vector<std::vector<double>> matrix=reader.readAndParseStadium();
+    auto start = high_resolution_clock::now(); // Start timing
+    vector<double> solution = tsp(matrix);
+    auto stop = high_resolution_clock::now(); // Stop timing
+    auto duration = duration_cast<milliseconds>(stop - start); // Calculate duration
 
     cout << "Melhor caminho encontrado: ";
-    for (int node : solution) {
-        cout << node << " ";
+    for (int city : solution) {
+        cout << city << " ";
     }
     cout << endl;
 
     cout << "Custo do melhor caminho: " << best_cost << endl;
+    cout << "Tempo de execução: " << duration.count() << " milliseconds" << endl;
+}
 
+void display4_1menuSmallGraphShipping(){
+    Reader reader;
+    std::vector<std::vector<double>> matrix=reader.readAndParseShipping();
+    auto start = high_resolution_clock::now(); // Start timing
+    vector<double> solution = tsp(matrix);
+    auto stop = high_resolution_clock::now(); // Stop timing
+    auto duration = duration_cast<milliseconds>(stop - start); // Calculate duration
 
+    cout << "Melhor caminho encontrado: ";
+    for (int city : solution) {
+        cout << city << " ";
+    }
+    cout << endl;
+
+    cout << "Custo do melhor caminho: " << best_cost << endl;
+    cout << "Tempo de execução: " << duration.count() << " milliseconds" << endl;
+}
+
+void display4_1menuSmallGraphTourism()
+{
+    Reader reader;
+    std::vector<std::vector<double>> matrix=reader.readAndParseTourism();
+    auto start = high_resolution_clock::now(); // Start timing
+    vector<double> solution = tsp(matrix);
+    auto stop = high_resolution_clock::now(); // Stop timing
+    auto duration = duration_cast<milliseconds>(stop - start); // Calculate duration
+
+    cout << "Melhor caminho encontrado: ";
+    for (int city : solution) {
+        cout << city << " ";
+    }
+    cout << endl;
+
+    cout << "Custo do melhor caminho: " << best_cost << endl;
+    cout << "Tempo de execução: " << duration.count() << " milliseconds" << endl;
 }
 
 void display4_1menuSmallGraph(){
@@ -89,7 +127,7 @@ void display4_1menuSmallGraph(){
         cout << "Enter the number of the graph you want:\n";
         cout << "1. Stadium Graph\n";
         cout << "2. Shipping Graph \n";
-        cout <<"3. tourism Graph \n";
+        cout <<"3. Tourism Graph \n";
         cout << "e. Back to the backtracing Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -104,7 +142,10 @@ void display4_1menuSmallGraph(){
                 display4_1menuSmallGraphStadium();
                 break;
             case '2':
+                display4_1menuSmallGraphShipping();
                 break;
+            case '3':
+                display4_1menuSmallGraphTourism();
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -154,7 +195,7 @@ void display4_1menu() {
     return;
 
 }
-void display4_1menuSmallGraph();
+
 
 
 
@@ -164,7 +205,7 @@ int mainMenu(){
     Reader reader;
 
 
-    Graph<int*>  graph = reader.getGraph();
+   // Graph<int*>  graph = reader.getGraph();
 
     string choice;
     bool exitMenu = false;

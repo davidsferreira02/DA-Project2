@@ -7,103 +7,116 @@
  *
  * This function reads data from the Stations.csv file, creates Station objects, and adds them to the graph.
  */
-void Reader::readAndParseStadium() {
+
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <unordered_set>
+
+
+std::vector<std::vector<double>> Reader::readAndParseStadium() {
     std::ifstream file("../Data/Toy-Graphs/stadiums.csv");
     std::string line;
 
+    std::unordered_set<int> nodes;
+    std::vector<Stadium*> stadiums;
     getline(file, line); // Skip the header line
-
     while (getline(file, line)) {
         std::stringstream ss(line);
-        std::string src_str, dst_str, dist_str;
-
-        getline(ss, src_str, ',');
-        int src = std::stoi(src_str);
-
-        getline(ss, dst_str, ',');
-        int dst = std::stoi(dst_str);
-
-        getline(ss, dist_str);
-        double dist = std::stod(dist_str);
-
-        graph.addVertex(&src);
-        graph.addVertex(&dst);
-
-        graph.addEdge(&src, &dst, dist);
-        auto *DS= new Stadium(src,dst,dist);
-        srcMapStadium[src]=DS;
-        dstMapStadium[dst]=DS;
+        int source, destination;
+        double dist;
+        char comma;
+        ss >> source >> comma >> destination >> comma >> dist;
+        nodes.insert(source);
+        nodes.insert(destination);
+        stadiums.push_back(new Stadium(source, destination, dist));
     }
 
-    file.close();
-}
+    int num_nodes = nodes.size();
+    std::vector<std::vector<double>> matrix(num_nodes, std::vector<double>(num_nodes, 0.0));
 
-
-
-void Reader::readAndParseTourism() {
-    std::ifstream file("../Data/Toy-Graphs/stadiums.csv");
-    std::string line;
-
-    getline(file, line); // Skip the header line
-
-    while (getline(file, line)) {
-        std::stringstream ss(line);
-        std::string src_str, dst_str, dist_str,label_org,label_dst;
-
-        getline(ss, src_str, ',');
-        int src = std::stoi(src_str);
-
-        getline(ss, dst_str, ',');
-        int dst = std::stoi(dst_str);
-
-        getline(ss, dist_str);
-        double dist = std::stod(dist_str);
-
-        getline(ss, label_org);
-        getline(ss,label_dst);
-
-        graph.addVertex(&src);
-        graph.addVertex(&dst);
-
-        graph.addEdge(&src, &dst, dist);
-        auto *DS= new Tourism(src,dst,dist,label_org,label_dst);
-        labelOrgTourism[label_org]=DS;
-        labelDstTourism[label_dst]=DS;
+    for (auto s : stadiums) {
+        matrix[s->getSrc()][s->getDst()] = s->getDist();
     }
 
-    file.close();
+    // Clean up dynamically allocated memory
+    for (auto s : stadiums) {
+        delete s;
+    }
+
+    return matrix;
 }
 
-
-void Reader::readAndParseShipping() {
+std::vector<std::vector<double>> Reader::readAndParseShipping() {
     std::ifstream file("../Data/Toy-Graphs/shipping.csv");
     std::string line;
 
+    std::unordered_set<int> nodes;
+    std::vector<Shipping*> shipping;
     getline(file, line); // Skip the header line
-
     while (getline(file, line)) {
         std::stringstream ss(line);
-        std::string src_str, dst_str, dist_str;
-
-        getline(ss, src_str, ',');
-        int src = std::stoi(src_str);
-
-        getline(ss, dst_str, ',');
-        int dst = std::stoi(dst_str);
-
-        getline(ss, dist_str);
-        double dist = std::stod(dist_str);
-
-        graph.addVertex(&src);
-        graph.addVertex(&dst);
-
-        graph.addEdge(&src, &dst, dist);
-        auto *DS= new Shipping(src,dst,dist);
-        srcMapShipping[src]=DS;
-        dstMapShipping[dst]=DS;
+        int source, destination;
+        double dist;
+        char comma;
+        ss >> source >> comma >> destination >> comma >> dist;
+        nodes.insert(source);
+        nodes.insert(destination);
+        shipping.push_back(new Shipping(source, destination, dist));
     }
 
-    file.close();
+    int num_nodes = nodes.size();
+    std::vector<std::vector<double>> matrix(num_nodes, std::vector<double>(num_nodes, 0.0));
+
+    for (auto s : shipping) {
+        matrix[s->getSrc()][s->getDst()] = s->getDist();
+    }
+
+    // Clean up dynamically allocated memory
+    for (auto s : shipping) {
+        delete s;
+    }
+
+    return matrix;
+}
+
+
+
+std::vector<std::vector<double>> Reader::readAndParseTourism() {
+    std::ifstream file("../Data/Toy-Graphs/tourism.csv");
+    std::string line;
+
+    std::unordered_set<int> nodes;
+    std::vector<Tourism*> tourism;
+   // getline(file, line); // Skip the header line
+    while (getline(file, line)) {
+        std::stringstream ss(line);
+        int source, destination;
+        double dist;
+        std::string label_org;
+        std::string label_dst;
+        char comma;
+        ss >> source >> comma >> destination >> comma >> dist>> comma>>label_org >>comma >> label_dst;
+        nodes.insert(source);
+        nodes.insert(destination);
+        tourism.push_back(new Tourism(source, destination, dist,label_org,label_dst));
+    }
+
+    int num_nodes = nodes.size();
+    std::vector<std::vector<double>> matrix(num_nodes, std::vector<double>(num_nodes, 0.0));
+
+    for (auto s : tourism) {
+        matrix[s->getSrc()][s->getDst()] = s->getDist();
+    }
+
+    // Clean up dynamically allocated memory
+    for (auto s : tourism) {
+        delete s;
+    }
+
+    return matrix;
 }
 
 
@@ -114,4 +127,6 @@ void Reader::readAndParseShipping() {
 
 
 
-Reader::Reader() = default;
+
+
+

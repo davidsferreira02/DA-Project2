@@ -15,7 +15,7 @@
  * @brief The Reader class is responsible for reading and parsing input data
  *        to construct the graph representing the water distribution network.
  */
-class Reader {
+/*class Reader {
 private:
     Graph<int*> graph;  ///< The graph representing the water distribution network.
     std::unordered_map<int, Stadium*> srcMapStadium;
@@ -29,6 +29,9 @@ private:
     std::unordered_map<int, Tourism*> distMapTourism;
     std::unordered_map<std::string,Tourism*> labelOrgTourism;
     std::unordered_map<std::string, Tourism*> labelDstTourism;
+    std::vector<double> distance;
+    int num_nodes;
+
 
 public:
     Reader();
@@ -45,6 +48,21 @@ public:
     Graph<int*> getGraph(){
         return graph;
     }
+    int getNumNodes() const { return num_nodes; }
+
+};
+*/
+class Reader {
+private:
+    std::vector<double> distance;
+    int num_nodes;
+
+public:
+    std::vector<std::vector<double>> readAndParseStadium();
+    std::vector<std::vector<double>> readAndParseShipping();
+    std::vector<std::vector<double>> readAndParseTourism();
+    int getNumNodes() const { return num_nodes; }
+    const std::vector<double>& getDistanceVector() const { return distance; }
 };
 
 #endif /* READER_H */
