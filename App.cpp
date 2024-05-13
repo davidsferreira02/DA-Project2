@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cmath>
 #include <utility>
+#include <chrono>
 #include "reader.h"
 #include "App.h"
 
