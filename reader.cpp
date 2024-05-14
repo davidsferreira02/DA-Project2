@@ -77,7 +77,7 @@ double Haversine(double lat1, double lon1, double lat2, double lon2) {
 
 
 Graph<int> Reader::readAndParse4_2Extra_Fully_Connected_Graphs(const std::string filename) {
-    std::ifstream file("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+    std::ifstream file(filename);
     std::string line;
 
     Graph<int> graph;
