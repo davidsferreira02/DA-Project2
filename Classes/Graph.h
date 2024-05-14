@@ -1,4 +1,3 @@
-
 #ifndef PROJ1_GRAPH_H
 #define PROJ1_GRAPH_H
 
@@ -41,6 +40,8 @@ public:
     bool removeEdge(T in);
     void removeOutgoingEdges();
     std::pair<Edge<T>*, double> removeOutgoingEdge();
+
+
 
 
 protected:
@@ -115,12 +116,71 @@ public:
     bool addVertex(const T &in);
     bool removeVertex(const T &in);
 
+
+
     /*
      * Adds an edge to a graph (this), given the contents of the source and
      * destination vertices and the edge weight (w).
      * Returns true if successful, and false if the source or destination vertex does not exist.
      */
     bool addEdge(const T &sourc, const T &dest, double w);
+
+
+    std::vector<Edge<T>*> primMST(int startIdx) {
+        std::vector<Edge<T>*> mst;
+        if (vertexSet.empty() || startIdx < 0 || startIdx >= vertexSet.size()) return mst;
+
+        std::priority_queue<std::pair<double, Edge<T>*>, std::vector<std::pair<double, Edge<T>*>>, std::greater<>> pq;
+        std::vector<bool> inMST(vertexSet.size(), false);
+
+        // Start from the specified vertex
+        inMST[startIdx] = true;
+        for (auto edge : vertexSet[startIdx]->getAdj()) {
+            pq.push({edge->getWeight(), edge});
+        }
+
+        while (!pq.empty()) {
+            auto [weight, edge] = pq.top();
+            pq.pop();
+            Vertex<T>* dest = edge->getDest();
+
+            int destIdx = findVertexIdx(dest->getInfo());
+            if (destIdx != -1 && !inMST[destIdx]) {
+                mst.push_back(edge);
+                inMST[destIdx] = true;
+
+                for (auto nextEdge : dest->getAdj()) {
+                    if (!inMST[findVertexIdx(nextEdge->getDest()->getInfo())]) {
+                        pq.push({nextEdge->getWeight(), nextEdge});
+                    }
+                }
+            }
+        }
+
+        return mst;
+    }
+
+
+
+
+
+// To start the traversal
+
+
+    Edge<T>* findEdge(const T& source, const T& dest) const {
+        Vertex<T>* srcVertex = findVertex(source);
+        Vertex<T>* destVertex = findVertex(dest);
+        if (srcVertex == nullptr || destVertex == nullptr) {
+            return nullptr; // Source or destination vertex doesn't exist
+        }
+        // Search for the edge in the source vertex's adjacency list
+        for (auto edge : srcVertex->getAdj()) {
+            if (edge->getDest() == destVertex) {
+                return edge;
+            }
+        }
+        return nullptr; // Edge not found
+    }
     bool removeEdge(const T &source, const T &dest);
     bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
 
@@ -147,6 +207,8 @@ protected:
     int findVertexIdx(const T &in) const;
 };
 
+
+
 void deleteMatrix(int **m, int n);
 void deleteMatrix(double **m, int n);
 
@@ -167,6 +229,7 @@ Edge<T> * Vertex<T>::addEdge(Vertex<T> *d, double w) {
     d->incoming.push_back(newEdge);
     return newEdge;
 }
+
 
 /*
  * Auxiliary function to remove an outgoing edge (with a given destination (d))

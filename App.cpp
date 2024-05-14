@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cmath>
 #include <utility>
+#include <set>
 #include <chrono>
 #include "reader.h"
 #include "App.h"
@@ -18,105 +19,161 @@ using namespace std;
 
 using namespace std::chrono;
 
+std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst) {
+    std::vector<int> order;
+    std::unordered_set<Vertex<int>*> visited;
+    std::unordered_map<Vertex<int>*, std::vector<Vertex<int>*>> tree;
 
-//Backtracking
-
-int n;
-vector<vector<double>> graph;
-vector<double> best_path;
-double best_cost = numeric_limits<double>::infinity();
-
-bool is_valid(vector<double>& path, int pos, int city) {
-    // Check if the city has not been visited in the current path
-    for (int i = 0; i < pos; ++i) {
-        if (path[i] == city)
-            return false;
+    for (auto edge : mst) {
+        tree[edge->getOrig()].push_back(edge->getDest());
+        tree[edge->getDest()].push_back(edge->getOrig());
     }
-    return true;
+
+    std::function<void(Vertex<int>*)> dfs = [&](Vertex<int>* vertex) {
+        if (!vertex || visited.count(vertex)) return;
+        visited.insert(vertex);
+        order.push_back(vertex->getInfo());
+
+        for (auto next : tree[vertex]) {
+            dfs(next);
+        }
+    };
+
+    dfs(root);
+    return order;
 }
 
-void recursive_backtracking(vector<double>& path, int pos, double cost) {
-    if (pos == n) {
 
-        // Check if the path is a complete solution
-        if (cost + graph[path[pos - 1]][0] < best_cost) {
-            best_cost = cost + graph[path[pos - 1]][0];
-            best_path = path;
 
+
+void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost) {
+    if (level == graph.getNumVertex()) {
+        Edge<int>* edgeBack = graph.findEdge(currentNode, 0);
+        if (edgeBack && currentCost + edgeBack->getWeight() < bestCost) {
+            bestCost = currentCost + edgeBack->getWeight();
+            bestPath = path;
+            bestPath.push_back(0);
         }
         return;
     }
-    for (int i = 1; i < n; ++i) {
-        if (is_valid(path, pos, i)) {
-            path[pos] = i;
-            recursive_backtracking(path, pos + 1, cost + graph[path[pos - 1]][i]);
+
+    // Pruning: Se o custo atual exceder o best cost desiste do caminho
+    if (currentCost >= bestCost)
+        return;
+
+    Vertex<int>* currentVertex = graph.findVertex(currentNode);
+    for (Edge<int>* edge : currentVertex->getAdj()) {
+        auto nextNode = edge->getDest();
+        if (!nextNode->isVisited()) {
+            nextNode->setVisited(true);
+            path.push_back(nextNode->getInfo());
+            tsp(nextNode->getInfo(), path, currentCost + edge->getWeight(), level + 1, graph, bestPath, bestCost);
+            nextNode->setVisited(false);
+            path.pop_back();
         }
     }
 }
 
-vector<double> tsp(vector<vector<double>>& distance_matrix) {
-    n = distance_matrix.size();
-    graph = distance_matrix;
-    vector<double> path(n);
-    path[0] = 0; // Starting from city 0
-    recursive_backtracking(path, 1, 0);
-    return best_path;
 
-}
-void display4_1menuSmallGraphStadium(){
+
+void display4_1menuSmallGraphStadium() {
     Reader reader;
-    std::vector<std::vector<double>> matrix=reader.readAndParseStadium();
-    auto start = high_resolution_clock::now(); // Start timing
-    vector<double> solution = tsp(matrix);
-    auto stop = high_resolution_clock::now(); // Stop timing
-    auto duration = duration_cast<milliseconds>(stop - start); // Calculate duration
+    Graph<int> graph;
+    graph = reader.readAndParseStadium();
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);  // Start from node 0
+    graph.findVertex(0)->setVisited(true);
 
-    cout << "Melhor caminho encontrado: ";
-    for (int city : solution) {
-        cout << city << " ";
+    auto startTime = high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
     }
-    cout << endl;
-
-    cout << "Custo do melhor caminho: " << best_cost << endl;
-    cout << "Tempo de execução: " << duration.count() << " milliseconds" << endl;
 }
 
-void display4_1menuSmallGraphShipping(){
+
+void display4_1menuSmallGraphShipping() {
     Reader reader;
-    std::vector<std::vector<double>> matrix=reader.readAndParseShipping();
-    auto start = high_resolution_clock::now(); // Start timing
-    vector<double> solution = tsp(matrix);
-    auto stop = high_resolution_clock::now(); // Stop timing
-    auto duration = duration_cast<milliseconds>(stop - start); // Calculate duration
+    Graph<int> graph;
+    graph = reader.readAndParseShipping();
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);  // Start from node 0
+    graph.findVertex(0)->setVisited(true);
 
-    cout << "Melhor caminho encontrado: ";
-    for (int city : solution) {
-        cout << city << " ";
+    auto startTime = high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: \n";
+    for (size_t i = 0; i < bestPath.size(); ++i) {
+        if (i == 0) {
+            std::cout << bestPath[i];
+        } else {
+            std::cout << " -> " << bestPath[i];
+        }
     }
-    cout << endl;
-
-    cout << "Custo do melhor caminho: " << best_cost << endl;
-    cout << "Tempo de execução: " << duration.count() << " milliseconds" << endl;
+    std::cout << std::endl;
 }
 
-void display4_1menuSmallGraphTourism()
-{
+
+
+void display4_1menuSmallGraphTourism() {
     Reader reader;
-    std::vector<std::vector<double>> matrix=reader.readAndParseTourism();
-    auto start = high_resolution_clock::now(); // Start timing
-    vector<double> solution = tsp(matrix);
-    auto stop = high_resolution_clock::now(); // Stop timing
-    auto duration = duration_cast<milliseconds>(stop - start); // Calculate duration
+    Graph<int> graph;
+    graph = reader.readAndParseTourism();
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);  // Start from node 0
+    graph.findVertex(0)->setVisited(true);
 
-    cout << "Melhor caminho encontrado: ";
-    for (int city : solution) {
-        cout << city << " ";
+    auto startTime = high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
     }
-    cout << endl;
-
-    cout << "Custo do melhor caminho: " << best_cost << endl;
-    cout << "Tempo de execução: " << duration.count() << " milliseconds" << endl;
 }
+
+
+void display4_1menuMedium(const std::string &filename){
+    Reader reader;
+    Graph<int> graph;
+    graph = reader.readAndParseExtra_Fully_Connected_Graphs(filename);
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);  // Start from node 0
+    graph.findVertex(0)->setVisited(true);
+
+    auto startTime = high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
+    }
+
+}
+
 
 void display4_1menuSmallGraph(){
     string choice;
@@ -148,6 +205,83 @@ void display4_1menuSmallGraph(){
             case '3':
                 display4_1menuSmallGraphTourism();
             case 'e':
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+
+
+void display4_1menuMediumGraph(){
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Backtracing Medium Graph Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "how many edges the graph has:\n";
+        cout << "1. 25\n";
+        cout << "2. 50 \n";
+        cout <<"3. 75 \n";
+        cout <<"4. 100 \n";
+        cout <<"5. 200 \n";
+        cout <<"6. 300 \n";
+        cout <<"7. 400 \n";
+        cout <<"8. 500\n";
+        cout <<"9. 600 \n";
+        cout <<"10. 700 \n";
+        cout <<"11. 800 \n";
+        cout <<"12. 900 \n";
+        cout << "e. Back to the backtracing Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+                break;
+            case '2':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
+                break;
+            case '3':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
+                break;
+            case '4':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
+                break;
+            case '5':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
+                break;
+            case '6':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
+                break;
+            case '7':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
+                break;
+            case '8':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
+                break;
+            case '9':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
+                break;
+            case '10':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
+                break;
+            case '11':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
+                break;
+            case '12':
+                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
+                break;
+            case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
                 break;
@@ -158,6 +292,7 @@ void display4_1menuSmallGraph(){
     return;
 
 }
+
 
 void display4_1menu() {
     string choice;
@@ -184,6 +319,133 @@ void display4_1menu() {
                 display4_1menuSmallGraph();
                 break;
             case '2':
+                display4_1menuMediumGraph();;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+
+void display4_2menuSmallGraphExtra_Fully_Connected_Graphs() {
+    Reader reader;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+
+
+    Vertex<int>* startVertexPtr = graph.findVertex(0);
+
+
+    vector<Edge<int>*> mst = graph.primMST(startVertexPtr->getInfo());
+
+
+    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
+
+
+    vector<int> tspTour;
+    set<int> visited;
+    for (int vertex : preorderList) {
+        if (visited.insert(vertex).second) {
+            tspTour.push_back(vertex);
+        }
+    }
+    tspTour.push_back(tspTour.front());
+
+
+    double totalDistance = 0;
+    int previous = tspTour.front();
+    for (size_t i = 1; i < tspTour.size(); i++) {
+        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
+        if (edge)
+            totalDistance += edge->getWeight();
+        previous = tspTour[i];
+
+    }
+
+
+    cout << "TSP Tour: ";
+    for (size_t i = 0; i < tspTour.size(); ++i) {
+        cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
+    }
+    cout << endl;
+    cout << "Total Approximation Distance: " << totalDistance << "\n";
+}
+
+
+
+
+
+void display4_2menuSmallGraph(){
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to  Triangular Approximation Heuristic SmallGraph Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the graph you want:\n";
+        cout << "1. Stadium Graph\n";
+        cout << "2. Shipping Graph \n";
+        cout <<"3. Tourism Graph \n";
+        cout << "e. Back to the backtracing Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                display4_2menuSmallGraphExtra_Fully_Connected_Graphs();
+                break;
+            case '2':
+                //display4_2menuSmallGraphShipping();
+                break;
+            case '3':
+                //  display4_2menuSmallGraphTourism();
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+
+
+void display4_2menu() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Triangular Approximation Heuristic       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Small Graph\n";
+        cout << "2. Medium Graph \n";
+        cout <<"3. Large Graph \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                display4_2menuSmallGraph();
+                break;
+            case '2':
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -200,13 +462,14 @@ void display4_1menu() {
 
 
 
+
 int mainMenu(){
     cout << "Loading...";
 
     Reader reader;
 
 
-   // Graph<int*>  graph = reader.getGraph();
+    // Graph<int*>  graph = reader.getGraph();
 
     string choice;
     bool exitMenu = false;
@@ -233,6 +496,7 @@ int mainMenu(){
                 display4_1menu();
                 break;
             case '2':
+                display4_2menu();
                 break;
             case '3':
                 break;
@@ -251,4 +515,3 @@ int mainMenu(){
 void App::run() {
     mainMenu();
 }
-

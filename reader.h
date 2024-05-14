@@ -54,15 +54,15 @@ public:
 */
 class Reader {
 private:
-    std::vector<double> distance;
-    int num_nodes;
+
 
 public:
-    std::vector<std::vector<double>> readAndParseStadium();
-    std::vector<std::vector<double>> readAndParseShipping();
-    std::vector<std::vector<double>> readAndParseTourism();
-    int getNumNodes() const { return num_nodes; }
-    const std::vector<double>& getDistanceVector() const { return distance; }
+    Graph<int> readAndParseStadium();
+    Graph<int>readAndParseShipping();
+    Graph<int> readAndParseTourism();
+
+    Graph<int> readAndParseExtra_Fully_Connected_Graphs(const std::string filename);
+    Graph<int> readAndParse4_2Extra_Fully_Connected_Graphs(const std::string filename);
 };
 
 #endif /* READER_H */

@@ -10,18 +10,18 @@ class Shipping {
 
 
 
-    protected:
-        int src;
-        int dst;
-        double dist;
+protected:
+    int src;
+    int dst;
+    double dist;
 
-    public:
-        Shipping(int src, int dst , double dist);
-        virtual ~Shipping();
-        int getSrc();
-        int getDst() ;
-        double getDist() ;
-    };
+public:
+    Shipping(int src, int dst , double dist);
+    virtual ~Shipping();
+    int getSrc();
+    int getDst() ;
+    double getDist() ;
+};
 
 
 
