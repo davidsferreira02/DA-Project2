@@ -602,49 +602,6 @@ void tsp(int currentNode, std::vector<int>& path, double currentCost, int level,
     }
 }
 
-void display4_2menuSmallGraphExtra_Fully_Connected_Graphs() {
-    Reader reader;
-    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
-
-
-    Vertex<int>* startVertexPtr = graph.findVertex(0);
-
-
-    vector<Edge<int>*> mst = graph.primMST(startVertexPtr->getInfo());
-
-
-    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
-
-
-    vector<int> tspTour;
-    set<int> visited;
-    for (int vertex : preorderList) {
-        if (visited.insert(vertex).second) {
-            tspTour.push_back(vertex);
-        }
-    }
-    tspTour.push_back(tspTour.front());
-
-
-    double totalDistance = 0;
-    int previous = tspTour.front();
-    for (size_t i = 1; i < tspTour.size(); i++) {
-        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
-        if (edge)
-            totalDistance += edge->getWeight();
-        previous = tspTour[i];
-
-    }
-
-
-    cout << "TSP Tour: ";
-    for (size_t i = 0; i < tspTour.size(); ++i) {
-        cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
-    }
-    cout << endl;
-    cout << "Total Approximation Distance: " << totalDistance << "\n";
-}
-
 void App::run() {
     mainMenu();
 }
