@@ -159,9 +159,47 @@ public:
 
         return mst;
     }
+    std::vector<Vertex<T>*> multiFragmentAlgorithm(Graph<T>& graph) {
+        std::vector<Vertex<T>*> tour;
 
+        std::vector<Vertex<T>*> vertices = graph.getVertexSet();
 
+        Vertex<int>* startVertex = graph.findVertex(0);
 
+        if (startVertex == nullptr) {
+            return tour;
+        }
+
+        tour.reserve(vertices.size() + 1); // Reserve space for the tour
+
+        tour.push_back(startVertex);
+
+        startVertex->setVisited(true);
+
+        while (tour.size() < vertices.size()) {
+            double minDistance = INF;
+            Vertex<T>* nearestNeighbor = nullptr;
+            for (auto vertex : vertices) {
+                if (!vertex->isVisited()) {
+                    double distance = graph.findEdge(tour.back()->getInfo(), vertex->getInfo())->getWeight();
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nearestNeighbor = vertex;
+                    }
+                }
+            }
+            tour.push_back(nearestNeighbor);
+            nearestNeighbor->setVisited(true);
+        }
+
+        tour.push_back(startVertex);
+
+        for (auto vertex : vertices) {
+            vertex->setVisited(false);
+        }
+
+        return tour;
+    }
 
 
 // To start the traversal
