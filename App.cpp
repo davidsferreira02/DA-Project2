@@ -16,164 +16,143 @@
 using namespace std;
 
 
-
-using namespace std::chrono;
-
-std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst) {
-    std::vector<int> order;
-    std::unordered_set<Vertex<int>*> visited;
-    std::unordered_map<Vertex<int>*, std::vector<Vertex<int>*>> tree;
-
-    for (auto edge : mst) {
-        tree[edge->getOrig()].push_back(edge->getDest());
-        tree[edge->getDest()].push_back(edge->getOrig());
-    }
-
-    std::function<void(Vertex<int>*)> dfs = [&](Vertex<int>* vertex) {
-        if (!vertex || visited.count(vertex)) return;
-        visited.insert(vertex);
-        order.push_back(vertex->getInfo());
-
-        for (auto next : tree[vertex]) {
-            dfs(next);
-        }
-    };
-
-    dfs(root);
-    return order;
-}
+void display4_1menu();
+void display4_2menu();
+void display4_1menuSmallGraph();
+void display4_1menuSmallGraphStadium();
+void display4_1menuSmallGraphShipping();
+void display4_1menuSmallGraphTourism();
+void display4_1menuMediumGraph();
+void display4_1menuMedium(const std::string &filename);
+void display4_2menuSmallGraph();
+void display4_2menuSmallGraphExtra_Fully_Connected_Graphs();
+std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst);
+void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
 
 
+int mainMenu(){
+    cout << "Loading...";
 
-
-void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost) {
-    if (level == graph.getNumVertex()) {
-        Edge<int>* edgeBack = graph.findEdge(currentNode, 0);
-        if (edgeBack && currentCost + edgeBack->getWeight() < bestCost) {
-            bestCost = currentCost + edgeBack->getWeight();
-            bestPath = path;
-            bestPath.push_back(0);
-        }
-        return;
-    }
-
-    // Pruning: Se o custo atual exceder o best cost desiste do caminho
-    if (currentCost >= bestCost)
-        return;
-
-    Vertex<int>* currentVertex = graph.findVertex(currentNode);
-    for (Edge<int>* edge : currentVertex->getAdj()) {
-        auto nextNode = edge->getDest();
-        if (!nextNode->isVisited()) {
-            nextNode->setVisited(true);
-            path.push_back(nextNode->getInfo());
-            tsp(nextNode->getInfo(), path, currentCost + edge->getWeight(), level + 1, graph, bestPath, bestCost);
-            nextNode->setVisited(false);
-            path.pop_back();
-        }
-    }
-}
-
-
-
-void display4_1menuSmallGraphStadium() {
     Reader reader;
-    Graph<int> graph;
-    graph = reader.readAndParseStadium();
-    std::vector<int> bestPath;
-    double bestCost = std::numeric_limits<double>::infinity();
-    std::vector<int> path(1, 0);  // Start from node 0
-    graph.findVertex(0)->setVisited(true);
-
-    auto startTime = high_resolution_clock::now();
-    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
-    auto endTime = high_resolution_clock::now();
-    std::chrono::duration<double> execTime = endTime - startTime;
-
-    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
-    std::cout << "Best Path Cost: " << bestCost << "\n";
-    std::cout << "Best Path: ";
-    for (int node : bestPath) {
-        std::cout << node << (node == 0 ? "\n" : " -> ");
-    }
-}
 
 
-void display4_1menuSmallGraphShipping() {
-    Reader reader;
-    Graph<int> graph;
-    graph = reader.readAndParseShipping();
-    std::vector<int> bestPath;
-    double bestCost = std::numeric_limits<double>::infinity();
-    std::vector<int> path(1, 0);  // Start from node 0
-    graph.findVertex(0)->setVisited(true);
+    // Graph<int*>  graph = reader.getGraph();
 
-    auto startTime = high_resolution_clock::now();
-    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
-    auto endTime = high_resolution_clock::now();
-    std::chrono::duration<double> execTime = endTime - startTime;
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Main Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option that suits your needs:\n";
+        cout << "1. Backtracking Algorithm\n";
+        cout << "2. Triangular Approximation Heuristic \n";
+        cout <<"3. Other Heuristics \n";
+        cout << "4 Tsp in the Real World\n";
+        cout << "e. Exit\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
 
-    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
-    std::cout << "Best Path Cost: " << bestCost << "\n";
-    std::cout << "Best Path: \n";
-    for (size_t i = 0; i < bestPath.size(); ++i) {
-        if (i == 0) {
-            std::cout << bestPath[i];
-        } else {
-            std::cout << " -> " << bestPath[i];
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                display4_1menu();
+                break;
+            case '2':
+                display4_2menu();
+                break;
+            case '3':
+                break;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
         }
     }
-    std::cout << std::endl;
+    return 0;
 }
 
+void display4_1menu() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Backtracing Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Small Graph\n";
+        cout << "2. Medium Graph \n";
+        cout <<"3. Large Graph \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
 
+        if (choice.length() != 1) {
+            choice = "0";
+        }
 
-void display4_1menuSmallGraphTourism() {
-    Reader reader;
-    Graph<int> graph;
-    graph = reader.readAndParseTourism();
-    std::vector<int> bestPath;
-    double bestCost = std::numeric_limits<double>::infinity();
-    std::vector<int> path(1, 0);  // Start from node 0
-    graph.findVertex(0)->setVisited(true);
-
-    auto startTime = high_resolution_clock::now();
-    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
-    auto endTime = high_resolution_clock::now();
-    std::chrono::duration<double> execTime = endTime - startTime;
-
-    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
-    std::cout << "Best Path Cost: " << bestCost << "\n";
-    std::cout << "Best Path: ";
-    for (int node : bestPath) {
-        std::cout << node << (node == 0 ? "\n" : " -> ");
+        switch (choice[0]) {
+            case '1':
+                display4_1menuSmallGraph();
+                break;
+            case '2':
+                display4_1menuMediumGraph();;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
     }
+    return;
+
 }
 
+void display4_2menu() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Triangular Approximation Heuristic       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Small Graph\n";
+        cout << "2. Medium Graph \n";
+        cout <<"3. Large Graph \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
 
-void display4_1menuMedium(const std::string &filename){
-    Reader reader;
-    Graph<int> graph;
-    graph = reader.readAndParseExtra_Fully_Connected_Graphs(filename);
-    std::vector<int> bestPath;
-    double bestCost = std::numeric_limits<double>::infinity();
-    std::vector<int> path(1, 0);  // Start from node 0
-    graph.findVertex(0)->setVisited(true);
+        if (choice.length() != 1) {
+            choice = "0";
+        }
 
-    auto startTime = high_resolution_clock::now();
-    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
-    auto endTime = high_resolution_clock::now();
-    std::chrono::duration<double> execTime = endTime - startTime;
-
-    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
-    std::cout << "Best Path Cost: " << bestCost << "\n";
-    std::cout << "Best Path: ";
-    for (int node : bestPath) {
-        std::cout << node << (node == 0 ? "\n" : " -> ");
+        switch (choice[0]) {
+            case '1':
+                display4_2menuSmallGraph();
+                break;
+            case '2':
+                break;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
     }
+    return;
 
 }
-
 
 void display4_1menuSmallGraph(){
     string choice;
@@ -215,6 +194,79 @@ void display4_1menuSmallGraph(){
 
 }
 
+void display4_1menuSmallGraphStadium() {
+    Reader reader;
+    Graph<int> graph;
+    graph = reader.readAndParseStadium();
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);  // Start from node 0
+    graph.findVertex(0)->setVisited(true);
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
+    }
+}
+
+
+void display4_1menuSmallGraphShipping() {
+    Reader reader;
+    Graph<int> graph;
+    graph = reader.readAndParseShipping();
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);  // Start from node 0
+    graph.findVertex(0)->setVisited(true);
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: \n";
+    for (size_t i = 0; i < bestPath.size(); ++i) {
+        if (i == 0) {
+            std::cout << bestPath[i];
+        } else {
+            std::cout << " -> " << bestPath[i];
+        }
+    }
+    std::cout << std::endl;
+}
+
+
+
+void display4_1menuSmallGraphTourism() {
+    Reader reader;
+    Graph<int> graph;
+    graph = reader.readAndParseTourism();
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);  // Start from node 0
+    graph.findVertex(0)->setVisited(true);
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
+    }
+}
 
 void display4_1menuMediumGraph(){
     string choice;
@@ -293,19 +345,41 @@ void display4_1menuMediumGraph(){
 
 }
 
+void display4_1menuMedium(const std::string &filename){
+    Reader reader;
+    Graph<int> graph;
+    graph = reader.readAndParseExtra_Fully_Connected_Graphs(filename);
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);  // Start from node 0
+    graph.findVertex(0)->setVisited(true);
 
-void display4_1menu() {
+    auto startTime = std::chrono::high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
+    }
+
+}
+
+void display4_2menuSmallGraph(){
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Backtracing Menu       \n";
+        cout << "     Welcome to  Triangular Approximation Heuristic SmallGraph Menu       \n";
         cout << "-----------------------------\n";
-        cout << "Enter the number of the option of the size of the graph you want:\n";
-        cout << "1. Small Graph\n";
-        cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
-        cout << "e. Back to the main Menu\n";
+        cout << "Enter the number of the graph you want:\n";
+        cout << "1. Stadium Graph\n";
+        cout << "2. Shipping Graph \n";
+        cout <<"3. Tourism Graph \n";
+        cout << "e. Back to the backtracing Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
@@ -316,10 +390,13 @@ void display4_1menu() {
 
         switch (choice[0]) {
             case '1':
-                display4_1menuSmallGraph();
+                display4_2menuSmallGraphExtra_Fully_Connected_Graphs();
                 break;
             case '2':
-                display4_1menuMediumGraph();;
+                //display4_2menuSmallGraphShipping();
+                break;
+            case '3':
+                //  display4_2menuSmallGraphTourism();
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -330,6 +407,63 @@ void display4_1menu() {
     }
     return;
 
+}
+
+using namespace std::chrono;
+
+std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst) {
+    std::vector<int> order;
+    std::unordered_set<Vertex<int>*> visited;
+    std::unordered_map<Vertex<int>*, std::vector<Vertex<int>*>> tree;
+
+    for (auto edge : mst) {
+        tree[edge->getOrig()].push_back(edge->getDest());
+        tree[edge->getDest()].push_back(edge->getOrig());
+    }
+
+    std::function<void(Vertex<int>*)> dfs = [&](Vertex<int>* vertex) {
+        if (!vertex || visited.count(vertex)) return;
+        visited.insert(vertex);
+        order.push_back(vertex->getInfo());
+
+        for (auto next : tree[vertex]) {
+            dfs(next);
+        }
+    };
+
+    dfs(root);
+    return order;
+}
+
+
+
+
+void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost) {
+    if (level == graph.getNumVertex()) {
+        Edge<int>* edgeBack = graph.findEdge(currentNode, 0);
+        if (edgeBack && currentCost + edgeBack->getWeight() < bestCost) {
+            bestCost = currentCost + edgeBack->getWeight();
+            bestPath = path;
+            bestPath.push_back(0);
+        }
+        return;
+    }
+
+    // Pruning: Se o custo atual exceder o best cost desiste do caminho
+    if (currentCost >= bestCost)
+        return;
+
+    Vertex<int>* currentVertex = graph.findVertex(currentNode);
+    for (Edge<int>* edge : currentVertex->getAdj()) {
+        auto nextNode = edge->getDest();
+        if (!nextNode->isVisited()) {
+            nextNode->setVisited(true);
+            path.push_back(nextNode->getInfo());
+            tsp(nextNode->getInfo(), path, currentCost + edge->getWeight(), level + 1, graph, bestPath, bestCost);
+            nextNode->setVisited(false);
+            path.pop_back();
+        }
+    }
 }
 
 void display4_2menuSmallGraphExtra_Fully_Connected_Graphs() {
@@ -374,143 +508,6 @@ void display4_2menuSmallGraphExtra_Fully_Connected_Graphs() {
     cout << endl;
     cout << "Total Approximation Distance: " << totalDistance << "\n";
 }
-
-
-
-
-
-void display4_2menuSmallGraph(){
-    string choice;
-    bool exitMenu = false;
-    while (!exitMenu) {
-        cout << "\n-----------------------------\n";
-        cout << "     Welcome to  Triangular Approximation Heuristic SmallGraph Menu       \n";
-        cout << "-----------------------------\n";
-        cout << "Enter the number of the graph you want:\n";
-        cout << "1. Stadium Graph\n";
-        cout << "2. Shipping Graph \n";
-        cout <<"3. Tourism Graph \n";
-        cout << "e. Back to the backtracing Menu\n";
-        cout << "-----------------------------\n";
-        cout << "Your choice: ";
-        cin >> choice;
-
-        if (choice.length() != 1) {
-            choice = "0";
-        }
-
-        switch (choice[0]) {
-            case '1':
-                display4_2menuSmallGraphExtra_Fully_Connected_Graphs();
-                break;
-            case '2':
-                //display4_2menuSmallGraphShipping();
-                break;
-            case '3':
-                //  display4_2menuSmallGraphTourism();
-            case 'e':
-                cout << "Exiting menu system...\n";
-                exitMenu = true;
-                break;
-            default:
-                cout << "Invalid input. Please choose a valid option.\n";
-        }
-    }
-    return;
-
-}
-
-
-void display4_2menu() {
-    string choice;
-    bool exitMenu = false;
-    while (!exitMenu) {
-        cout << "\n-----------------------------\n";
-        cout << "     Welcome to Triangular Approximation Heuristic       \n";
-        cout << "-----------------------------\n";
-        cout << "Enter the number of the option of the size of the graph you want:\n";
-        cout << "1. Small Graph\n";
-        cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
-        cout << "e. Back to the main Menu\n";
-        cout << "-----------------------------\n";
-        cout << "Your choice: ";
-        cin >> choice;
-
-        if (choice.length() != 1) {
-            choice = "0";
-        }
-
-        switch (choice[0]) {
-            case '1':
-                display4_2menuSmallGraph();
-                break;
-            case '2':
-                break;
-            case 'e':
-                cout << "Exiting menu system...\n";
-                exitMenu = true;
-                break;
-            default:
-                cout << "Invalid input. Please choose a valid option.\n";
-        }
-    }
-    return;
-
-}
-
-
-
-
-
-int mainMenu(){
-    cout << "Loading...";
-
-    Reader reader;
-
-
-    // Graph<int*>  graph = reader.getGraph();
-
-    string choice;
-    bool exitMenu = false;
-    while (!exitMenu) {
-        cout << "\n-----------------------------\n";
-        cout << "     Welcome to Main Menu       \n";
-        cout << "-----------------------------\n";
-        cout << "Enter the number of the option that suits your needs:\n";
-        cout << "1. Backtracking Algorithm\n";
-        cout << "2. Triangular Approximation Heuristic \n";
-        cout <<"3. Other Heuristics \n";
-        cout << "4 Tsp in the Real World\n";
-        cout << "e. Exit\n";
-        cout << "-----------------------------\n";
-        cout << "Your choice: ";
-        cin >> choice;
-
-        if (choice.length() != 1) {
-            choice = "0";
-        }
-
-        switch (choice[0]) {
-            case '1':
-                display4_1menu();
-                break;
-            case '2':
-                display4_2menu();
-                break;
-            case '3':
-                break;
-            case 'e':
-                cout << "Exiting menu system...\n";
-                exitMenu = true;
-                break;
-            default:
-                cout << "Invalid input. Please choose a valid option.\n";
-        }
-    }
-    return 0;
-}
-
 
 void App::run() {
     mainMenu();
