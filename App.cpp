@@ -34,14 +34,14 @@ void display4_2menuSmallGraphTourism();
 void display4_2menuMedium(const std::string &filename);
 
 void display_OHmenu();
-void display_MFmenu();
-void display_MFmenuSmallGraph();
-void display_MFmenuMediumGraph();
-void getValue_MFmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
-void getValue_MFmenuSmallGraphStadium();
-void getValue_MFmenuSmallGraphShipping();
-void getValue_MFmenuSmallGraphTourism();
-void getValue_MFmenuMediumGraph(const std::string &filename);
+void display_NNmenu();
+void display_NNmenuSmallGraph();
+void display_NNmenuMediumGraph();
+void getValue_NNmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
+void getValue_NNmenuSmallGraphStadium();
+void getValue_NNmenuSmallGraphShipping();
+void getValue_NNmenuSmallGraphTourism();
+void getValue_NNmenuMediumGraph(const std::string &filename);
 
 
 
@@ -623,7 +623,7 @@ void display_OHmenu(){
         cout << "     Welcome to Other Heuristics Menu       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the approach you want:\n";
-        cout << "1. MultiFragmentAlgorithm\n";
+        cout << "1. NearestNeighbour\n";
         cout << "2.  \n";
         cout <<"3.  \n";
         cout << "e. Back to the main Menu\n";
@@ -637,7 +637,7 @@ void display_OHmenu(){
 
         switch (choice[0]) {
             case '1':
-                display_MFmenu();
+                display_NNmenu();
                 break;
             case '2':
             case 'e':
@@ -651,7 +651,7 @@ void display_OHmenu(){
     return;
 
 }
-void display_MFmenu() {
+void display_NNmenu() {
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -673,10 +673,10 @@ void display_MFmenu() {
 
         switch (choice[0]) {
             case '1':
-                display_MFmenuSmallGraph();
+                display_NNmenuSmallGraph();
                 break;
             case '2':
-                display_MFmenuMediumGraph();
+                display_NNmenuMediumGraph();
                 break;
             case '3':
 
@@ -692,7 +692,7 @@ void display_MFmenu() {
     return;
 
 }
-void display_MFmenuSmallGraph(){
+void display_NNmenuSmallGraph(){
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -714,13 +714,13 @@ void display_MFmenuSmallGraph(){
 
         switch (choice[0]) {
             case '1':
-                getValue_MFmenuSmallGraphStadium();
+                getValue_NNmenuSmallGraphStadium();
                 break;
             case '2':
-                getValue_MFmenuSmallGraphShipping();
+                getValue_NNmenuSmallGraphShipping();
                 break;
             case '3':
-                getValue_MFmenuSmallGraphTourism();
+                getValue_NNmenuSmallGraphTourism();
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -733,12 +733,12 @@ void display_MFmenuSmallGraph(){
 
 }
 
-void getValue_MFmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
+void getValue_NNmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
     Reader reader;
     Graph<int> graph;
     graph = readAndParseFunc(reader);
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.multiFragmentAlgorithm(graph);
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbour(graph);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
@@ -760,22 +760,22 @@ void getValue_MFmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAnd
 
 
 
-void getValue_MFmenuSmallGraphStadium(){
+void getValue_NNmenuSmallGraphStadium(){
     auto readAndParseStadium = [](Reader& reader) { return reader.readAndParseStadium(); };
-    getValue_MFmenuSmallGraph(readAndParseStadium);
+    getValue_NNmenuSmallGraph(readAndParseStadium);
 }
 
-void getValue_MFmenuSmallGraphShipping() {
+void getValue_NNmenuSmallGraphShipping() {
     auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
-    getValue_MFmenuSmallGraph(readAndParseShipping);
+    getValue_NNmenuSmallGraph(readAndParseShipping);
 }
 
-void getValue_MFmenuSmallGraphTourism() {
+void getValue_NNmenuSmallGraphTourism() {
     auto readAndParseTourism = [](Reader& reader) { return reader.readAndParseTourism(); };
-    getValue_MFmenuSmallGraph(readAndParseTourism);
+    getValue_NNmenuSmallGraph(readAndParseTourism);
 }
 
-void display_MFmenuMediumGraph() {
+void display_NNmenuMediumGraph() {
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -808,40 +808,40 @@ void display_MFmenuMediumGraph() {
             int choiceNum = stoi(choice);
             switch (choiceNum) {
                 case 1:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
                     break;
                 case 2:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
                     break;
                 case 3:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
                     break;
                 case 4:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
                     break;
                 case 5:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
                     break;
                 case 6:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
                     break;
                 case 7:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
                     break;
                 case 8:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
                     break;
                 case 9:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
                     break;
                 case 10:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
                     break;
                 case 11:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
                     break;
                 case 12:
-                    getValue_MFmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
+                    getValue_NNmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
                     break;
                 default:
                     cout << "Invalid input. Please choose a valid option.\n";
@@ -850,11 +850,11 @@ void display_MFmenuMediumGraph() {
     }
 }
 
-void getValue_MFmenuMediumGraph(const std::string &filename){
+void getValue_NNmenuMediumGraph(const std::string &filename){
     Reader reader;
     Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.multiFragmentAlgorithm(graph);
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbour(graph);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 

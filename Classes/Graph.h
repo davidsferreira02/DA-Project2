@@ -159,7 +159,7 @@ public:
 
         return mst;
     }
-    std::vector<Vertex<T>*> multiFragmentAlgorithm(Graph<T>& graph) {
+    std::vector<Vertex<T>*> nearestNeighbour(Graph<T>& graph) {
         std::vector<Vertex<T>*> tour;
 
         std::vector<Vertex<T>*> vertices = graph.getVertexSet();
@@ -170,7 +170,7 @@ public:
             return tour;
         }
 
-        tour.reserve(vertices.size() + 1); // Reserve space for the tour
+        tour.reserve(vertices.size() + 1);
 
         tour.push_back(startVertex);
 
