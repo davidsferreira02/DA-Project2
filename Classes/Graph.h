@@ -201,30 +201,28 @@ public:
         return tour;
     }
 
-    std::vector<int> nearestNeighborNode(Graph<T>& graph, int startNode) {
-        std::vector<int> tour;
+    std::vector<Vertex<T>*> nearestNeighborNode(Graph<T>& graph, Vertex<T>* startVertex) {
+        std::vector<Vertex<T>*> tour;
         auto vertices = graph.getVertexSet();
-        Vertex<T>* startVertex = graph.findVertex(startNode);
-        if (!startVertex) return tour;
 
-        std::unordered_set<int> visited;
-        tour.push_back(startNode);
-        visited.insert(startNode);
+        std::unordered_set<Vertex<T>*> visited;
+        tour.push_back(startVertex);
+        visited.insert(startVertex);
 
-        int currentNode = startNode;
+        Vertex<T>* currentNode = startVertex;
         while (visited.size() < vertices.size()) {
             double minDistance = INF;
-            int nearestNeighbor = -1;
+            Vertex<T>* nearestNeighbor = nullptr;
             for (auto vertex : vertices) {
-                if (visited.find(vertex->getInfo()) == visited.end()) {
-                    Edge<T>* edge = graph.findEdge(currentNode, vertex->getInfo());
+                if (visited.find(vertex) == visited.end()) {
+                    Edge<T>* edge = graph.findEdge(currentNode->getInfo(), vertex->getInfo());
                     if (edge && edge->getWeight() < minDistance) {
                         minDistance = edge->getWeight();
-                        nearestNeighbor = vertex->getInfo();
+                        nearestNeighbor = vertex;
                     }
                 }
             }
-            if (nearestNeighbor != -1) {
+            if (nearestNeighbor) {
                 tour.push_back(nearestNeighbor);
                 visited.insert(nearestNeighbor);
                 currentNode = nearestNeighbor;
@@ -232,7 +230,7 @@ public:
                 break;
             }
         }
-        tour.push_back(startNode); // Return to start node
+        tour.push_back(startVertex); // Return to start vertex
         return tour;
     }
 
@@ -366,21 +364,10 @@ public:
         return visited.size() == tour.size() && tour.back()->getId() == originNode;
     }
 
-    std::vector<Vertex<T>*> linKernighanRealWorld(Graph<T>& graph, int startNode) {
-        std::vector<Vertex<T>*> tour = nearestNeighbourNode(graph, startNode); // Initialize with a tour starting from the user-provided starting node
+    std::vector<Vertex<T>*> linKernighanRealWorld(Graph<T>& graph, Vertex<T>* startVertex) {
+        std::vector<Vertex<T>*> tour = nearestNeighborNode(graph, startVertex); // Initialize with a tour starting from the user-provided starting vertex
         std::vector<Vertex<T>*> bestTour = tour;
         double bestCost = tourCost(tour, graph);
-
-        // Check if the graph is fully connected
-        if (!isFullyConnected(graph)) {
-            std::cout << "Warning: Graph may not be fully connected. The algorithm will attempt to find a tour.\n";
-        }
-
-        // Check if there exists a path that returns to the origin and visits all nodes
-        if (!hasFeasiblePath(tour, startNode)) {
-            std::cout << "No feasible path exists. Exiting...\n";
-            return {};
-        }
 
         const int maxIterations = 1000; // Maximum number of iterations
         int iter = 0;
@@ -411,7 +398,6 @@ public:
 
         return bestTour;
     }
-
 
     Edge<T>* findEdge(const T& source, const T& dest) const {
         Vertex<T>* srcVertex = findVertex(source);

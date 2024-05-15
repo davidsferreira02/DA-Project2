@@ -392,7 +392,7 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
     Graph<int> graph;
     std::string line;
 
-    std::unordered_map<int, Vertex<int>*> vertexMap;
+    std::unordered_map<int, Vertex<int>*> vertexMapInit;
 
     std::string filePath;
     switch (graphNumber) {

@@ -78,9 +78,9 @@ void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOpt
 
 
 void display_RWmenu();
-void getValue_RWsmallGraph();
-void getValue_RWmediumGraph();
-void getValue_RWlargeGraph();
+void getValue_RWsmallGraph(int choice);
+void getValue_RWmediumGraph(int choice);
+void getValue_RWlargeGraph(int choice);
 
 std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst);
 void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
@@ -2034,8 +2034,9 @@ void display_CLUSTERmenuMediumGraph(int clusterOption) {
     }
 }
 
-void display_RWmenu(){
-    string choice;
+void display_RWmenu() {
+    string choice_str;
+    int choice;
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
@@ -2048,21 +2049,26 @@ void display_RWmenu(){
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
-        cin >> choice;
+        cin >> choice_str;
 
-        if (choice.length() != 1) {
-            choice = "0";
+        try {
+            choice = stoi(choice_str);
+        } catch (const invalid_argument&) {
+            choice = 0;
         }
 
-        switch (choice[0]) {
-            case '1':
-                 getValue_RWsmallGraph();
+        switch (choice) {
+            case 1:
+                cout << "Input the starting node for the algorithm: ";
+                getValue_RWsmallGraph(choice); // Passing choice as argument
                 break;
-            case '2':
-                getValue_RWmediumGraph();
+            case 2:
+                cout << "Input the starting node for the algorithm: ";
+                // getValue_RWmediumGraph(choice); // Passing choice as argument
                 break;
-            case '3':
-                getValue_RWlargeGraph();
+            case 3:
+                cout << "Input the starting node for the algorithm: ";
+                // getValue_RWlargeGraph(choice); // Passing choice as argument
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -2074,36 +2080,40 @@ void display_RWmenu(){
     }
 }
 
-void getValue_RWsmallGraph(){
-    int choice; // Loop...
-
-    cout << "Your choice: ";
-    cin >> choice;
-
+void getValue_RWsmallGraph(int choice) {
     Reader reader;
-    std::unordered_map<int, Vertex<int>*> vertexMap;
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs(1, vertexMap);
-     //Get start vertice
+    unordered_map<int, Vertex<int>*> vertexMap;
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(choice, vertexMap);
 
-    auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
+    // Get the start vertex
+    Vertex<int>* startVertex = nullptr;
+    if (vertexMap.find(1) != vertexMap.end()) { // Assuming the start vertex ID is 1
+        startVertex = vertexMap[1];
+    } else {
+        cerr << "Start vertex not found in the vertex map." << endl;
+        return;
+    }
+
+    auto start = chrono::high_resolution_clock::now();
+    vector<Vertex<int>*> tour = graph.linKernighanRealWorld(graph, startVertex);
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
 
     double totalDistance = 0;
-    std::cout << "TSP Tour: ";
+    cout << "TSP Tour: ";
     for (size_t i = 0; i < tour.size(); ++i) {
-        std::cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
         if (i > 0) {
             Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
             if (edge)
                 totalDistance += edge->getWeight();
         }
     }
-    std::cout << std::endl;
-    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
-    std::cout << "Time: " << duration.count() << "\n";
+    cout << endl;
+    cout << "Total Approximation Distance: " << totalDistance << "\n";
+    cout << "Time: " << duration.count() << "\n";
 }
+
 void getValue_RWmediumGraph(){
    //Algo
 }
