@@ -34,7 +34,9 @@ private:
 
 
 public:
-    Reader();
+    Reader();cpp:443: undefined reference to `Reader::kMeansClustering(Graph<int> const&, int, std::unordered_map<int, Reader::Coordinates, std::hash<int>, std::equal_to<int>, std::allocator<std::pair<int const, Reader::Coordinates> > > const&)'
+/usr/bin/ld: CMakeFiles/YourExecutable.dir/reader.cpp.o: in function `Reader::readAndParse4_2Extra_Fully_Connected_Graphs(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)':
+/home/rebelojoao/Documents/DA/prj2/reader.cpp:147: undefined
 
     void readAndParseStadium();
 
@@ -64,6 +66,13 @@ public:
     Graph<int> readAndParseExtra_Fully_Connected_Graphs(const std::string filename);
     Graph<int> readAndParse4_2Extra_Fully_Connected_Graphs(const std::string filename);
     Graph<int> readAndParseRealWorld_Graphs(int graphNumber);
+
+    struct Coordinates {
+        double latitude;
+        double longitude;
+    };
+    std::unordered_map<int, Coordinates> readCoordinates();
+    std::vector<std::vector<int>> kMeansClustering(const Graph<int>& graph, int k, const std::unordered_map<int, Coordinates>& coordinates);
 };
 
 #endif /* READER_H */

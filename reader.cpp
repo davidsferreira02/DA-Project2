@@ -22,7 +22,7 @@ struct Coordinates {
     double longitude;
 };
 
-std::unordered_map<int, Coordinates> readCoordinates() {
+std::unordered_map<int, Reader::Coordinates> Reader::readCoordinates() {
     std::ifstream file("../Data/Extra_Fully_Connected_Graphs/nodes.csv");
     std::unordered_map<int, Coordinates> nodeCoordinates;
     std::string line;
@@ -72,9 +72,108 @@ double Haversine(double lat1, double lon1, double lat2, double lon2) {
     return earthRadius * c;
 }
 
+std::vector<std::vector<int>> Reader::kMeansClustering(const Graph<int>& graph, int k, const std::unordered_map<int, Coordinates>& coordinates) {
+    std::vector<std::vector<int>> clusters(k);
+    std::vector<int> vertexIds;
 
+    // Collect vertex IDs
+    for (const auto& vertex : graph.getVertexSet()) {
+        vertexIds.push_back(vertex->getInfo());
+    }
 
+    // Step 1: Initialize centroids based on proximity
+    std::vector<int> centroids;
+    centroids.push_back(vertexIds[0]); // Start with the first vertex
+    std::unordered_set<int> visitedCentroids;
+    visitedCentroids.insert(vertexIds[0]);
 
+    // Select remaining centroids based on proximity to existing centroids
+    while (centroids.size() < k) {
+        double maxDist = -1.0;
+        int farthestVertex = -1;
+        // Find the vertex farthest from existing centroids
+        for (int vertex : vertexIds) {
+            if (visitedCentroids.find(vertex) == visitedCentroids.end()) {
+                double minDist = INF;
+                for (int centroid : centroids) {
+                    double dist = Haversine(
+                            coordinates.at(vertex).latitude, coordinates.at(vertex).longitude,
+                            coordinates.at(centroid).latitude, coordinates.at(centroid).longitude
+                    );
+                    if (dist < minDist) {
+                        minDist = dist;
+                    }
+                }
+                if (minDist > maxDist) {
+                    maxDist = minDist;
+                    farthestVertex = vertex;
+                }
+            }
+        }
+        if (farthestVertex != -1) {
+            centroids.push_back(farthestVertex);
+            visitedCentroids.insert(farthestVertex);
+        } else {
+            // In case of failure to find another centroid, break to avoid infinite loop
+            break;
+        }
+    }
+
+    // Step 2: Assign vertices to clusters and iterate until convergence
+    bool changed = true;
+    while (changed) {
+        // Clear clusters
+        for (auto& cluster : clusters) {
+            cluster.clear();
+        }
+
+        // Assign each vertex to the nearest centroid
+        for (const auto& vertex : graph.getVertexSet()) {
+            int nearestCentroid = -1;
+            double minDistance = INF;
+            for (int i = 0; i < k; ++i) {
+                double dist = Haversine(
+                        coordinates.at(vertex->getInfo()).latitude, coordinates.at(vertex->getInfo()).longitude,
+                        coordinates.at(centroids[i]).latitude, coordinates.at(centroids[i]).longitude
+                );
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    nearestCentroid = i;
+                }
+            }
+            clusters[nearestCentroid].push_back(vertex->getInfo());
+        }
+
+        // Update centroids
+        changed = false;
+        for (int i = 0; i < k; ++i) {
+            double avgLat = 0.0, avgLon = 0.0;
+            for (int vertex : clusters[i]) {
+                avgLat += coordinates.at(vertex).latitude;
+                avgLon += coordinates.at(vertex).longitude;
+            }
+            avgLat /= clusters[i].size();
+            avgLon /= clusters[i].size();
+
+            double minDistance = INF;
+            int newCentroid = centroids[i];
+            for (int vertex : clusters[i]) {
+                double dist = Haversine(avgLat, avgLon, coordinates.at(vertex).latitude, coordinates.at(vertex).longitude);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    newCentroid = vertex;
+                }
+            }
+
+            if (newCentroid != centroids[i]) {
+                centroids[i] = newCentroid;
+                changed = true;
+            }
+        }
+    }
+
+    return clusters;
+}
 
 Graph<int> Reader::readAndParse4_2Extra_Fully_Connected_Graphs(const std::string filename) {
     std::ifstream file(filename);

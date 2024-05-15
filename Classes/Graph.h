@@ -201,6 +201,79 @@ public:
         return tour;
     }
 
+    std::vector<int> nearestNeighborNode(Graph<T>& graph, int startNode) {
+        std::vector<int> tour;
+        auto vertices = graph.getVertexSet();
+        Vertex<T>* startVertex = graph.findVertex(startNode);
+        if (!startVertex) return tour;
+
+        std::unordered_set<int> visited;
+        tour.push_back(startNode);
+        visited.insert(startNode);
+
+        int currentNode = startNode;
+        while (visited.size() < vertices.size()) {
+            double minDistance = INF;
+            int nearestNeighbor = -1;
+            for (auto vertex : vertices) {
+                if (visited.find(vertex->getInfo()) == visited.end()) {
+                    Edge<T>* edge = graph.findEdge(currentNode, vertex->getInfo());
+                    if (edge && edge->getWeight() < minDistance) {
+                        minDistance = edge->getWeight();
+                        nearestNeighbor = vertex->getInfo();
+                    }
+                }
+            }
+            if (nearestNeighbor != -1) {
+                tour.push_back(nearestNeighbor);
+                visited.insert(nearestNeighbor);
+                currentNode = nearestNeighbor;
+            } else {
+                break;
+            }
+        }
+        tour.push_back(startNode); // Return to start node
+        return tour;
+    }
+
+    std::vector<int> nearestNeighborForCluster(Graph<T>& graph, const std::vector<int>& cluster) {
+        std::vector<int> tour;
+        if (cluster.empty()) return tour;
+
+        std::unordered_set<int> clusterSet(cluster.begin(), cluster.end());
+        Vertex<T>* startVertex = graph.findVertex(cluster[0]);
+        if (!startVertex) return tour;
+
+        std::unordered_set<int> visited;
+        int currentNode = cluster[0];
+        tour.push_back(currentNode);
+        visited.insert(currentNode);
+
+        while (visited.size() < cluster.size()) {
+            double minDistance = INF;
+            int nearestNeighbor = -1;
+            for (int vertex : cluster) {
+                if (visited.find(vertex) == visited.end()) {
+                    Edge<T>* edge = graph.findEdge(currentNode, vertex);
+                    if (edge && edge->getWeight() < minDistance) {
+                        minDistance = edge->getWeight();
+                        nearestNeighbor = vertex;
+                    }
+                }
+            }
+            if (nearestNeighbor != -1) {
+                tour.push_back(nearestNeighbor);
+                visited.insert(nearestNeighbor);
+                currentNode = nearestNeighbor;
+            } else {
+                break;
+            }
+        }
+        tour.push_back(cluster[0]); // Return to the start node of the cluster
+        return tour;
+    }
+
+
     double tourCost(const std::vector<Vertex<T>*>& tour, const Graph<T>& graph) {
         double cost = 0;
         for (size_t i = 0; i < tour.size() - 1; ++i) {
