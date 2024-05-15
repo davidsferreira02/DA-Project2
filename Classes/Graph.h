@@ -114,6 +114,8 @@ public:
      *  Returns true if successful, and false if a vertex with that content already exists.
      */
     bool addVertex(const T &in);
+    Vertex<T>* addVertexNew(const T &in);
+
     bool removeVertex(const T &in);
 
 
@@ -125,8 +127,11 @@ public:
      */
     bool addEdge(const T &sourc, const T &dest, double w);
 
+    bool addEdgeNew(Vertex<T> *source, Vertex<T> *dest, double w);
 
-    std::vector<Edge<T>*> primMST(int startIdx) {
+
+
+        std::vector<Edge<T>*> primMST(int startIdx) {
         std::vector<Edge<T>*> mst;
         if (vertexSet.empty() || startIdx < 0 || startIdx >= vertexSet.size()) return mst;
 
@@ -719,6 +724,17 @@ bool Graph<T>::addVertex(const T &in) {
     return true;
 }
 
+template <class T>
+Vertex<T>* Graph<T>::addVertexNew(const T &in) {
+    if (findVertex(in) != nullptr) {
+        return nullptr;
+    }
+    Vertex<T>* newV = new Vertex<T>(in);
+    vertexSet.push_back(newV);
+
+    return newV;
+}
+
 /*
  *  Removes a vertex with a given content (in) from a graph (this), and
  *  all outgoing and incoming edges.
@@ -755,6 +771,15 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
     v1->addEdge(v2, w);
     return true;
 }
+template <class T>
+bool Graph<T>::addEdgeNew(Vertex<T> *source, Vertex<T> *dest, double w) {
+    if (source == nullptr || dest == nullptr)
+        return false;
+    source->addEdge(dest, w);
+    dest->addEdge(source,w);
+    return true;
+}
+
 
 /*
  * Removes an edge from a graph (this).

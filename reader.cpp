@@ -375,10 +375,12 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
     }
 
     std::getline(file, line);
-
+    long count = 0;
     while (std::getline(file, line)) {
         std::replace(line.begin(), line.end(), ',', ' ');
-
+            if(line.empty()){
+                break;
+            }
         std::istringstream iss(line);
         int source, dest;
         double dist;
@@ -387,17 +389,27 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
             std::cerr << "Error parsing line: " << line << std::endl;
             continue;
         }
-        graph.addEdge(source, dest, dist);
-        graph.addEdge(dest, source, dist);
+        Vertex<int>* sourceVertex;
+        Vertex<int>* destVertex;
+
         if (vertexMap.find(source) == vertexMap.end()) {
             vertexMap[source] = new Vertex<int>(static_cast<int>(source));
-            graph.addVertex(source);
+            sourceVertex = graph.addVertexNew(source);
+        }else{
+            sourceVertex = vertexMap[source];
 
         }
+
         if (vertexMap.find(dest) == vertexMap.end()) {
             vertexMap[dest] = new Vertex<int>(static_cast<int>(dest));
-            graph.addVertex(dest);
+            destVertex = graph.addVertexNew(dest);
+        }else{
+            destVertex = vertexMap[dest];
         }
+        graph.addEdgeNew(sourceVertex, destVertex,dist);
+
+        std::cout << count << "\n";
+        count++;
     }
 
     return graph;
