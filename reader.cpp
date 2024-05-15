@@ -387,15 +387,16 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
             std::cerr << "Error parsing line: " << line << std::endl;
             continue;
         }
-        graph.addVertex(source);
-        graph.addVertex(dest);
         graph.addEdge(source, dest, dist);
         graph.addEdge(dest, source, dist);
         if (vertexMap.find(source) == vertexMap.end()) {
             vertexMap[source] = new Vertex<int>(static_cast<int>(source));
+            graph.addVertex(source);
+
         }
         if (vertexMap.find(dest) == vertexMap.end()) {
             vertexMap[dest] = new Vertex<int>(static_cast<int>(dest));
+            graph.addVertex(dest);
         }
     }
 
