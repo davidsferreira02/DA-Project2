@@ -375,7 +375,6 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
     }
 
     std::getline(file, line);
-    long count = 0;
     while (std::getline(file, line)) {
         std::replace(line.begin(), line.end(), ',', ' ');
             if(line.empty()){
@@ -409,9 +408,6 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
             destVertex = vertexMap[dest];
         }
         graph.addEdgeNew(sourceVertex, destVertex,dist);
-
-        std::cout << count << "\n";
-        count++;
     }
 
     return graph;
