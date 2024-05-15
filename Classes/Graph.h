@@ -250,6 +250,60 @@ public:
         return bestTour;
     }
 
+    std::vector<Vertex<T>*> clusterLinKernighan(Graph<T>& graph) {
+        std::vector<Vertex<T>*> tour = nearestNeighbour(graph); // Initialize with a tour (e.g., nearest neighbor)
+        std::vector<Vertex<T>*> bestTour = tour;
+        double bestCost = tourCost(tour, graph);
+
+        const int maxIterations = 1000; // Maximum number of iterations
+        int iter = 0;
+
+        while (iter < maxIterations) {
+            bool improvement = false;
+
+            // Cluster the vertices
+            std::vector<std::vector<Vertex<T>*>> clusters = clusterVertices(graph);
+
+            // Perform Lin-Kernighan optimization within each cluster
+            for (size_t clusterIdx = 0; clusterIdx < clusters.size(); ++clusterIdx) {
+                std::vector<Vertex<T>*> cluster = clusters[clusterIdx];
+
+                // Perform edge exchanges to find improvements within the cluster
+                for (size_t i = 0; i < cluster.size() - 2; ++i) {
+                    for (size_t j = i + 2; j < cluster.size() - 1; ++j) {
+                        std::vector<Vertex<T>*> newCluster = twoOptExchange(cluster, i, j);
+                        double newCost = tourCost(newCluster, graph);
+                        if (newCost < tourCost(cluster, graph)) {
+                            cluster = newCluster;
+                            improvement = true;
+                            break;
+                        }
+                    }
+                    if (improvement) break;
+                }
+
+                // Replace the optimized cluster in the tour
+                for (size_t i = 0; i < cluster.size(); ++i) {
+                    tour[(clusterIdx + i) % tour.size()] = cluster[i];
+                }
+            }
+
+            // Update best tour and cost if improvement found
+            if (improvement) {
+                double newTourCost = tourCost(tour, graph);
+                if (newTourCost < bestCost) {
+                    bestCost = newTourCost;
+                    bestTour = tour;
+                }
+            } else {
+                break; // No improvement found, terminate
+            }
+
+            ++iter;
+        }
+
+        return bestTour;
+    }
 
 
 // To start the traversal

@@ -28,6 +28,7 @@ void display4_2menuSmallGraph();
 void display4_2menuMediumGraph();
 std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst);
 void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
+void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
 void display4_2menuSmallGraphStadium();
 void display4_2menuSmallGraphShipping();
 void display4_2menuSmallGraphTourism();
@@ -621,6 +622,63 @@ void tsp(int currentNode, std::vector<int>& path, double currentCost, int level,
             nextNode->setVisited(false);
             path.pop_back();
         }
+    }
+}
+
+void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestCost) {
+    int n = graph.getNumVertex();
+
+    // dp[mask][i] will be the minimum cost to reach node i with visited nodes as in mask.
+    std::vector<std::vector<double>> dp(1 << n, std::vector<double>(n, INF));
+    dp[1][0] = 0; // Starting at node 0.
+
+    // Iterate over all subsets of nodes.
+    for (int mask = 1; mask < (1 << n); ++mask) {
+        for (int u = 0; u < n; ++u) {
+            if (mask & (1 << u)) { // If u is in the subset represented by mask.
+                for (int v = 0; v < n; ++v) {
+                    if (!(mask & (1 << v))) { // If v is not in the subset.
+                        Edge<int>* edge = graph.findEdge(u, v);
+                        if (edge) {
+                            dp[mask | (1 << v)][v] = std::min(dp[mask | (1 << v)][v], dp[mask][u] + edge->getWeight());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Reconstruct the minimum cost to complete the tour and the path.
+    bestCost = INF;
+    int lastNode = -1;
+    for (int u = 1; u < n; ++u) {
+        Edge<int>* edge = graph.findEdge(u, 0);
+        if (edge) {
+            double currentCost = dp[(1 << n) - 1][u] + edge->getWeight();
+            if (currentCost < bestCost) {
+                bestCost = currentCost;
+                lastNode = u;
+            }
+        }
+    }
+
+    // Reconstruct the path using the last node.
+    if (lastNode != -1) {
+        bestPath.clear();
+        int mask = (1 << n) - 1;
+        int currentNode = lastNode;
+        while (currentNode != 0) {
+            bestPath.push_back(currentNode);
+            for (int v = 0; v < n; ++v) {
+                if ((mask & (1 << v)) && graph.findEdge(v, currentNode)) {
+                    mask ^= (1 << currentNode);
+                    currentNode = v;
+                    break;
+                }
+            }
+        }
+        bestPath.push_back(0); // Add the starting node to complete the cycle.
+        std::reverse(bestPath.begin(), bestPath.end()); // Reverse the path to start from the starting node.
     }
 }
 
