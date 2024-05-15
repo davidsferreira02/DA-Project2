@@ -63,6 +63,7 @@ public:
 
     Graph<int> readAndParseExtra_Fully_Connected_Graphs(const std::string filename);
     Graph<int> readAndParse4_2Extra_Fully_Connected_Graphs(const std::string filename);
+    Graph<int> readAndParseRealWorld_Graphs(int graphNumber);
 };
 
 #endif /* READER_H */

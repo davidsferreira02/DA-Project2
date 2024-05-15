@@ -288,10 +288,55 @@ Graph<int> Reader::readAndParseTourism() {
     return graph;
 }
 
+Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber){
+    Graph<int> graph;
+    std::string line;
 
+    std::unordered_map<int, Vertex<int>> vertexMap;
 
+    std::string filePath;
+    switch (graphNumber) {
+        case 1:
+            filePath = "../Data/Real-world Graphs/graph1/edges.csv";
+            break;
+        case 2:
+            filePath = "../Data/Real-world Graphs/graph2/edges.csv";
+            break;
+        case 3:
+            filePath = "../Data/Real-world Graphs/graph3/edges.csv";
+            break;
+        default:
+            std::cerr << "Invalid graph number!" << std::endl;
+            return graph;
+    }
 
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filePath << std::endl;
+        return graph;
+    }
 
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        std::replace(line.begin(), line.end(), ',', ' ');
+
+        std::istringstream iss(line);
+        int source, dest;
+        double dist;
+
+        if (!(iss >> source >> dest >> dist)) {
+            std::cerr << "Error parsing line: " << line << std::endl;
+            continue;
+        }
+        graph.addVertex(source);
+        graph.addVertex(dest);
+        graph.addEdge(source, dest, dist);
+        graph.addEdge(dest, source, dist);
+    }
+
+    return graph;
+}
 
 
 
