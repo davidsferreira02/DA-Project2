@@ -201,6 +201,56 @@ public:
         return tour;
     }
 
+    double tourCost(const std::vector<Vertex<T>*>& tour, const Graph<T>& graph) {
+        double cost = 0;
+        for (size_t i = 0; i < tour.size() - 1; ++i) {
+            cost += graph.findEdge(tour[i]->getInfo(), tour[i+1]->getInfo())->getWeight();
+        }
+        return cost;
+    }
+
+    std::vector<Vertex<T>*> twoOptExchange(const std::vector<Vertex<T>*>& tour, size_t i, size_t j) {
+        std::vector<Vertex<T>*> newTour = tour;
+        std::reverse(newTour.begin() + i + 1, newTour.begin() + j + 1);
+        return newTour;
+    }
+    // Lin-Kernighan heuristic
+    std::vector<Vertex<T>*> linKernighan(Graph<T>& graph) {
+        std::vector<Vertex<T>*> tour = nearestNeighbour(graph); // Initialize with a tour (e.g., nearest neighbor)
+        std::vector<Vertex<T>*> bestTour = tour;
+        double bestCost = tourCost(tour, graph);
+
+        const int maxIterations = 1000; // Maximum number of iterations
+        int iter = 0;
+
+        while (iter < maxIterations) {
+            bool improvement = false;
+
+            // Perform edge exchanges to find improvements
+            for (size_t i = 0; i < tour.size() - 2; ++i) {
+                for (size_t j = i + 2; j < tour.size() - 1; ++j) {
+                    std::vector<Vertex<T>*> newTour = twoOptExchange(tour, i, j);
+                    double newCost = tourCost(newTour, graph);
+                    if (newCost < bestCost) {
+                        bestCost = newCost;
+                        bestTour = newTour;
+                        tour = newTour;
+                        improvement = true;
+                        break;
+                    }
+                }
+                if (improvement) break;
+            }
+
+            if (!improvement) break; // No improvement found, terminate
+
+            ++iter;
+        }
+
+        return bestTour;
+    }
+
+
 
 // To start the traversal
 

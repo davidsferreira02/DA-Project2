@@ -43,6 +43,15 @@ void getValue_NNmenuSmallGraphShipping();
 void getValue_NNmenuSmallGraphTourism();
 void getValue_NNmenuMediumGraph(const std::string &filename);
 
+void display_LINmenu();
+void display_LINmenuSmallGraph();
+void display_LINmenuMediumGraph();
+void getValue_LINmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
+void getValue_LINmenuSmallGraphStadium();
+void getValue_LINmenuSmallGraphShipping();
+void getValue_LINmenuSmallGraphTourism();
+void getValue_LINmenuMediumGraph(const std::string &filename);
+
 
 
 
@@ -624,7 +633,7 @@ void display_OHmenu(){
         cout << "-----------------------------\n";
         cout << "Enter the number of the approach you want:\n";
         cout << "1. NearestNeighbour\n";
-        cout << "2.  \n";
+        cout << "2. LinKernighan\n";
         cout <<"3.  \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
@@ -640,6 +649,7 @@ void display_OHmenu(){
                 display_NNmenu();
                 break;
             case '2':
+                display_LINmenu();
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -855,6 +865,228 @@ void getValue_NNmenuMediumGraph(const std::string &filename){
     Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
     auto start = std::chrono::high_resolution_clock::now();
     std::vector<Vertex<int>*> tour = graph.nearestNeighbour(graph);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    double totalDistance = 0;
+    std::cout << "TSP Tour: ";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        std::cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        if (i > 0) {
+            Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
+            if (edge)
+                totalDistance += edge->getWeight();
+        }
+    }
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+}
+
+void display_LINmenu() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Multi Fragment Algorithm Heuristic       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Small Graph\n";
+        cout << "2. Medium Graph \n";
+        cout <<"3. Large Graph \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                display_LINmenuSmallGraph();
+                break;
+            case '2':
+                display_LINmenuMediumGraph();
+                break;
+            case '3':
+
+                break;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+void display_LINmenuSmallGraph(){
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Multi Fragment Heuristic SmallGraph Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the graph you want:\n";
+        cout << "1. Stadium Graph\n";
+        cout << "2. Shipping Graph \n";
+        cout <<"3. Tourism Graph \n";
+        cout << "e. Back to the backtracing Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                getValue_LINmenuSmallGraphStadium();
+                break;
+            case '2':
+                getValue_LINmenuSmallGraphShipping();
+                break;
+            case '3':
+                getValue_LINmenuSmallGraphTourism();
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+
+void getValue_LINmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
+    Reader reader;
+    Graph<int> graph;
+    graph = readAndParseFunc(reader);
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    double totalDistance = 0;
+    std::cout << "TSP Tour: ";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        std::cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        if (i > 0) {
+            Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
+            if (edge)
+                totalDistance += edge->getWeight();
+        }
+    }
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+
+}
+
+
+
+void getValue_LINmenuSmallGraphStadium(){
+    auto readAndParseStadium = [](Reader& reader) { return reader.readAndParseStadium(); };
+    getValue_LINmenuSmallGraph(readAndParseStadium);
+}
+
+void getValue_LINmenuSmallGraphShipping() {
+    auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
+    getValue_LINmenuSmallGraph(readAndParseShipping);
+}
+
+void getValue_LINmenuSmallGraphTourism() {
+    auto readAndParseTourism = [](Reader& reader) { return reader.readAndParseTourism(); };
+    getValue_LINmenuSmallGraph(readAndParseTourism);
+}
+
+void display_LINmenuMediumGraph() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Multi Fragment Medium Graph Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "How many edges does the graph have:\n";
+        cout << "1. 25\n";
+        cout << "2. 50\n";
+        cout << "3. 75\n";
+        cout << "4. 100\n";
+        cout << "5. 200\n";
+        cout << "6. 300\n";
+        cout << "7. 400\n";
+        cout << "8. 500\n";
+        cout << "9. 600\n";
+        cout << "10. 700\n";
+        cout << "11. 800\n";
+        cout << "12. 900\n";
+        cout << "e. Back to the backtracing Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice == "e") {
+            cout << "Exiting menu system...\n";
+            exitMenu = true;
+        } else {
+            // Convert choice to an integer for comparison
+            int choiceNum = stoi(choice);
+            switch (choiceNum) {
+                case 1:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+                    break;
+                case 2:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
+                    break;
+                case 3:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
+                    break;
+                case 4:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
+                    break;
+                case 5:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
+                    break;
+                case 6:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
+                    break;
+                case 7:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
+                    break;
+                case 8:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
+                    break;
+                case 9:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
+                    break;
+                case 10:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
+                    break;
+                case 11:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
+                    break;
+                case 12:
+                    getValue_LINmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
+                    break;
+                default:
+                    cout << "Invalid input. Please choose a valid option.\n";
+            }
+        }
+    }
+}
+
+void getValue_LINmenuMediumGraph(const std::string &filename){
+    Reader reader;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
