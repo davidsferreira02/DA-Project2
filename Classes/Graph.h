@@ -249,7 +249,24 @@ public:
 
         return bestTour;
     }
-    
+
+    double computeTourLength(const std::vector<int>& tour, const Graph<int>& graph) {
+        double length = 0.0;
+        for (size_t i = 0; i < tour.size() - 1; ++i) {
+            Edge<T>* edge = findEdge(tour[i], tour[i + 1]);
+            if(edge) {
+                double w = edge->getWeight();
+                length += w;
+            }
+        }
+        Edge<T>* edge = findEdge(tour.back(), tour.front());
+        if(edge) {
+        double w = edge->getWeight();
+            length += w; // Complete the tour
+        }
+        return length;
+    }
+
     Edge<T>* findEdge(const T& source, const T& dest) const {
         Vertex<T>* srcVertex = findVertex(source);
         Vertex<T>* destVertex = findVertex(dest);

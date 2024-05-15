@@ -10,6 +10,7 @@
 #include <utility>
 #include <set>
 #include <chrono>
+#include <cmath>
 #include "reader.h"
 #include "App.h"
 
@@ -26,9 +27,6 @@ void display4_1menuMediumGraph();
 void display4_1menuMedium(const std::string &filename);
 void display4_2menuSmallGraph();
 void display4_2menuMediumGraph();
-std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst);
-void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
-void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
 void display4_2menuSmallGraphStadium();
 void display4_2menuSmallGraphShipping();
 void display4_2menuSmallGraphTourism();
@@ -44,6 +42,15 @@ void getValue_NNmenuSmallGraphShipping();
 void getValue_NNmenuSmallGraphTourism();
 void getValue_NNmenuMediumGraph(const std::string &filename);
 
+void display_SANmenu();
+void display_SANmenuSmallGraph();
+void display_SANmenuMediumGraph();
+void getValue_SANmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
+void getValue_SANmenuSmallGraphStadium();
+void getValue_SANmenuSmallGraphShipping();
+void getValue_SANmenuSmallGraphTourism();
+void getValue_SANmenuMediumGraph(const std::string &filename);
+
 void display_LINmenu();
 void display_LINmenuSmallGraph();
 void display_LINmenuMediumGraph();
@@ -53,10 +60,27 @@ void getValue_LINmenuSmallGraphShipping();
 void getValue_LINmenuSmallGraphTourism();
 void getValue_LINmenuMediumGraph(const std::string &filename);
 
+void display_HeldKarp_menu();
+void display_HeldKarp_menuSmallGraph();
+void display_HeldKarp_menuMediumGraph();
+void getValue_HeldKarp_menuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
+void getValue_HeldKarp_menuSmallGraphStadium();
+void getValue_HeldKarp_menuSmallGraphShipping();
+void getValue_HeldKarp_menuSmallGraphTourism();
+void getValue_HeldKarp_menuMediumGraph(const std::string &filename);
+
 void display_RWmenu();
 void getValue_RWsmallGraph();
 void getValue_RWmediumGraph();
 void getValue_RWlargeGraph();
+
+std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst);
+void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
+void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
+std::vector<int> generateInitialTour(Graph<int> graph);
+std::vector<int> generateNeighbor(const std::vector<int>& tour);
+bool shouldAccept(double delta, double temperature);
+std::vector<int> simulatedAnnealing(Graph<int>& graph, double initialTemperature, double coolingRate, int iterations);
 
 
 int mainMenu(){
@@ -693,8 +717,9 @@ void display_OHmenu(){
         cout << "-----------------------------\n";
         cout << "Enter the number of the approach you want:\n";
         cout << "1. NearestNeighbour\n";
-        cout << "2. LinKernighan\n";
-        cout <<"3.  \n";
+        cout << "2. Simulated Annealing\n";
+        cout << "3. LinKernighan\n";
+        cout << "4. HeldKarp (Optimal solution but feasible only on toy graphs)";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -709,7 +734,13 @@ void display_OHmenu(){
                 display_NNmenu();
                 break;
             case '2':
+                display_SANmenu();
+            case '3':
                 display_LINmenu();
+                break;
+            case '4':
+                display_HeldKarp_menu();
+                break;
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -721,6 +752,7 @@ void display_OHmenu(){
     return;
 
 }
+
 void display_NNmenu() {
     string choice;
     bool exitMenu = false;
@@ -791,6 +823,7 @@ void display_NNmenuSmallGraph(){
                 break;
             case '3':
                 getValue_NNmenuSmallGraphTourism();
+                break;
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -1165,6 +1198,314 @@ void getValue_LINmenuMediumGraph(const std::string &filename){
     std::cout << "Time: " << duration.count() << "\n";
 }
 
+void display_SANmenu() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Nearest Neighbour Algorithm Heuristic       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Small Graph\n";
+        cout << "2. Medium Graph \n";
+        cout <<"3. Large Graph \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                display_SANmenuSmallGraph();
+                break;
+            case '2':
+                display_SANmenuMediumGraph();
+                break;
+            case '3':
+
+                break;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+void display_SANmenuSmallGraph(){
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Nearest Neighbour Heuristic SmallGraph Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the graph you want:\n";
+        cout << "1. Stadium Graph\n";
+        cout << "2. Shipping Graph \n";
+        cout <<"3. Tourism Graph \n";
+        cout << "e. Back to the other Heuristics Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                getValue_SANmenuSmallGraphStadium();
+                break;
+            case '2':
+                getValue_SANmenuSmallGraphShipping();
+                break;
+            case '3':
+                getValue_SANmenuSmallGraphTourism();
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+
+void getValue_SANmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
+    Reader reader;
+    Graph<int> graph;
+    graph = readAndParseFunc(reader);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Generate initial tour using Nearest Neighbor heuristic
+    std::vector<Vertex<int>*> initialTour = graph.nearestNeighbour(graph);
+    std::vector<int> currentTour;
+    for (const auto& vertex : initialTour) {
+        currentTour.push_back(vertex->getInfo());
+    }
+
+    // Set parameters for simulated annealing
+    double initialTemperature = 1000.0;
+    double coolingRate = 0.99;
+    int iterations = 10000;
+
+    // Perform Simulated Annealing
+    std::vector<int> bestTour = simulatedAnnealing(graph, initialTemperature, coolingRate, iterations);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    // Output the best tour and its cost
+    double totalDistance = graph.computeTourLength(bestTour, graph);
+    std::cout << "TSP Tour: ";
+    for (size_t i = 0; i < bestTour.size(); ++i) {
+        std::cout << bestTour[i] << (i < bestTour.size() - 1 ? " -> " : "");
+    }
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+}
+
+
+
+
+void getValue_SANmenuSmallGraphStadium(){
+    auto readAndParseStadium = [](Reader& reader) { return reader.readAndParseStadium(); };
+    getValue_SANmenuSmallGraph(readAndParseStadium);
+}
+
+void getValue_SANmenuSmallGraphShipping() {
+    auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
+    getValue_SANmenuSmallGraph(readAndParseShipping);
+}
+
+void getValue_SANmenuSmallGraphTourism() {
+    auto readAndParseTourism = [](Reader& reader) { return reader.readAndParseTourism(); };
+    getValue_SANmenuSmallGraph(readAndParseTourism);
+}
+
+void display_SANmenuMediumGraph() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Nearest Neighbour Medium Graph Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "How many edges does the graph have:\n";
+        cout << "1. 25\n";
+        cout << "2. 50\n";
+        cout << "3. 75\n";
+        cout << "4. 100\n";
+        cout << "5. 200\n";
+        cout << "6. 300\n";
+        cout << "7. 400\n";
+        cout << "8. 500\n";
+        cout << "9. 600\n";
+        cout << "10. 700\n";
+        cout << "11. 800\n";
+        cout << "12. 900\n";
+        cout << "e. Back to the other heuristics Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice == "e") {
+            cout << "Exiting menu system...\n";
+            exitMenu = true;
+        } else {
+            // Convert choice to an integer for comparison
+            int choiceNum = stoi(choice);
+            switch (choiceNum) {
+                case 1:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+                    break;
+                case 2:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
+                    break;
+                case 3:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
+                    break;
+                case 4:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
+                    break;
+                case 5:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
+                    break;
+                case 6:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
+                    break;
+                case 7:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
+                    break;
+                case 8:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
+                    break;
+                case 9:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
+                    break;
+                case 10:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
+                    break;
+                case 11:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
+                    break;
+                case 12:
+                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
+                    break;
+                default:
+                    cout << "Invalid input. Please choose a valid option.\n";
+            }
+        }
+    }
+}
+
+std::vector<int> generateInitialTour(Graph<int> graph) {
+    std::vector<int> tour;
+    std::vector<Vertex<int>*> nearestNeighborTour = graph.nearestNeighbour(graph);
+
+    // Convert Vertex pointers to their respective IDs
+    for (const auto& vertex : nearestNeighborTour) {
+        tour.push_back(vertex->getInfo());
+    }
+
+    return tour;
+}
+
+std::vector<int> generateNeighbor(const std::vector<int>& tour) {
+    std::vector<int> neighbor = tour;
+
+    // Select two random indices to swap
+    int index1 = rand() % (neighbor.size() - 1); // Avoid swapping the start/end city
+    int index2 = rand() % (neighbor.size() - 1);
+
+    // Ensure the two indices are different
+    while (index1 == index2) {
+        index2 = rand() % (neighbor.size() - 1);
+    }
+
+    // Swap the cities at the selected indices
+    std::swap(neighbor[index1], neighbor[index2]);
+
+    return neighbor;
+}
+
+
+bool shouldAccept(double delta, double temperature) {
+    // Decide whether to accept a new solution based on the change in cost and temperature
+    return (delta < 0) || (exp(-delta / temperature) > static_cast<double>(rand()) / RAND_MAX);
+}
+
+std::vector<int> simulatedAnnealing(Graph<int>& graph, double initialTemperature, double coolingRate, int iterations) {
+    std::vector<int> currentTour = generateInitialTour(graph);
+    std::vector<int> bestTour = currentTour;
+    double currentCost = graph.computeTourLength(currentTour, graph);
+    double bestCost = currentCost;
+    double temperature = initialTemperature;
+
+    for (int i = 0; i < iterations; ++i) {
+        std::vector<int> neighbor = generateNeighbor(currentTour);
+        double neighborCost = graph.computeTourLength(neighbor, graph);
+        double delta = neighborCost - currentCost;
+
+        if (shouldAccept(delta, temperature)) {
+            currentTour = neighbor;
+            currentCost = neighborCost;
+            if (currentCost < bestCost) {
+                bestTour = currentTour;
+                bestCost = currentCost;
+            }
+        }
+
+        temperature *= coolingRate;
+    }
+
+    return bestTour;
+}
+
+void getValue_SANmenuMediumGraph(const std::string& filename) {
+    Reader reader;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Generate initial tour using Nearest Neighbor heuristic
+    std::vector<Vertex<int>*> initialTour = graph.nearestNeighbour(graph);
+    std::vector<int> currentTour;
+    for (const auto& vertex : initialTour) {
+        currentTour.push_back(vertex->getInfo());
+    }
+
+    // Set parameters for simulated annealing
+    double initialTemperature = 1000.0;
+    double coolingRate = 0.99;
+    int iterations = 10000;
+
+    // Perform Simulated Annealing
+    std::vector<int> bestTour = simulatedAnnealing(graph, initialTemperature, coolingRate, iterations);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    // Output the best tour and its cost
+    double totalDistance = graph.computeTourLength(bestTour, graph);
+    std::cout << "TSP Tour: ";
+    for (size_t i = 0; i < bestTour.size(); ++i) {
+        std::cout << bestTour[i] << (i < bestTour.size() - 1 ? " -> " : "");
+    }
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+}
+
 void display_RWmenu(){
     string choice;
     bool exitMenu = false;
@@ -1204,6 +1545,226 @@ void display_RWmenu(){
         }
     }
 }
+
+void display_HeldKarp_menu() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Nearest Neighbour Algorithm Heuristic       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Small Graph\n";
+        cout << "2. Medium Graph \n";
+        cout <<"3. Large Graph \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                display_HeldKarp_menuSmallGraph();
+                break;
+            case '2':
+                display_HeldKarp_menuMediumGraph();
+                break;
+            case '3':
+
+                break;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+void display_HeldKarp_menuSmallGraph(){
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Nearest Neighbour Heuristic SmallGraph Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the graph you want:\n";
+        cout << "1. Stadium Graph\n";
+        cout << "2. Shipping Graph \n";
+        cout <<"3. Tourism Graph \n";
+        cout << "e. Back to the other Heuristics Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                getValue_HeldKarp_menuSmallGraphStadium();
+                break;
+            case '2':
+                getValue_HeldKarp_menuSmallGraphShipping();
+                break;
+            case '3':
+                getValue_HeldKarp_menuSmallGraphTourism();
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+    return;
+
+}
+
+void getValue_HeldKarp_menuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
+    Reader reader;
+    Graph<int> graph;
+    graph = readAndParseFunc(reader);
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);
+    graph.findVertex(0)->setVisited(true);
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+    heldKarp(graph,bestPath,bestCost);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
+    }
+}
+
+
+
+void getValue_HeldKarp_menuSmallGraphStadium(){
+    auto readAndParseStadium = [](Reader& reader) { return reader.readAndParseStadium(); };
+    getValue_HeldKarp_menuSmallGraph(readAndParseStadium);
+}
+
+void getValue_HeldKarp_menuSmallGraphShipping() {
+    auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
+    getValue_HeldKarp_menuSmallGraph(readAndParseShipping);
+}
+
+void getValue_HeldKarp_menuSmallGraphTourism() {
+    auto readAndParseTourism = [](Reader& reader) { return reader.readAndParseTourism(); };
+    getValue_HeldKarp_menuSmallGraph(readAndParseTourism);
+}
+
+void getValue_HeldKarp_menuMediumGraph(const std::string &filename){
+    Reader reader;
+    Graph<int> graph;
+    graph = reader.readAndParseExtra_Fully_Connected_Graphs(filename);
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);
+    graph.findVertex(0)->setVisited(true);
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
+    }
+
+}
+
+void display_HeldKarp_menuMediumGraph() {
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Nearest Neighbour Medium Graph Menu       \n";
+        cout << "-----------------------------\n";
+        cout << "How many edges does the graph have:\n";
+        cout << "1. 25\n";
+        cout << "2. 50\n";
+        cout << "3. 75\n";
+        cout << "4. 100\n";
+        cout << "5. 200\n";
+        cout << "6. 300\n";
+        cout << "7. 400\n";
+        cout << "8. 500\n";
+        cout << "9. 600\n";
+        cout << "10. 700\n";
+        cout << "11. 800\n";
+        cout << "12. 900\n";
+        cout << "e. Back to the other heuristics Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice == "e") {
+            cout << "Exiting menu system...\n";
+            exitMenu = true;
+        } else {
+            // Convert choice to an integer for comparison
+            int choiceNum = stoi(choice);
+            switch (choiceNum) {
+                case 1:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+                    break;
+                case 2:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
+                    break;
+                case 3:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
+                    break;
+                case 4:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
+                    break;
+                case 5:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
+                    break;
+                case 6:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
+                    break;
+                case 7:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
+                    break;
+                case 8:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
+                    break;
+                case 9:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
+                    break;
+                case 10:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
+                    break;
+                case 11:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
+                    break;
+                case 12:
+                    getValue_HeldKarp_menuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
+                    break;
+                default:
+                    cout << "Invalid input. Please choose a valid option.\n";
+            }
+        }
+    }
+}
+
 
 void getValue_RWsmallGraph(){
     Reader reader;
