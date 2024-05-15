@@ -286,77 +286,77 @@ void display4_1menuSmallGraphTourism() {
     display4_1menuSmallGraph(readAndParseTourism);
 }
 
-void display4_1menuMediumGraph(){
+void display4_1menuMediumGraph() {
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Backtracing Medium Graph Menu       \n";
+        cout << "     Welcome to Triangular Approximation Medium Graph Menu       \n";
         cout << "-----------------------------\n";
-        cout << "how many edges the graph has:\n";
+        cout << "How many edges does the graph have:\n";
         cout << "1. 25\n";
-        cout << "2. 50 \n";
-        cout <<"3. 75 \n";
-        cout <<"4. 100 \n";
-        cout <<"5. 200 \n";
-        cout <<"6. 300 \n";
-        cout <<"7. 400 \n";
-        cout <<"8. 500\n";
-        cout <<"9. 600 \n";
-        cout <<"10. 700 \n";
-        cout <<"11. 800 \n";
-        cout <<"12. 900 \n";
+        cout << "2. 50\n";
+        cout << "3. 75\n";
+        cout << "4. 100\n";
+        cout << "5. 200\n";
+        cout << "6. 300\n";
+        cout << "7. 400\n";
+        cout << "8. 500\n";
+        cout << "9. 600\n";
+        cout << "10. 700\n";
+        cout << "11. 800\n";
+        cout << "12. 900\n";
         cout << "e. Back to the backtracing Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
-        if (choice.length() != 1) {
-            choice = "0";
-        }
 
-        switch (choice[0]) {
-            case '1':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
-                break;
-            case '2':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
-                break;
-            case '3':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
-                break;
-            case '4':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
-                break;
-            case '5':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
-                break;
-            case '6':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
-                break;
-            case '7':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
-                break;
-            case '8':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
-                break;
-            case '9':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
-                break;
-            case '10':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
-                break;
-            case '11':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
-                break;
-            case '12':
-                display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
-                break;
-            case 'e':
-                cout << "Exiting menu system...\n";
-                exitMenu = true;
-                break;
-            default:
-                cout << "Invalid input. Please choose a valid option.\n";
+        if (choice == "e") {
+            cout << "Exiting menu system...\n";
+            exitMenu = true;
+        } else {
+            // Convert choice to an integer for comparison
+            int choiceNum = stoi(choice);
+            switch (choiceNum) {
+                case 1:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+                    break;
+                case 2:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
+                    break;
+                case 3:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
+                    break;
+                case 4:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
+                    break;
+                case 5:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
+                    break;
+                case 6:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
+                    break;
+                case 7:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
+                    break;
+                case 8:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
+                    break;
+                case 9:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
+                    break;
+                case 10:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
+                    break;
+                case 11:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
+                    break;
+                case 12:
+                    display4_1menuMedium("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
+                    break;
+                default:
+                    cout << "Invalid input. Please choose a valid option.\n";
+            }
         }
     }
 }
