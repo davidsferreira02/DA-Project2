@@ -340,6 +340,79 @@ public:
         return length;
     }
 
+    bool hasFeasiblePath(const std::vector<Vertex<T>*>& tour, int originNode) {
+        // Keep track of visited nodes
+        std::unordered_set<int> visited;
+
+        // Start from the origin node
+        int currentNode = originNode;
+        visited.insert(currentNode);
+
+        // Traverse the tour and check for feasibility
+        for (size_t i = 0; i < tour.size(); ++i) {
+            // Check if the current node is distinct and has not been visited before
+            if (visited.find(tour[i]->getId()) != visited.end()) {
+                return false; // Node has been visited before, no feasible path
+            }
+
+            // Mark the current node as visited
+            visited.insert(tour[i]->getId());
+
+            // Update the current node
+            currentNode = tour[i]->getId();
+        }
+
+        // Check if all nodes have been visited and if the last node is the origin node
+        return visited.size() == tour.size() && tour.back()->getId() == originNode;
+    }
+
+    std::vector<Vertex<T>*> linKernighanRealWorld(Graph<T>& graph, int startNode) {
+        std::vector<Vertex<T>*> tour = nearestNeighbourNode(graph, startNode); // Initialize with a tour starting from the user-provided starting node
+        std::vector<Vertex<T>*> bestTour = tour;
+        double bestCost = tourCost(tour, graph);
+
+        // Check if the graph is fully connected
+        if (!isFullyConnected(graph)) {
+            std::cout << "Warning: Graph may not be fully connected. The algorithm will attempt to find a tour.\n";
+        }
+
+        // Check if there exists a path that returns to the origin and visits all nodes
+        if (!hasFeasiblePath(tour, startNode)) {
+            std::cout << "No feasible path exists. Exiting...\n";
+            return {};
+        }
+
+        const int maxIterations = 1000; // Maximum number of iterations
+        int iter = 0;
+
+        while (iter < maxIterations) {
+            bool improvement = false;
+
+            // Perform edge exchanges to find improvements
+            for (size_t i = 0; i < tour.size() - 2; ++i) {
+                for (size_t j = i + 2; j < tour.size() - 1; ++j) {
+                    std::vector<Vertex<T>*> newTour = twoOptExchange(tour, i, j);
+                    double newCost = tourCost(newTour, graph);
+                    if (newCost < bestCost) {
+                        bestCost = newCost;
+                        bestTour = newTour;
+                        tour = newTour;
+                        improvement = true;
+                        break;
+                    }
+                }
+                if (improvement) break;
+            }
+
+            if (!improvement) break; // No improvement found, terminate
+
+            ++iter;
+        }
+
+        return bestTour;
+    }
+
+
     Edge<T>* findEdge(const T& source, const T& dest) const {
         Vertex<T>* srcVertex = findVertex(source);
         Vertex<T>* destVertex = findVertex(dest);
