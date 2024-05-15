@@ -201,36 +201,56 @@ public:
         return tour;
     }
 
-    std::vector<Vertex<T>*> nearestNeighborNode(Graph<T>& graph, Vertex<T>* startVertex) {
+    std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph,  Vertex<int>* startVertex ) {
         std::vector<Vertex<T>*> tour;
-        auto vertices = graph.getVertexSet();
 
-        std::unordered_set<Vertex<T>*> visited;
+        std::vector<Vertex<T>*> vertices = graph.getVertexSet();
+
+        if (startVertex == nullptr) {
+            return tour;
+        }
+
+        tour.reserve(vertices.size() + 1);
+
         tour.push_back(startVertex);
-        visited.insert(startVertex);
 
-        Vertex<T>* currentNode = startVertex;
-        while (visited.size() < vertices.size()) {
+        startVertex->setVisited(true);
+
+        int flag = 0;
+
+        while (tour.size() < vertices.size()) {
             double minDistance = INF;
             Vertex<T>* nearestNeighbor = nullptr;
             for (auto vertex : vertices) {
-                if (visited.find(vertex) == visited.end()) {
-                    Edge<T>* edge = graph.findEdge(currentNode->getInfo(), vertex->getInfo());
-                    if (edge && edge->getWeight() < minDistance) {
-                        minDistance = edge->getWeight();
+                if (!vertex->isVisited()) {
+                    flag = 1;
+                    auto edge = graph.findEdge(tour.back()->getInfo(), vertex->getInfo());
+                    if(!edge)
+                    {
+                        continue;
+                    }
+                    double distance = edge->getWeight();
+                    if (distance < minDistance) {
+                        minDistance = distance;
                         nearestNeighbor = vertex;
                     }
                 }
             }
-            if (nearestNeighbor) {
-                tour.push_back(nearestNeighbor);
-                visited.insert(nearestNeighbor);
-                currentNode = nearestNeighbor;
-            } else {
-                break;
+            tour.push_back(nearestNeighbor);
+            nearestNeighbor->setVisited(true);
+            if(flag == 0){
+                std::cout << "Cant Compute the rest of the tour...";
+                return tour;
             }
+            flag = 0;
         }
-        tour.push_back(startVertex); // Return to start vertex
+
+        tour.push_back(startVertex);
+
+        for (auto vertex : vertices) {
+            vertex->setVisited(false);
+        }
+
         return tour;
     }
 
