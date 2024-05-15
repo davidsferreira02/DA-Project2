@@ -376,21 +376,10 @@ public:
         return visited.size() == tour.size() && tour.back()->getId() == originNode;
     }
 
-    std::vector<Vertex<T>*> linKernighanRealWorld(Graph<T>& graph, int startNode) {
-        std::vector<Vertex<T>*> tour = nearestNeighbourNode(graph, startNode); // Initialize with a tour starting from the user-provided starting node
+    std::vector<Vertex<T>*> linKernighanRealWorld(Graph<T>& graph, Vertex<T>* startVertex) {
+        std::vector<Vertex<T>*> tour = nearestNeighborNode(graph, startVertex); // Initialize with a tour starting from the user-provided starting vertex
         std::vector<Vertex<T>*> bestTour = tour;
         double bestCost = tourCost(tour, graph);
-
-        // Check if the graph is fully connected
-        if (!isFullyConnected(graph)) {
-            std::cout << "Warning: Graph may not be fully connected. The algorithm will attempt to find a tour.\n";
-        }
-
-        // Check if there exists a path that returns to the origin and visits all nodes
-        if (!hasFeasiblePath(tour, startNode)) {
-            std::cout << "No feasible path exists. Exiting...\n";
-            return {};
-        }
 
         const int maxIterations = 1000; // Maximum number of iterations
         int iter = 0;
@@ -421,7 +410,6 @@ public:
 
         return bestTour;
     }
-
 
     Edge<T>* findEdge(const T& source, const T& dest) const {
         Vertex<T>* srcVertex = findVertex(source);
