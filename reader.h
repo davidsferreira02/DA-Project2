@@ -65,7 +65,7 @@ public:
 
     Graph<int> readAndParseExtra_Fully_Connected_Graphs(const std::string filename);
     Graph<int> readAndParse4_2Extra_Fully_Connected_Graphs(const std::string filename);
-    Graph<int> readAndParseRealWorld_Graphs(int graphNumber);
+    Graph<int> readAndParseRealWorld_Graphs(int graphNumber,  std::unordered_map<int, Vertex<int>*> &vertexMap);
 
     struct Coordinates {
         double latitude;

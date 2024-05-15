@@ -387,7 +387,8 @@ Graph<int> Reader::readAndParseTourism() {
     return graph;
 }
 
-Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber){
+Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_map<int, Vertex<int>*> &vertexMap)
+{
     Graph<int> graph;
     std::string line;
 
@@ -432,7 +433,12 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber){
         graph.addVertex(dest);
         graph.addEdge(source, dest, dist);
         graph.addEdge(dest, source, dist);
-        vertexMap[source] = new Vertex<int>(source);
+        if (vertexMap.find(source) == vertexMap.end()) {
+            vertexMap[source] = new Vertex<int>(static_cast<int>(source));
+        }
+        if (vertexMap.find(dest) == vertexMap.end()) {
+            vertexMap[dest] = new Vertex<int>(static_cast<int>(dest));
+        }
     }
 
     return graph;

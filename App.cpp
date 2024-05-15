@@ -2075,9 +2075,15 @@ void display_RWmenu(){
 }
 
 void getValue_RWsmallGraph(){
+    int choice; // Loop...
+
+    cout << "Your choice: ";
+    cin >> choice;
+
     Reader reader;
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs(1);
-    Vertex<int>* startVertexPtr = graph.findVertex(0);
+    std::unordered_map<int, Vertex<int>*> vertexMap;
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(1, vertexMap);
+     //Get start vertice
 
     auto start = std::chrono::high_resolution_clock::now();
     std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
