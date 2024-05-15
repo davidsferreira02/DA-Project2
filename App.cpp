@@ -724,7 +724,7 @@ void display_NNmenu() {
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Multi Fragment Algorithm Heuristic       \n";
+        cout << "     Welcome to Nearest Neighbour Algorithm Heuristic       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
@@ -765,13 +765,13 @@ void display_NNmenuSmallGraph(){
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Multi Fragment Heuristic SmallGraph Menu       \n";
+        cout << "     Welcome to Nearest Neighbour Heuristic SmallGraph Menu       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the graph you want:\n";
         cout << "1. Stadium Graph\n";
         cout << "2. Shipping Graph \n";
         cout <<"3. Tourism Graph \n";
-        cout << "e. Back to the backtracing Menu\n";
+        cout << "e. Back to the other Heuristics Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
@@ -848,7 +848,7 @@ void display_NNmenuMediumGraph() {
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Multi Fragment Medium Graph Menu       \n";
+        cout << "     Welcome to Nearest Neighbour Medium Graph Menu       \n";
         cout << "-----------------------------\n";
         cout << "How many edges does the graph have:\n";
         cout << "1. 25\n";
@@ -863,7 +863,7 @@ void display_NNmenuMediumGraph() {
         cout << "10. 700\n";
         cout << "11. 800\n";
         cout << "12. 900\n";
-        cout << "e. Back to the backtracing Menu\n";
+        cout << "e. Back to the other heuristics Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
@@ -946,7 +946,7 @@ void display_LINmenu() {
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Multi Fragment Algorithm Heuristic       \n";
+        cout << "     Welcome to LinKernighan Algorithm Heuristic       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
@@ -987,13 +987,13 @@ void display_LINmenuSmallGraph(){
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Multi Fragment Heuristic SmallGraph Menu       \n";
+        cout << "     Welcome to LinKernighan Heuristic SmallGraph Menu       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the graph you want:\n";
         cout << "1. Stadium Graph\n";
         cout << "2. Shipping Graph \n";
         cout <<"3. Tourism Graph \n";
-        cout << "e. Back to the backtracing Menu\n";
+        cout << "e. Back to the Other Heuristics Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
@@ -1070,7 +1070,7 @@ void display_LINmenuMediumGraph() {
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Multi Fragment Medium Graph Menu       \n";
+        cout << "     Welcome to LinKernighan Medium Graph Menu       \n";
         cout << "-----------------------------\n";
         cout << "How many edges does the graph have:\n";
         cout << "1. 25\n";
@@ -1085,7 +1085,7 @@ void display_LINmenuMediumGraph() {
         cout << "10. 700\n";
         cout << "11. 800\n";
         cout << "12. 900\n";
-        cout << "e. Back to the backtracing Menu\n";
+        cout << "e. Back to the other Heuristics Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
