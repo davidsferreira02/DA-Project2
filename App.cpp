@@ -53,8 +53,10 @@ void getValue_LINmenuSmallGraphShipping();
 void getValue_LINmenuSmallGraphTourism();
 void getValue_LINmenuMediumGraph(const std::string &filename);
 
-
-
+void display_RWmenu();
+void getValue_RWsmallGraph();
+void getValue_RWmediumGraph();
+void getValue_RWlargeGraph();
 
 
 int mainMenu(){
@@ -1162,6 +1164,82 @@ void getValue_LINmenuMediumGraph(const std::string &filename){
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 }
+
+void display_RWmenu(){
+    string choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Real World TSP       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Graph1('Small')\n";
+        cout << "2. Graph2(Medium) \n";
+        cout << "3. Graph3(Large)  \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice.length() != 1) {
+            choice = "0";
+        }
+
+        switch (choice[0]) {
+            case '1':
+                getValue_RWsmallGraph();
+                break;
+            case '2':
+                getValue_RWmediumGraph();
+                break;
+            case '3':
+                getValue_RWlargeGraph();
+                break;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+}
+
+void getValue_RWsmallGraph(){
+    Reader reader;
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(1);
+    Vertex<int>* startVertexPtr = graph.findVertex(0);
+
+    vector<Edge<int>*> mst = graph.primMST(startVertexPtr->getInfo());
+
+    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
+
+    vector<int> tspTour;
+    set<int> visited;
+    for (int vertex : preorderList) {
+        if (visited.insert(vertex).second) {
+            tspTour.push_back(vertex);
+        }
+    }
+    tspTour.push_back(tspTour.front());
+
+    double totalDistance = 0;
+    int previous = tspTour.front();
+    for (size_t i = 1; i < tspTour.size(); i++) {
+        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
+        if (edge)
+            totalDistance += edge->getWeight();
+        previous = tspTour[i];
+    }
+
+    cout << "TSP Tour: ";
+    for (size_t i = 0; i < tspTour.size(); ++i) {
+        cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
+    }
+    cout << endl;
+    cout << "Total Approximation Distance: " << totalDistance << "\n";
+}
+
 void App::run() {
     mainMenu();
 }
