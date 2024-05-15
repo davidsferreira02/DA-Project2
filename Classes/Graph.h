@@ -216,11 +216,14 @@ public:
 
         startVertex->setVisited(true);
 
+        int flag = 0;
+
         while (tour.size() < vertices.size()) {
             double minDistance = INF;
             Vertex<T>* nearestNeighbor = nullptr;
             for (auto vertex : vertices) {
                 if (!vertex->isVisited()) {
+                    flag = 1;
                     auto edge = graph.findEdge(tour.back()->getInfo(), vertex->getInfo());
                     if(!edge)
                     {
@@ -235,6 +238,11 @@ public:
             }
             tour.push_back(nearestNeighbor);
             nearestNeighbor->setVisited(true);
+            if(flag == 0){
+                std::cout << "Cant Compute the rest of the tour...";
+                return tour;
+            }
+            flag = 0;
         }
 
         tour.push_back(startVertex);
