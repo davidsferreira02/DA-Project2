@@ -2090,7 +2090,7 @@ void getValue_RWsmallGraph(int nodeID){
 
     Reader reader;
     unordered_map<int, Vertex<int>*> vertexMap;
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs(2, vertexMap);
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(1, vertexMap);
 
     Vertex<int>* startingVertex = vertexMap[nodeID];
     if(!startingVertex){
@@ -2124,7 +2124,7 @@ void getValue_RWsmallGraph(int nodeID){
 void getValue_RWmediumGraph(int nodeID) {
     Reader reader;
     unordered_map<int, Vertex<int>*> vertexMap;
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs(3, vertexMap);
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(2, vertexMap);
 
     Vertex<int>* startingVertex = vertexMap[nodeID];
     if(!startingVertex){
@@ -2157,7 +2157,7 @@ void getValue_RWmediumGraph(int nodeID) {
 void getValue_RWlargeGraph(int nodeID) {
     Reader reader;
     unordered_map<int, Vertex<int>*> vertexMap;
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs(1, vertexMap);
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(3, vertexMap);
 
     Vertex<int>* startingVertex = vertexMap[nodeID];
     if(!startingVertex){
