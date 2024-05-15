@@ -67,14 +67,15 @@ void getValue_HeldKarp_menuSmallGraphShipping();
 void getValue_HeldKarp_menuSmallGraphTourism();
 void getValue_HeldKarp_menuMediumGraph(const std::string &filename);
 
-void display_CLUSTERmenu();
-void display_CLUSTERmenuSmallGraph();
-void display_CLUSTERmenuMediumGraph();
-void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
-void getValue_CLUSTERmenuSmallGraphStadium();
-void getValue_CLUSTERmenuSmallGraphShipping();
-void getValue_CLUSTERmenuSmallGraphTourism();
-void getValue_CLUSTERmenuMediumGraph(const std::string &filename);
+void display_CLUSTERmenu(int clusterOption);
+void display_CLUSTERmenuSmallGraph(int clusterOption);
+void display_CLUSTERmenuMediumGraph(int clusterOption);
+void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc, int clusterOption);
+void getValue_CLUSTERmenuSmallGraphStadium(int clusterOption);
+void getValue_CLUSTERmenuSmallGraphShipping(int clusterOption);
+void getValue_CLUSTERmenuSmallGraphTourism(int clusterOption);
+void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOption);
+
 
 void display_RWmenu();
 void getValue_RWsmallGraph();
@@ -743,9 +744,29 @@ void display_OHmenu(){
             case '1':
                 display_NNmenu();
                 break;
-            case '2':
-                display_CLUSTERmenu();
+            case '2': {
+                string clusterChoice;
+                int clusterOption;
+                bool validInput = false;
+
+                // Keep asking for input until valid input is provided
+                while (!validInput) {
+                    cout << "Enter the number of clusters: ";
+                    cin >> clusterChoice;
+
+                    try {
+                        clusterOption = stoi(clusterChoice);
+                        validInput = true;
+                    } catch (const invalid_argument& e) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range& e) {
+                        cout << "Invalid input. The number is out of range.\n";
+                    }
+                }
+
+                display_CLUSTERmenu(clusterOption);
                 break;
+            }
             case '3':
                 display_SANmenu();
                 break;
@@ -1726,7 +1747,7 @@ void display_HeldKarp_menuMediumGraph() {
     }
 }
 
-void display_CLUSTERmenu() {
+void display_CLUSTERmenu(int clusterOption) {
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -1736,7 +1757,7 @@ void display_CLUSTERmenu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
+        cout << "3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1748,13 +1769,13 @@ void display_CLUSTERmenu() {
 
         switch (choice[0]) {
             case '1':
-                display_CLUSTERmenuSmallGraph();
+                display_CLUSTERmenuSmallGraph(clusterOption);
                 break;
             case '2':
-                display_CLUSTERmenuMediumGraph();
+                display_CLUSTERmenuMediumGraph(clusterOption);
                 break;
             case '3':
-
+                // Implement for large graph
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -1766,7 +1787,8 @@ void display_CLUSTERmenu() {
     }
 }
 
-void display_CLUSTERmenuSmallGraph(){
+
+void display_CLUSTERmenuSmallGraph(int clusterOption) {
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -1776,7 +1798,7 @@ void display_CLUSTERmenuSmallGraph(){
         cout << "Enter the number of the graph you want:\n";
         cout << "1. Stadium Graph\n";
         cout << "2. Shipping Graph \n";
-        cout <<"3. Tourism Graph \n";
+        cout << "3. Tourism Graph \n";
         cout << "e. Back to the other Heuristics Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1788,13 +1810,14 @@ void display_CLUSTERmenuSmallGraph(){
 
         switch (choice[0]) {
             case '1':
-                getValue_CLUSTERmenuSmallGraphStadium();
+                getValue_CLUSTERmenuSmallGraphStadium(clusterOption);
                 break;
             case '2':
-                getValue_CLUSTERmenuSmallGraphShipping();
+                getValue_CLUSTERmenuSmallGraphShipping(clusterOption);
                 break;
             case '3':
-                getValue_CLUSTERmenuSmallGraphTourism();
+                getValue_CLUSTERmenuSmallGraphTourism(clusterOption);
+                break;
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -1805,7 +1828,8 @@ void display_CLUSTERmenuSmallGraph(){
     }
 }
 
-void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
+
+void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc, int clusterOption)  {
     auto start = std::chrono::high_resolution_clock::now(); // Start timing
 
     Reader reader;
@@ -1813,7 +1837,7 @@ void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& re
     auto coordinates = reader.readCoordinates();
 
     // Step 1: Clustering the graph
-    int numClusters = 5; // Number of clusters, adjust based on your graph size
+    int numClusters = clusterOption; // Number of clusters based on the user's choice
     auto clusters = reader.kMeansClustering(graph, numClusters, coordinates);
 
     // Step 2: Solve TSP for each cluster using nearest neighbor
@@ -1871,24 +1895,23 @@ void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& re
     std::cout << "Execution Time: " << execTime.count() << " seconds\n"; // Print execution time
 }
 
-
-
-void getValue_CLUSTERmenuSmallGraphStadium(){
+void getValue_CLUSTERmenuSmallGraphStadium(int clusterOption) {
     auto readAndParseStadium = [](Reader& reader) { return reader.readAndParseStadium(); };
-    getValue_CLUSTERmenuSmallGraph(readAndParseStadium);
+    getValue_CLUSTERmenuSmallGraph(readAndParseStadium, clusterOption);
 }
 
-void getValue_CLUSTERmenuSmallGraphShipping() {
+void getValue_CLUSTERmenuSmallGraphShipping(int clusterOption) {
     auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
-    getValue_CLUSTERmenuSmallGraph(readAndParseShipping);
+    getValue_CLUSTERmenuSmallGraph(readAndParseShipping, clusterOption);
 }
 
-void getValue_CLUSTERmenuSmallGraphTourism() {
+void getValue_CLUSTERmenuSmallGraphTourism(int clusterOption) {
     auto readAndParseTourism = [](Reader& reader) { return reader.readAndParseTourism(); };
-    getValue_CLUSTERmenuSmallGraph(readAndParseTourism);
+    getValue_CLUSTERmenuSmallGraph(readAndParseTourism, clusterOption);
 }
 
-void getValue_CLUSTERmenuMediumGraph(const std::string &filename){
+
+void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOption) {
     auto start = std::chrono::high_resolution_clock::now(); // Start timing
 
     Reader reader;
@@ -1896,7 +1919,7 @@ void getValue_CLUSTERmenuMediumGraph(const std::string &filename){
     auto coordinates = reader.readCoordinates();
 
     // Step 1: Clustering the graph
-    int numClusters = 5; // Number of clusters, adjust based on your graph size
+    int numClusters = clusterOption; // Number of clusters based on the user's choice
     auto clusters = reader.kMeansClustering(graph, numClusters, coordinates);
 
     // Step 2: Solve TSP for each cluster using nearest neighbor
@@ -1955,7 +1978,7 @@ void getValue_CLUSTERmenuMediumGraph(const std::string &filename){
 
 }
 
-void display_CLUSTERmenuMediumGraph() {
+void display_CLUSTERmenuMediumGraph(int clusterOption) {
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -1988,40 +2011,40 @@ void display_CLUSTERmenuMediumGraph() {
             int choiceNum = stoi(choice);
             switch (choiceNum) {
                 case 1:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv", clusterOption);
                     break;
                 case 2:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv", clusterOption);
                     break;
                 case 3:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv", clusterOption);
                     break;
                 case 4:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv", clusterOption);
                     break;
                 case 5:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv", clusterOption);
                     break;
                 case 6:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv", clusterOption);
                     break;
                 case 7:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv", clusterOption);
                     break;
                 case 8:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv", clusterOption);
                     break;
                 case 9:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv", clusterOption);
                     break;
                 case 10:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv", clusterOption);
                     break;
                 case 11:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv", clusterOption);
                     break;
                 case 12:
-                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
+                    getValue_CLUSTERmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv", clusterOption);
                     break;
                 default:
                     cout << "Invalid input. Please choose a valid option.\n";
