@@ -2064,11 +2064,11 @@ void display_RWmenu() {
                 break;
             case 2:
                 cout << "Input the starting node for the algorithm: ";
-                // getValue_RWmediumGraph(choice); // Passing choice as argument
+                getValue_RWmediumGraph(choice); // Passing choice as argument
                 break;
             case 3:
                 cout << "Input the starting node for the algorithm: ";
-                // getValue_RWlargeGraph(choice); // Passing choice as argument
+                getValue_RWlargeGraph(choice); // Passing choice as argument
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -2083,7 +2083,7 @@ void display_RWmenu() {
 void getValue_RWsmallGraph(int choice) {
     Reader reader;
     unordered_map<int, Vertex<int>*> vertexMap;
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs(choice, vertexMap);
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(1, vertexMap);
 
     // Get the start vertex
     Vertex<int>* startVertex = nullptr;
@@ -2114,11 +2114,72 @@ void getValue_RWsmallGraph(int choice) {
     cout << "Time: " << duration.count() << "\n";
 }
 
-void getValue_RWmediumGraph(){
-   //Algo
+void getValue_RWmediumGraph(int choice) {
+    Reader reader;
+    unordered_map<int, Vertex<int>*> vertexMap;
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(2, vertexMap);
+
+    // Get the start vertex
+    Vertex<int>* startVertex = nullptr;
+    if (vertexMap.find(1) != vertexMap.end()) { // Assuming the start vertex ID is 1
+        startVertex = vertexMap[1];
+    } else {
+        cerr << "Start vertex not found in the vertex map." << endl;
+        return;
+    }
+
+    auto start = chrono::high_resolution_clock::now();
+    vector<Vertex<int>*> tour = graph.linKernighanRealWorld(graph, startVertex);
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+
+    double totalDistance = 0;
+    cout << "TSP Tour: ";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        if (i > 0) {
+            Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
+            if (edge)
+                totalDistance += edge->getWeight();
+        }
+    }
+    cout << endl;
+    cout << "Total Approximation Distance: " << totalDistance << "\n";
+    cout << "Time: " << duration.count() << "\n";
 }
-void getValue_RWlargeGraph(){
-    //Algo
+
+void getValue_RWlargeGraph(int choice) {
+    Reader reader;
+    unordered_map<int, Vertex<int>*> vertexMap;
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(3, vertexMap);
+
+    // Get the start vertex
+    Vertex<int>* startVertex = nullptr;
+    if (vertexMap.find(1) != vertexMap.end()) { // Assuming the start vertex ID is 1
+        startVertex = vertexMap[1];
+    } else {
+        cerr << "Start vertex not found in the vertex map." << endl;
+        return;
+    }
+
+    auto start = chrono::high_resolution_clock::now();
+    vector<Vertex<int>*> tour = graph.linKernighanRealWorld(graph, startVertex);
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+
+    double totalDistance = 0;
+    cout << "TSP Tour: ";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        if (i > 0) {
+            Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
+            if (edge)
+                totalDistance += edge->getWeight();
+        }
+    }
+    cout << endl;
+    cout << "Total Approximation Distance: " << totalDistance << "\n";
+    cout << "Time: " << duration.count() << "\n";
 }
 
 void App::run() {
