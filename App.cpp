@@ -145,7 +145,6 @@ void display4_1menu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -181,7 +180,6 @@ void display4_2menu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -797,7 +795,6 @@ void display_NNmenu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -813,9 +810,6 @@ void display_NNmenu() {
                 break;
             case '2':
                 display_NNmenuMediumGraph();
-                break;
-            case '3':
-
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -1016,7 +1010,6 @@ void display_LINmenu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1032,9 +1025,6 @@ void display_LINmenu() {
                 break;
             case '2':
                 display_LINmenuMediumGraph();
-                break;
-            case '3':
-
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -1234,7 +1224,6 @@ void display_SANmenu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1250,9 +1239,6 @@ void display_SANmenu() {
                 break;
             case '2':
                 display_SANmenuMediumGraph();
-                break;
-            case '3':
-
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -1538,7 +1524,6 @@ void display_HeldKarp_menu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout <<"3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1554,9 +1539,6 @@ void display_HeldKarp_menu() {
                 break;
             case '2':
                 display_HeldKarp_menuMediumGraph();
-                break;
-            case '3':
-
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -1757,7 +1739,6 @@ void display_CLUSTERmenu(int clusterOption) {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout << "3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1768,14 +1749,11 @@ void display_CLUSTERmenu(int clusterOption) {
         }
 
         switch (choice[0]) {
-            case '1':
+            case '1':\
                 display_CLUSTERmenuSmallGraph(clusterOption);
                 break;
             case '2':
                 display_CLUSTERmenuMediumGraph(clusterOption);
-                break;
-            case '3':
-                // Implement for large graph
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
