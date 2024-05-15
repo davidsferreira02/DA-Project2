@@ -2057,18 +2057,22 @@ void display_RWmenu() {
             choice = 0;
         }
 
+        int startingNode;
         switch (choice) {
             case 1:
                 cout << "Input the starting node for the algorithm: ";
-                getValue_RWsmallGraph(choice); // Passing choice as argument
+                cin >> startingNode;
+                getValue_RWsmallGraph(startingNode);
                 break;
             case 2:
                 cout << "Input the starting node for the algorithm: ";
-                getValue_RWmediumGraph(choice); // Passing choice as argument
+                cin >> startingNode;
+                getValue_RWmediumGraph(startingNode);
                 break;
             case 3:
                 cout << "Input the starting node for the algorithm: ";
-                getValue_RWlargeGraph(choice); // Passing choice as argument
+                cin >> startingNode;
+                getValue_RWlargeGraph(startingNode);
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
