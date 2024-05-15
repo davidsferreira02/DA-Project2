@@ -266,9 +266,13 @@ void display4_1menuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndP
     std::cout << "Execution Time: " << execTime.count() << " seconds\n";
     std::cout << "Best Path Cost: " << bestCost << "\n";
     std::cout << "Best Path: ";
-    for (int node : bestPath) {
-        std::cout << node << (node == 0 ? "\n" : " -> ");
+    for (size_t i = 0; i < bestPath.size(); ++i) {
+        std::cout << bestPath[i];
+        if (i < bestPath.size() - 1) {
+            std::cout << " -> ";
+        }
     }
+    std::cout << "\n";
 }
 
 void display4_1menuSmallGraphStadium() {
@@ -427,11 +431,13 @@ void display4_2menuSmallGraph(){
 
 }
 
-
 void display4_2menuSmall(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
+
     Reader reader;
     Graph<int> graph = readAndParseFunc(reader);
     Vertex<int>* startVertexPtr = graph.findVertex(0);
+
+    auto start = std::chrono::high_resolution_clock::now(); // Start timing
 
     vector<Edge<int>*> mst = graph.primMST(startVertexPtr->getInfo());
 
@@ -455,13 +461,18 @@ void display4_2menuSmall(const std::function<Graph<int>(Reader&)>& readAndParseF
         previous = tspTour[i];
     }
 
+    auto end = std::chrono::high_resolution_clock::now(); // End timing
+    std::chrono::duration<double> execTime = end - start; // Calculate execution time
+
     cout << "TSP Tour: ";
     for (size_t i = 0; i < tspTour.size(); ++i) {
         cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
     }
     cout << endl;
     cout << "Total Approximation Distance: " << totalDistance << "\n";
+    cout << "Execution Time: " << execTime.count() << " seconds\n"; // Print execution time
 }
+
 
 void display4_2menuSmallGraphStadium() {
     auto readAndParseStadium = [](Reader& reader) { return reader.readAndParseStadium(); };
@@ -561,6 +572,7 @@ void display4_2menuMedium(const std::string &filename){
 
     Vertex<int>* startVertexPtr = graph.findVertex(0);
 
+    auto start = std::chrono::high_resolution_clock::now();
 
     vector<Edge<int>*> mst = graph.primMST(startVertexPtr->getInfo());
 
@@ -577,6 +589,8 @@ void display4_2menuMedium(const std::string &filename){
     }
     tspTour.push_back(tspTour.front());
 
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> execTime = end - start;
 
     double totalDistance = 0;
     int previous = tspTour.front();
@@ -595,7 +609,7 @@ void display4_2menuMedium(const std::string &filename){
     }
     cout << endl;
     cout << "Total Approximation Distance: " << totalDistance << "\n";
-
+    cout << "Execution Time: " << execTime.count() << " seconds\n";
 
 }
 
@@ -656,6 +670,7 @@ void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestC
 
     // dp[mask][i] will be the minimum cost to reach node i with visited nodes as in mask.
     std::vector<std::vector<double>> dp(1 << n, std::vector<double>(n, INF));
+    std::vector<std::vector<int>> parent(1 << n, std::vector<int>(n, -1));
     dp[1][0] = 0; // Starting at node 0.
 
     // Iterate over all subsets of nodes.
@@ -666,7 +681,11 @@ void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestC
                     if (!(mask & (1 << v))) { // If v is not in the subset.
                         Edge<int>* edge = graph.findEdge(u, v);
                         if (edge) {
-                            dp[mask | (1 << v)][v] = std::min(dp[mask | (1 << v)][v], dp[mask][u] + edge->getWeight());
+                            double newCost = dp[mask][u] + edge->getWeight();
+                            if (newCost < dp[mask | (1 << v)][v]) {
+                                dp[mask | (1 << v)][v] = newCost;
+                                parent[mask | (1 << v)][v] = u;
+                            }
                         }
                     }
                 }
@@ -688,25 +707,24 @@ void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestC
         }
     }
 
-    // Reconstruct the path using the last node.
+    // Reconstruct the path using the parent table.
     if (lastNode != -1) {
         bestPath.clear();
         int mask = (1 << n) - 1;
         int currentNode = lastNode;
         while (currentNode != 0) {
             bestPath.push_back(currentNode);
-            for (int v = 0; v < n; ++v) {
-                if ((mask & (1 << v)) && graph.findEdge(v, currentNode)) {
-                    mask ^= (1 << currentNode);
-                    currentNode = v;
-                    break;
-                }
-            }
+            int temp = parent[mask][currentNode];
+            mask ^= (1 << currentNode);
+            currentNode = temp;
         }
         bestPath.push_back(0); // Add the starting node to complete the cycle.
         std::reverse(bestPath.begin(), bestPath.end()); // Reverse the path to start from the starting node.
+        bestPath.push_back(0); // Add the starting node at the end to complete the cycle.
     }
 }
+
+
 
 void display_OHmenu(){
     string choice;
@@ -1645,9 +1663,13 @@ void getValue_HeldKarp_menuSmallGraph(const std::function<Graph<int>(Reader&)>& 
     std::cout << "Execution Time: " << execTime.count() << " seconds\n";
     std::cout << "Best Path Cost: " << bestCost << "\n";
     std::cout << "Best Path: ";
-    for (int node : bestPath) {
-        std::cout << node << (node == 0 ? "\n" : " -> ");
+    for (size_t i = 0; i < bestPath.size(); ++i) {
+        std::cout << bestPath[i];
+        if (i < bestPath.size() - 1) {
+            std::cout << " -> ";
+        }
     }
+    std::cout << "\n";
 }
 
 
