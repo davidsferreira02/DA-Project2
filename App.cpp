@@ -124,6 +124,9 @@ int mainMenu(){
             case '3':
                 display_OHmenu();
                 break;
+            case '4':
+                display_RWmenu();
+                break;
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -2053,13 +2056,13 @@ void display_RWmenu(){
 
         switch (choice[0]) {
             case '1':
-                // getValue_RWsmallGraph();
+                 getValue_RWsmallGraph();
                 break;
             case '2':
-                // getValue_RWmediumGraph();
+                getValue_RWmediumGraph();
                 break;
             case '3':
-                // getValue_RWlargeGraph();
+                getValue_RWlargeGraph();
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -2104,6 +2107,12 @@ void getValue_RWsmallGraph(){
     }
     cout << endl;
     cout << "Total Approximation Distance: " << totalDistance << "\n";
+}
+void getValue_RWmediumGraph(){
+   //Algo
+}
+void getValue_RWlargeGraph(){
+    //Algo
 }
 
 void App::run() {
