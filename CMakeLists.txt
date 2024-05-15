@@ -11,9 +11,6 @@ set(SOURCES
         main.cpp
         App.cpp
         reader.cpp
-        Classes/Shipping.cpp
-        Classes/Stadium.cpp
-        Classes/Tourism.cpp
 )
 
 # Add executable target

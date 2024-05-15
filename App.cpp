@@ -1,7 +1,3 @@
-//
-// Created by David Ferreira on 11/05/2024.
-//
-
 #include "App.h"
 
 
@@ -2058,23 +2054,54 @@ void display_RWmenu() {
             choice = 0;
         }
 
+        int nodeID = 0;
+        string choiceNode;
 
-        int startingNode;
         switch (choice) {
             case 1:
-                cout << "Input the starting node for the algorithm: ";
-                cin >> startingNode;
-                getValue_RWsmallGraph(startingNode);
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        getValue_RWsmallGraph(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
                 break;
             case 2:
-                cout << "Input the starting node for the algorithm: ";
-                cin >> startingNode;
-                getValue_RWmediumGraph(startingNode);
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        getValue_RWmediumGraph(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
                 break;
             case 3:
-                cout << "Input the starting node for the algorithm: ";
-                cin >> startingNode;
-                getValue_RWlargeGraph(startingNode);
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        getValue_RWlargeGraph(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
