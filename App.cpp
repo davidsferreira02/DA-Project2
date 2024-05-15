@@ -78,7 +78,7 @@ void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOpt
 
 
 void display_RWmenu();
-void getValue_RWsmallGraph();
+void getValue_RWsmallGraph(int nodeID);
 void getValue_RWmediumGraph();
 void getValue_RWlargeGraph();
 
@@ -2056,7 +2056,7 @@ void display_RWmenu(){
 
         switch (choice[0]) {
             case '1':
-                 getValue_RWsmallGraph();
+                 getValue_RWsmallGraph(15);
                 break;
             case '2':
                 getValue_RWmediumGraph();
@@ -2074,19 +2074,19 @@ void display_RWmenu(){
     }
 }
 
-void getValue_RWsmallGraph(){
-    int choice; // Loop...
-
-    cout << "Your choice: ";
-    cin >> choice;
+void getValue_RWsmallGraph(int nodeID){
 
     Reader reader;
     std::unordered_map<int, Vertex<int>*> vertexMap;
     Graph<int> graph = reader.readAndParseRealWorld_Graphs(1, vertexMap);
-     //Get start vertice
+
+    Vertex<int>* startingVertex = vertexMap[nodeID];
+    if(!startingVertex){
+        return;
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
@@ -2103,6 +2103,7 @@ void getValue_RWsmallGraph(){
     std::cout << std::endl;
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
+    std::cout << "Tour Size: " << tour.size() << "\n";
 }
 void getValue_RWmediumGraph(){
    //Algo
