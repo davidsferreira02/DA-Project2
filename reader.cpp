@@ -1,12 +1,4 @@
 #include "reader.h"
-#include "Classes/Shipping.h"
-
-
-/**
- * @brief Read and parse data from the Stations.csv file to create Station objects.
- *
- * This function reads data from the Stations.csv file, creates Station objects, and adds them to the graph.
- */
 
 #include <fstream>
 #include <iostream>
@@ -16,18 +8,12 @@
 #include <unordered_set>
 #include <complex>
 
-
-struct Coordinates {
-    double latitude;
-    double longitude;
-};
-
 std::unordered_map<int, Reader::Coordinates> Reader::readCoordinates() {
     std::ifstream file("../Data/Extra_Fully_Connected_Graphs/nodes.csv");
     std::unordered_map<int, Coordinates> nodeCoordinates;
     std::string line;
     if (file.is_open()) {
-        std::getline(file, line); // Skip header
+        std::getline(file, line);
         while (std::getline(file, line)) {
             std::istringstream iss(line);
             std::string token;
@@ -44,12 +30,10 @@ std::unordered_map<int, Reader::Coordinates> Reader::readCoordinates() {
     return nodeCoordinates;
 }
 
-// Function to convert degrees to radians
 double convert_to_radians(double coord) {
     return coord * 3.14 / 180.0;
 }
 
-// Haversine function to calculate the distance between two points on Earth
 double Haversine(double lat1, double lon1, double lat2, double lon2) {
 
     double rad_lat1 = convert_to_radians(lat1);
@@ -65,10 +49,8 @@ double Haversine(double lat1, double lon1, double lat2, double lon2) {
                std::cos(rad_lat1) * std::cos(rad_lat2) * std::pow(std::sin(delta_lon / 2), 2);
     double c = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a));
 
-    // Earth's radius in meters
     const double earthRadius = 6371000;
 
-    // Calculate and return the distance
     return earthRadius * c;
 }
 
@@ -76,22 +58,18 @@ std::vector<std::vector<int>> Reader::kMeansClustering(const Graph<int>& graph, 
     std::vector<std::vector<int>> clusters(k);
     std::vector<int> vertexIds;
 
-    // Collect vertex IDs
     for (const auto& vertex : graph.getVertexSet()) {
         vertexIds.push_back(vertex->getInfo());
     }
 
-    // Step 1: Initialize centroids based on proximity
     std::vector<int> centroids;
-    centroids.push_back(vertexIds[0]); // Start with the first vertex
+    centroids.push_back(vertexIds[0]);
     std::unordered_set<int> visitedCentroids;
     visitedCentroids.insert(vertexIds[0]);
 
-    // Select remaining centroids based on proximity to existing centroids
     while (centroids.size() < k) {
         double maxDist = -1.0;
         int farthestVertex = -1;
-        // Find the vertex farthest from existing centroids
         for (int vertex : vertexIds) {
             if (visitedCentroids.find(vertex) == visitedCentroids.end()) {
                 double minDist = INF;
@@ -114,20 +92,16 @@ std::vector<std::vector<int>> Reader::kMeansClustering(const Graph<int>& graph, 
             centroids.push_back(farthestVertex);
             visitedCentroids.insert(farthestVertex);
         } else {
-            // In case of failure to find another centroid, break to avoid infinite loop
             break;
         }
     }
 
-    // Step 2: Assign vertices to clusters and iterate until convergence
     bool changed = true;
     while (changed) {
-        // Clear clusters
         for (auto& cluster : clusters) {
             cluster.clear();
         }
 
-        // Assign each vertex to the nearest centroid
         for (const auto& vertex : graph.getVertexSet()) {
             int nearestCentroid = -1;
             double minDistance = INF;
@@ -144,7 +118,6 @@ std::vector<std::vector<int>> Reader::kMeansClustering(const Graph<int>& graph, 
             clusters[nearestCentroid].push_back(vertex->getInfo());
         }
 
-        // Update centroids
         changed = false;
         for (int i = 0; i < k; ++i) {
             double avgLat = 0.0, avgLon = 0.0;
@@ -187,12 +160,10 @@ Graph<int> Reader::readAndParse4_2Extra_Fully_Connected_Graphs(const std::string
         return graph;
     }
 
-    // Skip the header line
     std::getline(file, line);
 
     while (std::getline(file, line)) {
-        std::replace(line.begin(), line.end(), ',', ' '); // Replace commas with spaces for easier parsing
-
+        std::replace(line.begin(), line.end(), ',', ' ');
         std::istringstream iss(line);
         int source, dest;
         double dist;
@@ -231,7 +202,6 @@ Graph<int> Reader::readAndParseStadium() {
     std::ifstream file("../Data/Toy-Graphs/stadiums.csv");
     std::string line;
 
-    // Assuming T is int and the Graph is for an undirected graph with distances as weights
     Graph<int> graph;
 
     if (!file.is_open()) {
@@ -239,11 +209,10 @@ Graph<int> Reader::readAndParseStadium() {
         return graph;
     }
 
-    // Skip the header line
     std::getline(file, line);
 
     while (std::getline(file, line)) {
-        std::replace(line.begin(), line.end(), ',', ' '); // Replace commas with spaces for easier parsing
+        std::replace(line.begin(), line.end(), ',', ' ');
 
         std::istringstream iss(line);
         int source, dest;
@@ -254,7 +223,6 @@ Graph<int> Reader::readAndParseStadium() {
             continue;
         }
 
-        // Add vertices and edge
         graph.addVertex(source);
         graph.addVertex(dest);
         graph.addEdge(source, dest, dist);
@@ -273,7 +241,6 @@ Graph<int> Reader::readAndParseExtra_Fully_Connected_Graphs(const std::string fi
     std::ifstream file("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
     std::string line;
 
-    // Assuming T is int and the Graph is for an undirected graph with distances as weights
     Graph<int> graph;
 
     if (!file.is_open()) {
@@ -281,11 +248,10 @@ Graph<int> Reader::readAndParseExtra_Fully_Connected_Graphs(const std::string fi
         return graph;
     }
 
-    // Skip the header line
     std::getline(file, line);
 
     while (std::getline(file, line)) {
-        std::replace(line.begin(), line.end(), ',', ' '); // Replace commas with spaces for easier parsing
+        std::replace(line.begin(), line.end(), ',', ' ');
 
         std::istringstream iss(line);
         int source, dest;
@@ -296,7 +262,6 @@ Graph<int> Reader::readAndParseExtra_Fully_Connected_Graphs(const std::string fi
             continue;
         }
 
-        // Add vertices and edge
         graph.addVertex(source);
         graph.addVertex(dest);
         graph.addEdge(source, dest, dist);
@@ -314,7 +279,6 @@ Graph<int> Reader::readAndParseShipping() {
     std::ifstream file("../Data/Toy-Graphs/shipping.csv");
     std::string line;
 
-    // Assuming T is int and the Graph is for an undirected graph with distances as weights
     Graph<int> graph;
 
     if (!file.is_open()) {
@@ -322,11 +286,10 @@ Graph<int> Reader::readAndParseShipping() {
         return graph;
     }
 
-    // Skip the header line
     std::getline(file, line);
 
     while (std::getline(file, line)) {
-        std::replace(line.begin(), line.end(), ',', ' '); // Replace commas with spaces for easier parsing
+        std::replace(line.begin(), line.end(), ',', ' ');
 
         std::istringstream iss(line);
         int source, dest;
@@ -337,7 +300,6 @@ Graph<int> Reader::readAndParseShipping() {
             continue;
         }
 
-        // Add vertices and edge
         graph.addVertex(source);
         graph.addVertex(dest);
         graph.addEdge(source, dest, dist);
@@ -353,7 +315,6 @@ Graph<int> Reader::readAndParseTourism() {
     std::ifstream file("../Data/Toy-Graphs/tourism.csv");
     std::string line;
 
-    // Assuming T is int and the Graph is for an undirected graph with distances as weights
     Graph<int> graph;
 
     if (!file.is_open()) {
@@ -361,14 +322,13 @@ Graph<int> Reader::readAndParseTourism() {
         return graph;
     }
 
-    // Skip the header line
     std::getline(file, line);
 
     while (std::getline(file, line)) {
-        std::replace(line.begin(), line.end(), ',', ' '); // Replace commas with spaces for easier parsing
+        std::replace(line.begin(), line.end(), ',', ' ');
 
         std::istringstream iss(line);
-        int source, dest, label_source, label_dest;
+        int source, dest;
         double dist;
         std::string label_source_str, label_dest_str;
 

@@ -1,7 +1,3 @@
-//
-// Created by David Ferreira on 11/05/2024.
-//
-
 #include "App.h"
 
 
