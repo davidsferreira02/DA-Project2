@@ -393,16 +393,18 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
         Vertex<int>* destVertex;
 
         if (vertexMap.find(source) == vertexMap.end()) {
-            vertexMap[source] = new Vertex<int>(static_cast<int>(source));
             sourceVertex = graph.addVertexNew(source);
+            vertexMap[source] = sourceVertex;
+
         }else{
             sourceVertex = vertexMap[source];
 
         }
 
         if (vertexMap.find(dest) == vertexMap.end()) {
-            vertexMap[dest] = new Vertex<int>(static_cast<int>(dest));
             destVertex = graph.addVertexNew(dest);
+            vertexMap[dest] = destVertex;
+
         }else{
             destVertex = vertexMap[dest];
         }
