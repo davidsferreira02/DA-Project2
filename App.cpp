@@ -2079,34 +2079,24 @@ void getValue_RWsmallGraph(){
     Graph<int> graph = reader.readAndParseRealWorld_Graphs(1);
     Vertex<int>* startVertexPtr = graph.findVertex(0);
 
-    vector<Edge<int>*> mst = graph.primMST(startVertexPtr->getInfo());
-
-    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
-
-    vector<int> tspTour;
-    set<int> visited;
-    for (int vertex : preorderList) {
-        if (visited.insert(vertex).second) {
-            tspTour.push_back(vertex);
-        }
-    }
-    tspTour.push_back(tspTour.front());
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
 
     double totalDistance = 0;
-    int previous = tspTour.front();
-    for (size_t i = 1; i < tspTour.size(); i++) {
-        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
-        if (edge)
-            totalDistance += edge->getWeight();
-        previous = tspTour[i];
+    std::cout << "TSP Tour: ";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        std::cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        if (i > 0) {
+            Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
+            if (edge)
+                totalDistance += edge->getWeight();
+        }
     }
-
-    cout << "TSP Tour: ";
-    for (size_t i = 0; i < tspTour.size(); ++i) {
-        cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
-    }
-    cout << endl;
-    cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
 }
 void getValue_RWmediumGraph(){
    //Algo

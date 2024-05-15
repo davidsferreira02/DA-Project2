@@ -432,6 +432,7 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber){
         graph.addVertex(dest);
         graph.addEdge(source, dest, dist);
         graph.addEdge(dest, source, dist);
+        vertexMap[source] = Vertex<int>(source);
     }
 
     return graph;
