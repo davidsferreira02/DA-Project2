@@ -373,12 +373,11 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
         std::cerr << "Failed to open file: " << filePath << std::endl;
         return graph;
     }
-
     std::getline(file, line);
     while (std::getline(file, line)) {
         std::replace(line.begin(), line.end(), ',', ' ');
             if(line.empty()){
-                break;
+                return graph;
             }
         std::istringstream iss(line);
         int source, dest;
@@ -407,6 +406,7 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
         }else{
             destVertex = vertexMap[dest];
         }
+
         graph.addEdgeNew(sourceVertex, destVertex,dist);
     }
 

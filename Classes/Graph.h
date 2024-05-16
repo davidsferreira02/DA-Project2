@@ -181,6 +181,7 @@ public:
 
         startVertex->setVisited(true);
 
+
         while (tour.size() < vertices.size()) {
             double minDistance = INF;
             Vertex<T>* nearestNeighbor = nullptr;
@@ -193,8 +194,6 @@ public:
                     }
                 }
             }
-            tour.push_back(nearestNeighbor);
-            nearestNeighbor->setVisited(true);
         }
 
         tour.push_back(startVertex);
@@ -221,8 +220,9 @@ public:
 
         startVertex->setVisited(true);
 
+        int errors = 0;
 
-        while (tour.size() < vertices.size()) {
+        while (tour.size() < vertices.size() || errors < 3) {
             double minDistance = INF;
             Vertex<T>* nearestNeighbor = nullptr;
             for (auto vertex : vertices) {
@@ -241,9 +241,10 @@ public:
             }
             if(nearestNeighbor != nullptr){
                 tour.push_back(nearestNeighbor);
+            }else{
+                errors++;
             }
             nearestNeighbor->setVisited(true);
-
         }
 
         tour.push_back(startVertex);

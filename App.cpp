@@ -2157,7 +2157,13 @@ void getValue_RWsmallGraph(int nodeID){
 void getValue_RWmediumGraph(int nodeID) {
     Reader reader;
     unordered_map<int, Vertex<int>*> vertexMap;
+    auto start1 = std::chrono::high_resolution_clock::now();
     Graph<int> graph = reader.readAndParseRealWorld_Graphs(2, vertexMap);
+    auto end1 = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> duration1 = end1 - start1;
+
+    cout << "Parsing durou: " << duration1.count() << "\n";
 
     Vertex<int>* startingVertex = vertexMap[nodeID];
     if(!startingVertex){
