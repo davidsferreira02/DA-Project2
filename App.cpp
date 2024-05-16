@@ -569,9 +569,11 @@ void display4_2menuMedium(const std::string &filename){
     unordered_map<int, Vertex<int>*> vertexMap;
     unordered_map<std::string, Edge<int>*> edgeMap;
     Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
-
-
-    Vertex<int>* startVertexPtr = graph.findVertex(0);
+    Vertex<int>* startVertexPtr = nullptr;
+    auto vertexIter = vertexMap.find(0);
+    if (vertexIter != vertexMap.end()) {
+        startVertexPtr = vertexIter->second;
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -753,7 +755,14 @@ void display4_2menuLarge2(int nodeID) {
     unordered_map<int, Vertex<int>*> vertexMap;
     unordered_map<std::string, Edge<int>*> edgeMap;
     Graph<int> graph = reader.readAndParseRealWorld_Graphs(2,vertexMap,edgeMap);
-    Vertex<int>* startVertexPtr = graph.findVertex(0);
+    Vertex<int>* startVertexPtr = nullptr;
+    auto vertexIter = vertexMap.find(nodeID);
+    if (vertexIter != vertexMap.end()) {
+        startVertexPtr = vertexIter->second;
+    } else {
+        std::cerr << "Node ID " << nodeID << " not found in the graph.\n";
+        return;
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -798,7 +807,14 @@ void display4_2menuLarge3(int nodeID) {
     unordered_map<int, Vertex<int>*> vertexMap;
     unordered_map<std::string, Edge<int>*> edgeMap;
     Graph<int> graph = reader.readAndParseRealWorld_Graphs(3,vertexMap,edgeMap);
-    Vertex<int>* startVertexPtr = graph.findVertex(0);
+    Vertex<int>* startVertexPtr = nullptr;
+    auto vertexIter = vertexMap.find(nodeID);
+    if (vertexIter != vertexMap.end()) {
+        startVertexPtr = vertexIter->second;
+    } else {
+        std::cerr << "Node ID " << nodeID << " not found in the graph.\n";
+        return;
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -1530,43 +1546,75 @@ void display_Triangular2OPTmenuSmallGraph(){
     }
 }
 
+std::vector<int> twoOptExchange(const std::vector<int>& tour, size_t i, size_t j) {
+    std::vector<int> newTour = tour;
+    std::reverse(newTour.begin() + i + 1, newTour.begin() + j + 1);
+    return newTour;
+}
+
 void getValue_Triangular2OPTmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
     Reader reader;
     Graph<int> graph;
     graph = readAndParseFunc(reader);
+    Vertex<int>* startVertexPtr = graph.findVertex(0);
     auto start = std::chrono::high_resolution_clock::now();
 
-    // Generate initial tour using Nearest Neighbor heuristic
-    std::vector<Vertex<int>*> initialTour = graph.nearestNeighbour(graph);
-    std::vector<int> currentTour;
-    for (const auto& vertex : initialTour) {
-        currentTour.push_back(vertex->getInfo());
+    std::vector<Edge<int>*> mst = graph.primMST(startVertexPtr->getInfo());
+
+    std::vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
+
+    std::vector<int> tspTour;
+    std::set<int> visited;
+    for (int vertex : preorderList) {
+        if (visited.insert(vertex).second) {
+            tspTour.push_back(vertex);
+        }
+    }
+    tspTour.push_back(tspTour.front());
+
+    // Initialize total distance
+    double totalDistance = 0;
+
+    // Apply 2-opt exchange
+    bool improvement = true;
+    while (improvement) {
+        improvement = false;
+        for (size_t i = 1; i < tspTour.size() - 2; ++i) {
+            for (size_t j = i + 1; j < tspTour.size() - 1; ++j) {
+                std::vector<int> newTour = twoOptExchange(tspTour, i, j);
+                double newDistance = graph.computeTourLength(newTour, graph);
+                if (newDistance < totalDistance) {
+                    tspTour = newTour;
+                    totalDistance = newDistance;
+                    improvement = true;
+                }
+            }
+        }
     }
 
-    // Set parameters for simulated annealing
-    double initialTemperature = 1000.0;
-    double coolingRate = 0.99;
-    int iterations = 10000;
-
-    // Perform Simulated Annealing
-    std::vector<int> bestTour = simulatedAnnealing(graph, initialTemperature, coolingRate, iterations);
+    // Compute total distance
+    totalDistance = 0;
+    int previous = tspTour.front();
+    for (size_t i = 1; i < tspTour.size(); i++) {
+        Edge<int>* edge = graph.findEdge(previous, tspTour[i]);
+        if (edge)
+            totalDistance += edge->getWeight();
+        previous = tspTour[i];
+    }
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
     // Output the best tour and its cost
-    double totalDistance = graph.computeTourLength(bestTour, graph);
+    totalDistance = graph.computeTourLength(tspTour, graph);
     std::cout << "TSP Tour: ";
-    for (size_t i = 0; i < bestTour.size(); ++i) {
-        std::cout << bestTour[i] << (i < bestTour.size() - 1 ? " -> " : "");
+    for (size_t i = 0; i < tspTour.size(); ++i) {
+        std::cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
     }
     std::cout << std::endl;
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 }
-
-
-
 
 void getValue_Triangular2OPTmenuSmallGraphStadium(){
     auto readAndParseStadium = [](Reader& reader) { return reader.readAndParseStadium(); };
@@ -1658,84 +1706,25 @@ void display_Triangular2OPTmenuMediumGraph() {
     }
 }
 
-std::vector<int> generateInitialTour(Graph<int> graph) {
-    std::vector<int> tour;
-    std::vector<Vertex<int>*> nearestNeighborTour = graph.nearestNeighbour(graph);
-
-    // Convert Vertex pointers to their respective IDs
-    for (const auto& vertex : nearestNeighborTour) {
-        tour.push_back(vertex->getInfo());
-    }
-
-    return tour;
-}
-
-std::vector<int> generateNeighbor(const std::vector<int>& tour) {
-    std::vector<int> neighbor = tour;
-
-    // Select two random indices to swap
-    int index1 = rand() % (neighbor.size() - 1); // Avoid swapping the start/end city
-    int index2 = rand() % (neighbor.size() - 1);
-
-    // Ensure the two indices are different
-    while (index1 == index2) {
-        index2 = rand() % (neighbor.size() - 1);
-    }
-
-    // Swap the cities at the selected indices
-    std::swap(neighbor[index1], neighbor[index2]);
-
-    return neighbor;
-}
-
-
-bool shouldAccept(double delta, double temperature) {
-    // Decide whether to accept a new solution based on the change in cost and temperature
-    return (delta < 0) || (exp(-delta / temperature) > static_cast<double>(rand()) / RAND_MAX);
-}
-
-std::vector<int> simulatedAnnealing(Graph<int>& graph, double initialTemperature, double coolingRate, int iterations) {
-    std::vector<int> currentTour = generateInitialTour(graph);
-    std::vector<int> bestTour = currentTour;
-    double currentCost = graph.computeTourLength(currentTour, graph);
-    double bestCost = currentCost;
-    double temperature = initialTemperature;
-
-    for (int i = 0; i < iterations; ++i) {
-        std::vector<int> neighbor = generateNeighbor(currentTour);
-        double neighborCost = graph.computeTourLength(neighbor, graph);
-        double delta = neighborCost - currentCost;
-
-        if (shouldAccept(delta, temperature)) {
-            currentTour = neighbor;
-            currentCost = neighborCost;
-            if (currentCost < bestCost) {
-                bestTour = currentTour;
-                bestCost = currentCost;
-            }
-        }
-
-        temperature *= coolingRate;
-    }
-
-    return bestTour;
-}
-
 void getValue_Triangular2OPTmenuMediumGraph(const std::string& filename) {
     Reader reader;
-    unordered_map<int, Vertex<int>*> vertexMap;
-    unordered_map<std::string, Edge<int>*> edgeMap;
-    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
-    Vertex<int>* startVertexPtr = graph.findVertex(0);
+    std::unordered_map<int, Vertex<int>*> vertexMap;
+    std::unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename, vertexMap, edgeMap);
+    Vertex<int>* startVertexPtr = nullptr;
+    auto vertexIter = vertexMap.find(0);
+    if (vertexIter != vertexMap.end()) {
+        startVertexPtr = vertexIter->second;
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    vector<Edge<int>*> mst = graph.primMSTMaps(startVertexPtr->getInfo(),vertexMap,edgeMap);
+    std::vector<Edge<int>*> mst = graph.primMSTMaps(startVertexPtr->getInfo(), vertexMap, edgeMap);
 
-    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
+    std::vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
 
-    vector<int> tspTour;
-    set<int> visited;
+    std::vector<int> tspTour;
+    std::set<int> visited;
     for (int vertex : preorderList) {
         if (visited.insert(vertex).second) {
             tspTour.push_back(vertex);
@@ -1743,10 +1732,31 @@ void getValue_Triangular2OPTmenuMediumGraph(const std::string& filename) {
     }
     tspTour.push_back(tspTour.front());
 
+    // Initialize total distance
     double totalDistance = 0;
+
+    // Apply 2-opt exchange
+    bool improvement = true;
+    while (improvement) {
+        improvement = false;
+        for (size_t i = 1; i < tspTour.size() - 2; ++i) {
+            for (size_t j = i + 1; j < tspTour.size() - 1; ++j) {
+                std::vector<int> newTour = twoOptExchange(tspTour, i, j);
+                double newDistance = graph.computeTourLength(newTour, graph);
+                if (newDistance < totalDistance) {
+                    tspTour = newTour;
+                    totalDistance = newDistance;
+                    improvement = true;
+                }
+            }
+        }
+    }
+
+    // Compute total distance
+    totalDistance = 0;
     int previous = tspTour.front();
     for (size_t i = 1; i < tspTour.size(); i++) {
-        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
+        Edge<int>* edge = graph.findEdge(previous, tspTour[i]);
         if (edge)
             totalDistance += edge->getWeight();
         previous = tspTour[i];
