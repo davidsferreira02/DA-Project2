@@ -127,7 +127,7 @@ public:
      */
     bool addEdge(const T &sourc, const T &dest, double w);
 
-    bool addEdgeNew(Vertex<T> *source, Vertex<T> *dest, double w);
+    Edge<T>* addEdgeNew(Vertex<T> *source, Vertex<T> *dest, double w);
 
 
 
@@ -205,7 +205,7 @@ public:
         return tour;
     }
 
-    std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph,  Vertex<int>* startVertex, std::unordered_map<int, Vertex<int>*> vertexMap) {
+    std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph,  Vertex<int>* startVertex, std::unordered_map<int, Vertex<int>*> vertexMap, std::unordered_map<std::string, Edge<int>*> edgeMap) {
         std::vector<Vertex<T>*> tour;
 
         std::vector<Vertex<T>*> vertices = graph.getVertexSet();
@@ -230,7 +230,12 @@ public:
                     auto srcNode = vertexMap[tour.back()->getInfo()];
                     auto destNode = vertexMap[vertex->getInfo()];
 
-                    auto edge = graph.findEdgeNew(srcNode, destNode);
+                    std::string nodes;
+                    nodes += std::to_string(tour.back()->getInfo());
+                    nodes += "_";
+                    nodes += std::to_string(vertex->getInfo());
+
+                    auto edge = edgeMap[nodes];
                     if(!edge)
                     {
                         continue;
@@ -447,6 +452,7 @@ public:
             if (edge->getDest() == destVertex) {
                 return edge;
             }
+            std::cout << srcVertex->getAdj().size() << "\n";
         }
         return nullptr;
     }
@@ -789,12 +795,12 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
     return true;
 }
 template <class T>
-bool Graph<T>::addEdgeNew(Vertex<T> *source, Vertex<T> *dest, double w) {
+ Edge<T> * Graph<T>::addEdgeNew(Vertex<T> *source, Vertex<T> *dest, double w) {
     if (source == nullptr || dest == nullptr)
-        return false;
+        return nullptr;
     source->addEdge(dest, w);
     dest->addEdge(source,w);
-    return true;
+    return new Edge<T>(source, dest, w);
 }
 
 
