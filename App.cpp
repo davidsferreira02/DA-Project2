@@ -2131,7 +2131,7 @@ void getValue_RWsmallGraph(int nodeID){
     }
 
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex);
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex, vertexMap);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
@@ -2171,7 +2171,7 @@ void getValue_RWmediumGraph(int nodeID) {
     }
 
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex);
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex, vertexMap);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
@@ -2209,7 +2209,7 @@ void getValue_RWlargeGraph(int nodeID) {
     }
 
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex);
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex, vertexMap);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 

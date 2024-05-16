@@ -205,7 +205,7 @@ public:
         return tour;
     }
 
-    std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph,  Vertex<int>* startVertex ) {
+    std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph,  Vertex<int>* startVertex, std::unordered_map<int, Vertex<int>*> vertexMap) {
         std::vector<Vertex<T>*> tour;
 
         std::vector<Vertex<T>*> vertices = graph.getVertexSet();
@@ -227,7 +227,10 @@ public:
             Vertex<T>* nearestNeighbor = nullptr;
             for (auto vertex : vertices) {
                 if (!vertex->isVisited()) {
-                    auto edge = graph.findEdge(tour.back()->getInfo(), vertex->getInfo());
+                    auto srcNode = vertexMap[tour.back()->getInfo()];
+                    auto destNode = vertexMap[vertex->getInfo()];
+
+                    auto edge = graph.findEdgeNew(srcNode, destNode);
                     if(!edge)
                     {
                         continue;
@@ -435,6 +438,19 @@ public:
         }
         return nullptr; // Edge not found
     }
+
+    Edge<T>* findEdgeNew(Vertex<T>* srcVertex, Vertex<T>* destVertex) const {
+        if (srcVertex == nullptr || destVertex == nullptr) {
+            return nullptr;
+        }
+        for (auto edge : srcVertex->getAdj()) {
+            if (edge->getDest() == destVertex) {
+                return edge;
+            }
+        }
+        return nullptr;
+    }
+
     bool removeEdge(const T &source, const T &dest);
     bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
 
