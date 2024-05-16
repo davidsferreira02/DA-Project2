@@ -30,16 +30,16 @@ std::unordered_map<int, Reader::Coordinates> Reader::readCoordinates() {
     return nodeCoordinates;
 }
 
-double convert_to_radians(double coord) {
+double Reader::convert_to_radians(double coord) {
     return coord * 3.14 / 180.0;
 }
 
-double Haversine(double lat1, double lon1, double lat2, double lon2) {
+double Reader::Haversine(double lat1, double lon1, double lat2, double lon2) {
 
-    double rad_lat1 = convert_to_radians(lat1);
-    double rad_lon1 = convert_to_radians(lon1);
-    double rad_lat2 = convert_to_radians(lat2);
-    double rad_lon2 = convert_to_radians(lon2);
+    double rad_lat1 = Reader::convert_to_radians(lat1);
+    double rad_lon1 = Reader::convert_to_radians(lon1);
+    double rad_lat2 = Reader::convert_to_radians(lat2);
+    double rad_lon2 = Reader::convert_to_radians(lon2);
 
 
     double delta_lat = rad_lat2 - rad_lat1;
