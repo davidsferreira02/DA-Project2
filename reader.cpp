@@ -415,6 +415,15 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
         nodes += std::to_string(destVertex->getInfo());
 
         edgeMap[nodes] = edge;
+
+        std::string nodes_otherWay;
+        nodes_otherWay += std::to_string(destVertex->getInfo());
+        nodes_otherWay += "_";
+        nodes_otherWay += std::to_string(sourceVertex->getInfo());
+
+        edgeMap[nodes_otherWay] = edge;
+
+
     }
 
     return graph;

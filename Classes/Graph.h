@@ -453,7 +453,6 @@ public:
             if (edge->getDest() == destVertex) {
                 return edge;
             }
-            std::cout << srcVertex->getAdj().size() << "\n";
         }
         return nullptr;
     }
