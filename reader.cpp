@@ -148,97 +148,8 @@ std::vector<std::vector<int>> Reader::kMeansClustering(const Graph<int>& graph, 
     return clusters;
 }
 
-Graph<int> Reader::readAndParse4_2Extra_Fully_Connected_Graphs(const std::string filename) {
-    std::ifstream file(filename);
-    std::string line;
-
-    Graph<int> graph;
-    std::unordered_map<int, Coordinates> coordinates = readCoordinates();
-
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file\n";
-        return graph;
-    }
-
-    std::getline(file, line);
-
-    while (std::getline(file, line)) {
-        std::replace(line.begin(), line.end(), ',', ' ');
-        std::istringstream iss(line);
-        int source, dest;
-        double dist;
-
-        if (!(iss >> source >> dest >> dist)) {
-            std::cerr << "Error parsing line: " << line << std::endl;
-            continue;
-        }
-        graph.addVertex(source);
-        graph.addVertex(dest);
-        graph.addEdge(source, dest, dist);
-        graph.addEdge(dest, source, dist);
-    }
-
-    auto vertices = graph.getVertexSet();
-    for (auto& v : vertices) {
-        for (auto& w : vertices) {
-            if (v->getInfo() != w->getInfo() && !graph.findEdge(v->getInfo(), w->getInfo())) {
-                double dist = Haversine(
-                        coordinates[v->getInfo()].latitude, coordinates[v->getInfo()].longitude,
-                        coordinates[w->getInfo()].latitude, coordinates[w->getInfo()].longitude
-                );
-                graph.addEdge(v->getInfo(), w->getInfo(), dist);
-                graph.addEdge(w->getInfo(), v->getInfo(), dist);
-            }
-        }
-    }
-
-    file.close();
-    return graph;
-}
-
-
-
 Graph<int> Reader::readAndParseStadium() {
     std::ifstream file("../Data/Toy-Graphs/stadiums.csv");
-    std::string line;
-
-    Graph<int> graph;
-
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file\n";
-        return graph;
-    }
-
-    std::getline(file, line);
-
-    while (std::getline(file, line)) {
-        std::replace(line.begin(), line.end(), ',', ' ');
-
-        std::istringstream iss(line);
-        int source, dest;
-        double dist;
-
-        if (!(iss >> source >> dest >> dist)) {
-            std::cerr << "Error parsing line: " << line << std::endl;
-            continue;
-        }
-
-        graph.addVertex(source);
-        graph.addVertex(dest);
-        graph.addEdge(source, dest, dist);
-        graph.addEdge(dest, source, dist);
-    }
-
-    file.close();
-    return graph;
-
-
-
-}
-
-
-Graph<int> Reader::readAndParseExtra_Fully_Connected_Graphs(const std::string filename) {
-    std::ifstream file("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
     std::string line;
 
     Graph<int> graph;
@@ -426,6 +337,96 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
 
     }
 
+    return graph;
+}
+
+Graph<int> Reader::readAndParse4_2Extra_Fully_Connected_Graphs(const std::string filename,std::unordered_map<int, Vertex<int>*> &vertexMap, std::unordered_map<std::string, Edge<int>*> &edgeMap) {
+    std::ifstream file(filename);
+    std::string line;
+
+    Graph<int> graph;
+    std::unordered_map<int, Coordinates> coordinates = readCoordinates();
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file\n";
+        return graph;
+    }
+
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        std::replace(line.begin(), line.end(), ',', ' ');
+        std::istringstream iss(line);
+        int source, dest;
+        double dist;
+
+        if (!(iss >> source >> dest >> dist)) {
+            std::cerr << "Error parsing line: " << line << std::endl;
+            continue;
+        }
+        Vertex<int>* sourceVertex;
+        Vertex<int>* destVertex;
+
+        if (vertexMap.find(source) == vertexMap.end()) {
+            sourceVertex = graph.addVertexNew(source);
+            vertexMap[source] = sourceVertex;
+
+        }else{
+            sourceVertex = vertexMap[source];
+
+        }
+
+        if (vertexMap.find(dest) == vertexMap.end()) {
+            destVertex = graph.addVertexNew(dest);
+            vertexMap[dest] = destVertex;
+
+        }else{
+            destVertex = vertexMap[dest];
+        }
+
+        Edge<int>* edge = graph.addEdgeNew(sourceVertex, destVertex,dist);
+
+        std::string nodes;
+        nodes += std::to_string(sourceVertex->getInfo());
+        nodes += "_";
+        nodes += std::to_string(destVertex->getInfo());
+
+        edgeMap[nodes] = edge;
+
+        std::string nodes_otherWay;
+        nodes_otherWay += std::to_string(destVertex->getInfo());
+        nodes_otherWay += "_";
+        nodes_otherWay += std::to_string(sourceVertex->getInfo());
+
+        edgeMap[nodes_otherWay] = edge;
+    }
+
+    auto vertices = graph.getVertexSet();
+    for (auto& v : vertices) {
+        int vInfo = v->getInfo();
+        for (auto& w : vertices) {
+            int wInfo = w->getInfo();
+            if (vInfo != wInfo) {
+                std::string edgeKey = std::to_string(vInfo) + "_" + std::to_string(wInfo);
+                std::string reverseEdgeKey = std::to_string(wInfo) + "_" + std::to_string(vInfo);
+
+                if (edgeMap.find(edgeKey) == edgeMap.end() && edgeMap.find(reverseEdgeKey) == edgeMap.end()) {
+                    double dist = Haversine(
+                            coordinates[vInfo].latitude, coordinates[vInfo].longitude,
+                            coordinates[wInfo].latitude, coordinates[wInfo].longitude
+                    );
+
+                    Edge<int>* edge = graph.addEdgeNew(vertexMap[vInfo], vertexMap[wInfo], dist);
+                    edgeMap[edgeKey] = edge;
+                    edgeMap[reverseEdgeKey] = edge;
+
+                    graph.addEdgeNew(vertexMap[wInfo], vertexMap[vInfo], dist);
+                }
+            }
+        }
+    }
+
+    file.close();
     return graph;
 }
 

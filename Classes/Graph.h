@@ -205,6 +205,68 @@ public:
         return tour;
     }
 
+    std::vector<Vertex<T>*> nearestNeighbourMedium(Graph<T>& graph, std::unordered_map<int, Vertex<int>*> vertexMap, std::unordered_map<std::string, Edge<int>*> edgeMap) {
+        std::vector<Vertex<T>*> tour;
+
+        // Check if the starting vertex exists in the map
+        auto startIt = vertexMap.find(0);
+        if (startIt == vertexMap.end()) {
+            return tour;
+        }
+
+        Vertex<int>* startVertex = startIt->second;
+
+        // Reserve space for the tour
+        tour.reserve(vertexMap.size() + 1);
+
+        // Initialize the tour with the starting vertex
+        tour.push_back(startVertex);
+        startVertex->setVisited(true);
+
+        while (tour.size() < vertexMap.size()) {
+            double minDistance = INF;
+            Vertex<T>* nearestNeighbor = nullptr;
+
+            // Get the last vertex in the current tour
+            Vertex<T>* currentVertex = tour.back();
+            int currentVertexInfo = currentVertex->getInfo();
+
+            for (auto& [vertexInfo, vertex] : vertexMap) {
+                if (!vertex->isVisited()) {
+                    // Create the key for the edge lookup
+                    std::string edgeKey = std::to_string(currentVertexInfo) + "_" + std::to_string(vertexInfo);
+                    auto edgeIt = edgeMap.find(edgeKey);
+
+                    if (edgeIt != edgeMap.end()) {
+                        double distance = edgeIt->second->getWeight();
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearestNeighbor = vertex;
+                        }
+                    }
+                }
+            }
+
+            // If no nearest neighbor is found, break the loop
+            if (nearestNeighbor == nullptr) {
+                break;
+            }
+
+            nearestNeighbor->setVisited(true);
+            tour.push_back(nearestNeighbor);
+        }
+
+        // Return to the starting vertex to complete the tour
+        tour.push_back(startVertex);
+
+        // Reset the visited status of all vertices
+        for (auto& [vertexInfo, vertex] : vertexMap) {
+            vertex->setVisited(false);
+        }
+
+        return tour;
+    }
+
     std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph,  Vertex<int>* startVertex, std::unordered_map<int, Vertex<int>*> vertexMap, std::unordered_map<std::string, Edge<int>*> edgeMap) {
         std::vector<Vertex<T>*> tour;
 

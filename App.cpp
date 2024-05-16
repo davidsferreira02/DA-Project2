@@ -36,14 +36,14 @@ void getValue_NNmenuSmallGraphShipping();
 void getValue_NNmenuSmallGraphTourism();
 void getValue_NNmenuMediumGraph(const std::string &filename);
 
-void display_SANmenu();
-void display_SANmenuSmallGraph();
-void display_SANmenuMediumGraph();
-void getValue_SANmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
-void getValue_SANmenuSmallGraphStadium();
-void getValue_SANmenuSmallGraphShipping();
-void getValue_SANmenuSmallGraphTourism();
-void getValue_SANmenuMediumGraph(const std::string &filename);
+void display_Triangular2OPTmenu();
+void display_Triangular2OPTmenuSmallGraph();
+void display_Triangular2OPTmenuMediumGraph();
+void getValue_Triangular2OPTmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
+void getValue_Triangular2OPTmenuSmallGraphStadium();
+void getValue_Triangular2OPTmenuSmallGraphShipping();
+void getValue_Triangular2OPTmenuSmallGraphTourism();
+void getValue_Triangular2OPTmenuMediumGraph(const std::string &filename);
 
 void display_LINmenu();
 void display_LINmenuSmallGraph();
@@ -363,7 +363,9 @@ void display4_1menuMediumGraph() {
 void display4_1menuMedium(const std::string &filename){
     Reader reader;
     Graph<int> graph;
-    graph = reader.readAndParseExtra_Fully_Connected_Graphs(filename);
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
     std::vector<int> bestPath;
     double bestCost = std::numeric_limits<double>::infinity();
     std::vector<int> path(1, 0);
@@ -557,7 +559,9 @@ void display4_2menuMediumGraph() {
 
 void display4_2menuMedium(const std::string &filename){
     Reader reader;
-    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
 
 
     Vertex<int>* startVertexPtr = graph.findVertex(0);
@@ -766,7 +770,7 @@ void display_OHmenu(){
                 break;
             }
             case '3':
-                display_SANmenu();
+                display_Triangular2OPTmenu();
                 break;
             case '4':
                 display_LINmenu();
@@ -979,9 +983,11 @@ void display_NNmenuMediumGraph() {
 
 void getValue_NNmenuMediumGraph(const std::string &filename){
     Reader reader;
-    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.nearestNeighbour(graph);
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbourMedium(graph,vertexMap,edgeMap);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
@@ -1193,7 +1199,9 @@ void display_LINmenuMediumGraph() {
 
 void getValue_LINmenuMediumGraph(const std::string &filename){
     Reader reader;
-    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
     auto start = std::chrono::high_resolution_clock::now();
     std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
     auto end = std::chrono::high_resolution_clock::now();
@@ -1214,7 +1222,7 @@ void getValue_LINmenuMediumGraph(const std::string &filename){
     std::cout << "Time: " << duration.count() << "\n";
 }
 
-void display_SANmenu() {
+void display_Triangular2OPTmenu() {
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -1235,10 +1243,10 @@ void display_SANmenu() {
 
         switch (choice[0]) {
             case '1':
-                display_SANmenuSmallGraph();
+                display_Triangular2OPTmenuSmallGraph();
                 break;
             case '2':
-                display_SANmenuMediumGraph();
+                display_Triangular2OPTmenuMediumGraph();
                 break;
             case 'e':
                 cout << "Exiting menu system...\n";
@@ -1249,7 +1257,7 @@ void display_SANmenu() {
         }
     }
 }
-void display_SANmenuSmallGraph(){
+void display_Triangular2OPTmenuSmallGraph(){
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -1271,13 +1279,13 @@ void display_SANmenuSmallGraph(){
 
         switch (choice[0]) {
             case '1':
-                getValue_SANmenuSmallGraphStadium();
+                getValue_Triangular2OPTmenuSmallGraphStadium();
                 break;
             case '2':
-                getValue_SANmenuSmallGraphShipping();
+                getValue_Triangular2OPTmenuSmallGraphShipping();
                 break;
             case '3':
-                getValue_SANmenuSmallGraphTourism();
+                getValue_Triangular2OPTmenuSmallGraphTourism();
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -1288,7 +1296,7 @@ void display_SANmenuSmallGraph(){
     }
 }
 
-void getValue_SANmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
+void getValue_Triangular2OPTmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
     Reader reader;
     Graph<int> graph;
     graph = readAndParseFunc(reader);
@@ -1326,22 +1334,22 @@ void getValue_SANmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAn
 
 
 
-void getValue_SANmenuSmallGraphStadium(){
+void getValue_Triangular2OPTmenuSmallGraphStadium(){
     auto readAndParseStadium = [](Reader& reader) { return reader.readAndParseStadium(); };
-    getValue_SANmenuSmallGraph(readAndParseStadium);
+    getValue_Triangular2OPTmenuSmallGraph(readAndParseStadium);
 }
 
-void getValue_SANmenuSmallGraphShipping() {
+void getValue_Triangular2OPTmenuSmallGraphShipping() {
     auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
-    getValue_SANmenuSmallGraph(readAndParseShipping);
+    getValue_Triangular2OPTmenuSmallGraph(readAndParseShipping);
 }
 
-void getValue_SANmenuSmallGraphTourism() {
+void getValue_Triangular2OPTmenuSmallGraphTourism() {
     auto readAndParseTourism = [](Reader& reader) { return reader.readAndParseTourism(); };
-    getValue_SANmenuSmallGraph(readAndParseTourism);
+    getValue_Triangular2OPTmenuSmallGraph(readAndParseTourism);
 }
 
-void display_SANmenuMediumGraph() {
+void display_Triangular2OPTmenuMediumGraph() {
     string choice;
     bool exitMenu = false;
     while (!exitMenu) {
@@ -1374,40 +1382,40 @@ void display_SANmenuMediumGraph() {
             int choiceNum = stoi(choice);
             switch (choiceNum) {
                 case 1:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_25.csv");
                     break;
                 case 2:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_50.csv");
                     break;
                 case 3:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_75.csv");
                     break;
                 case 4:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_100.csv");
                     break;
                 case 5:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_200.csv");
                     break;
                 case 6:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_300.csv");
                     break;
                 case 7:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_400.csv");
                     break;
                 case 8:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_500.csv");
                     break;
                 case 9:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_600.csv");
                     break;
                 case 10:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_700.csv");
                     break;
                 case 11:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_800.csv");
                     break;
                 case 12:
-                    getValue_SANmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
+                    getValue_Triangular2OPTmenuMediumGraph("../Data/Extra_Fully_Connected_Graphs/edges_900.csv");
                     break;
                 default:
                     cout << "Invalid input. Please choose a valid option.\n";
@@ -1479,9 +1487,11 @@ std::vector<int> simulatedAnnealing(Graph<int>& graph, double initialTemperature
     return bestTour;
 }
 
-void getValue_SANmenuMediumGraph(const std::string& filename) {
+void getValue_Triangular2OPTmenuMediumGraph(const std::string& filename) {
     Reader reader;
-    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -1634,7 +1644,9 @@ void getValue_HeldKarp_menuSmallGraphTourism() {
 void getValue_HeldKarp_menuMediumGraph(const std::string &filename){
     Reader reader;
     Graph<int> graph;
-    graph = reader.readAndParseExtra_Fully_Connected_Graphs(filename);
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
     std::vector<int> bestPath;
     double bestCost = std::numeric_limits<double>::infinity();
     std::vector<int> path(1, 0);
@@ -1893,7 +1905,9 @@ void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOpt
     auto start = std::chrono::high_resolution_clock::now(); // Start timing
 
     Reader reader;
-    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename);
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
     auto coordinates = reader.readCoordinates();
 
     // Step 1: Clustering the graph
