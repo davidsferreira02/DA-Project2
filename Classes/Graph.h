@@ -262,14 +262,14 @@ public:
     }
 
     /**
-     * @brief Constructs a tour starting from a specified vertex using the nearest neighbor heuristic.
-     * @param graph The graph on which to perform the nearest neighbor search.
-     * @param startVertex The starting vertex of the tour.
-     * @param vertexMap A map containing vertex IDs and pointers to vertex objects.
-     * @param edgeMap A map containing edge keys and pointers to edge objects.
-     * @return A vector of vertices representing the tour.
-     * @timecomplexity O(V^2), where V is the number of vertices.
-     */
+ * @brief Constructs a tour starting from a specified vertex using the nearest neighbor heuristic.
+ * @param graph The graph on which to perform the nearest neighbor search.
+ * @param startVertex The starting vertex of the tour.
+ * @param vertexMap A map containing vertex IDs and pointers to vertex objects.
+ * @param edgeMap A map containing edge keys and pointers to edge objects.
+ * @return A vector of vertices representing the tour.
+ * @timecomplexity O(V^2), where V is the number of vertices.
+ */
     std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph, Vertex<int>* startVertex,
                                                  std::unordered_map<int, Vertex<int>*> vertexMap,
                                                  std::unordered_map<std::string, Edge<int>*> edgeMap) {
@@ -318,18 +318,18 @@ public:
         for (auto vertex : vertices) {
             if (!vertex->isVisited()) {
                 allVisited = false;
-                break;
+                std::cout << "Unvisited node: " << vertex->getInfo() << std::endl;
             }
         }
 
         std::string returnEdgeKey = std::to_string(tour.back()->getInfo()) + "_" + std::to_string(startVertex->getInfo());
         bool canReturnToStart = edgeMap.find(returnEdgeKey) != edgeMap.end();
 
-        if (!allVisited || !canReturnToStart) {
-            std::cout << "No feasible path exists that visits all nodes and returns to the origin." << std::endl;
+        if (!canReturnToStart) {
             for (auto vertex : vertices) {
                 vertex->setVisited(false);
             }
+            std::cout << "Cannot return to start vertex." << std::endl;
             return std::vector<Vertex<T>*>{};
         }
 
@@ -339,8 +339,11 @@ public:
             vertex->setVisited(false);
         }
 
+        std::cout << "Number of unvisited nodes: " << (allVisited ? 0 : vertices.size() - tour.size() - 1) << std::endl;
+
         return tour;
     }
+
 
     /**
      * @brief Constructs a tour for a cluster of vertices using the nearest neighbor heuristic.

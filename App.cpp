@@ -2354,7 +2354,7 @@ void getValue_RWsmallGraph(int nodeID){
 
     std::chrono::duration<double> duration1 = end1 - start1;
 
-    cout << "Parsing durou: " << duration1.count() << "\n";
+    cout << "Parsing time: " << duration1.count() << "\n";
 
     Vertex<int>* startingVertex = vertexMap[nodeID];
     if(!startingVertex){
@@ -2379,9 +2379,9 @@ void getValue_RWsmallGraph(int nodeID){
     }
 
     std::cout << std::endl;
+    std::cout << "No feasible path exists that visits all nodes and returns to the origin." << std::endl;
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
-    std::cout << "Tour Size: " << tour.size() << "\n";
 
 }
 
@@ -2406,7 +2406,7 @@ void getValue_RWmediumGraph(int nodeID) {
 
     std::chrono::duration<double> duration1 = end1 - start1;
 
-    cout << "Parsing durou: " << duration1.count() << "\n";
+    cout << "Parsing time: " << duration1.count() << "\n";
 
     Vertex<int>* startingVertex = vertexMap[nodeID];
     if(!startingVertex){
@@ -2454,12 +2454,12 @@ void getValue_RWlargeGraph(int nodeID) {
     unordered_map<std::string, Edge<int>*> edgeMap;
 
     auto start1 = std::chrono::high_resolution_clock::now();
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs(3, vertexMap, edgeMap);
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs4_2(3, vertexMap, edgeMap);
     auto end1 = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double> duration1 = end1 - start1;
 
-    cout << "Parsing durou: " << duration1.count() << "\n";
+    cout << "Parsing time: " << duration1.count() << "\n";
     Vertex<int>* startingVertex = vertexMap[nodeID];
     if(!startingVertex){
         return;

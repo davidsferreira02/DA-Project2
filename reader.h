@@ -52,6 +52,17 @@ public:
     static Graph<int> readAndParseRealWorld_Graphs(int graphNumber, std::unordered_map<int, Vertex<int>*> &vertexMap, std::unordered_map<std::string, Edge<int>*> &edgeMap);
 
     /**
+     * @brief Reads and parses a real-world graph from a file based on the specified graph number.
+     * In this specific parsing, we are using 2 unordered maps, one for vertex's and the other for edges, this prevent the exhaustive search that was being performed in the find vertex and addEgde, methods.
+     * We also discard those functions to meet the performance requirements, creating new ones, that are more efficient, receiving the objects instead of searching them.
+     * @param graphNumber The number of the graph to read and parse.
+     * @param vertexMap A map containing vertex IDs and pointers to vertex objects.
+     * @param edgeMap A map containing edge keys and pointers to edge objects.
+     * @return A real-world graph.
+     */
+    Graph<int> readAndParseRealWorld_Graphs4_2(int graphNumber, std::unordered_map<int, Vertex<int>*> &vertexMap, std::unordered_map<std::string, Edge<int>*> &edgeMap);
+
+    /**
      * @brief Structure to hold latitude and longitude coordinates.
      */
     struct Coordinates {
@@ -90,6 +101,7 @@ public:
      * @return A vector of clusters, where each cluster is represented by a vector of node IDs.
      */
     static std::vector<std::vector<int>> kMeansClustering(const Graph<int>& graph, int k, const std::unordered_map<int, Coordinates>& coordinates);
+
 };
 
 #endif /* READER_H */
