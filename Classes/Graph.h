@@ -164,6 +164,48 @@ public:
 
         return mst;
     }
+
+    std::vector<Edge<T>*> primMSTMaps(int startIdx, std::unordered_map<int, Vertex<T>*> &vertexMap, std::unordered_map<std::string, Edge<T>*> &edgeMap) {
+        std::vector<Edge<T>*> mst;
+        if (vertexMap.empty() || vertexMap.find(startIdx) == vertexMap.end()) return mst;
+
+        auto cmp = [](const std::pair<double, Edge<T>*>& left, const std::pair<double, Edge<T>*>& right) { return left.first > right.first; };
+        std::priority_queue<std::pair<double, Edge<T>*>, std::vector<std::pair<double, Edge<T>*>>, decltype(cmp)> pq(cmp);
+
+        std::unordered_map<int, bool> inMST;
+        for (const auto& [vertexInfo, vertex] : vertexMap) {
+            inMST[vertexInfo] = false;
+        }
+
+        // Start from the specified vertex
+        inMST[startIdx] = true;
+        Vertex<T>* startVertex = vertexMap[startIdx];
+        for (auto edge : startVertex->getAdj()) {
+            pq.push({edge->getWeight(), edge});
+        }
+
+        while (!pq.empty()) {
+            auto [weight, edge] = pq.top();
+            pq.pop();
+            Vertex<T>* dest = edge->getDest();
+            int destIdx = dest->getInfo();
+
+            if (!inMST[destIdx]) {
+                mst.push_back(edge);
+                inMST[destIdx] = true;
+
+                for (auto nextEdge : dest->getAdj()) {
+                    int nextDestIdx = nextEdge->getDest()->getInfo();
+                    if (!inMST[nextDestIdx]) {
+                        pq.push({nextEdge->getWeight(), nextEdge});
+                    }
+                }
+            }
+        }
+
+        return mst;
+    }
+
     std::vector<Vertex<T>*> nearestNeighbour(Graph<T>& graph) {
         std::vector<Vertex<T>*> tour;
 
@@ -379,18 +421,17 @@ public:
         return newTour;
     }
     // Lin-Kernighan heuristic
-    std::vector<Vertex<T>*> linKernighan(Graph<T>& graph) {
-        std::vector<Vertex<T>*> tour = nearestNeighbour(graph); // Initialize with a tour (e.g., nearest neighbor)
+    std::vector<Vertex<T>*> linKernighan(Graph<T>& graph, std::unordered_map<int, Vertex<int>*> vertexMap, std::unordered_map<std::string, Edge<int>*> edgeMap) {
+        std::vector<Vertex<T>*> tour = nearestNeighbourMedium(graph, vertexMap, edgeMap);
         std::vector<Vertex<T>*> bestTour = tour;
         double bestCost = tourCost(tour, graph);
 
-        const int maxIterations = 1000; // Maximum number of iterations
+        const int maxIterations = 2;
         int iter = 0;
 
         while (iter < maxIterations) {
             bool improvement = false;
 
-            // Perform edge exchanges to find improvements
             for (size_t i = 0; i < tour.size() - 2; ++i) {
                 for (size_t j = i + 2; j < tour.size() - 1; ++j) {
                     std::vector<Vertex<T>*> newTour = twoOptExchange(tour, i, j);
@@ -406,7 +447,7 @@ public:
                 if (improvement) break;
             }
 
-            if (!improvement) break; // No improvement found, terminate
+            if (!improvement) break;
 
             ++iter;
         }

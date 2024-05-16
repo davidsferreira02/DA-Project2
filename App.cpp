@@ -21,10 +21,14 @@ void display4_1menuMediumGraph();
 void display4_1menuMedium(const std::string &filename);
 void display4_2menuSmallGraph();
 void display4_2menuMediumGraph();
+void display4_2menuLargeGraph();
 void display4_2menuSmallGraphStadium();
 void display4_2menuSmallGraphShipping();
 void display4_2menuSmallGraphTourism();
 void display4_2menuMedium(const std::string &filename);
+void display4_2menuLarge1(int nodeID);
+void display4_2menuLarge2(int nodeID);
+void display4_2menuLarge3(int nodeID);
 
 void display_OHmenu();
 void display_NNmenu();
@@ -179,7 +183,8 @@ void display4_2menu() {
         cout << "-----------------------------\n";
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
-        cout << "2. Medium Graph \n";
+        cout << "2. Medium Graph\n";
+        cout << "3  Large Graph\n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -196,6 +201,8 @@ void display4_2menu() {
             case '2':
                 display4_2menuMediumGraph();
                 break;
+            case '3':
+                display4_2menuLargeGraph();
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -607,6 +614,231 @@ void display4_2menuMedium(const std::string &filename){
 
 }
 
+void display4_2menuLargeGraph() {
+    string choice_str;
+    int choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Triangular Approximation for Large Graphs       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Graph1('Small')\n";
+        cout << "2. Graph2(Medium) \n";
+        cout << "3. Graph3(Large)  \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice_str;
+
+        try {
+            choice = stoi(choice_str);
+        } catch (const invalid_argument&) {
+            choice = 0;
+        }
+
+        int nodeID = 0;
+        string choiceNode;
+
+        switch (choice) {
+            case 1:
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        display4_2menuLarge1(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
+                break;
+            case 2:
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        display4_2menuLarge2(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
+                break;
+            case 3:
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        display4_2menuLarge3(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
+                break;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+}
+
+void display4_2menuLarge1(int nodeID) {
+    Reader reader;
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(1,vertexMap,edgeMap);
+    Vertex<int>* startVertexPtr = nullptr;
+    auto vertexIter = vertexMap.find(nodeID);
+    if (vertexIter != vertexMap.end()) {
+        startVertexPtr = vertexIter->second;
+    } else {
+        std::cerr << "Node ID " << nodeID << " not found in the graph.\n";
+        return;
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    vector<Edge<int>*> mst = graph.primMSTMaps(startVertexPtr->getInfo(),vertexMap,edgeMap);
+
+    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
+
+    vector<int> tspTour;
+    set<int> visited;
+    for (int vertex : preorderList) {
+        if (visited.insert(vertex).second) {
+            tspTour.push_back(vertex);
+        }
+    }
+    tspTour.push_back(tspTour.front());
+
+    double totalDistance = 0;
+    int previous = tspTour.front();
+    for (size_t i = 1; i < tspTour.size(); i++) {
+        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
+        if (edge)
+            totalDistance += edge->getWeight();
+        previous = tspTour[i];
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    // Output the best tour and its cost
+    totalDistance = graph.computeTourLength(tspTour, graph);
+    std::cout << "TSP Tour: ";
+    for (size_t i = 0; i < tspTour.size(); ++i) {
+        std::cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
+    }
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+}
+
+void display4_2menuLarge2(int nodeID) {
+    Reader reader;
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(2,vertexMap,edgeMap);
+    Vertex<int>* startVertexPtr = graph.findVertex(0);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    vector<Edge<int>*> mst = graph.primMSTMaps(startVertexPtr->getInfo(),vertexMap,edgeMap);
+
+    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
+
+    vector<int> tspTour;
+    set<int> visited;
+    for (int vertex : preorderList) {
+        if (visited.insert(vertex).second) {
+            tspTour.push_back(vertex);
+        }
+    }
+    tspTour.push_back(tspTour.front());
+
+    double totalDistance = 0;
+    int previous = tspTour.front();
+    for (size_t i = 1; i < tspTour.size(); i++) {
+        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
+        if (edge)
+            totalDistance += edge->getWeight();
+        previous = tspTour[i];
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    // Output the best tour and its cost
+    totalDistance = graph.computeTourLength(tspTour, graph);
+    std::cout << "TSP Tour: ";
+    for (size_t i = 0; i < tspTour.size(); ++i) {
+        std::cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
+    }
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+}
+
+void display4_2menuLarge3(int nodeID) {
+    Reader reader;
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(3,vertexMap,edgeMap);
+    Vertex<int>* startVertexPtr = graph.findVertex(0);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    vector<Edge<int>*> mst = graph.primMSTMaps(startVertexPtr->getInfo(),vertexMap,edgeMap);
+
+    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
+
+    vector<int> tspTour;
+    set<int> visited;
+    for (int vertex : preorderList) {
+        if (visited.insert(vertex).second) {
+            tspTour.push_back(vertex);
+        }
+    }
+    tspTour.push_back(tspTour.front());
+
+    double totalDistance = 0;
+    int previous = tspTour.front();
+    for (size_t i = 1; i < tspTour.size(); i++) {
+        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
+        if (edge)
+            totalDistance += edge->getWeight();
+        previous = tspTour[i];
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    // Output the best tour and its cost
+    totalDistance = graph.computeTourLength(tspTour, graph);
+    std::cout << "TSP Tour: ";
+    for (size_t i = 0; i < tspTour.size(); ++i) {
+        std::cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
+    }
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+}
+
+
 std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst) {
     std::vector<int> order;
     std::unordered_set<Vertex<int>*> visited;
@@ -730,7 +962,7 @@ void display_OHmenu(){
         cout << "Enter the number of the approach you want:\n";
         cout << "1. NearestNeighbour\n";
         cout << "2. K-means Clustering NearestNeighbour\n";
-        cout << "3. Simulated Annealing\n";
+        cout << "3. Triangular 2OPT Exchange\n";
         cout << "4. LinKernighan\n";
         cout << "5. HeldKarp (Optimal solution but feasible only on toy graphs)";
         cout << "e. Back to the main Menu\n";
@@ -1084,8 +1316,10 @@ void getValue_LINmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAn
     Reader reader;
     Graph<int> graph;
     graph = readAndParseFunc(reader);
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
+    std::vector<Vertex<int>*> tour = graph.linKernighan(graph,vertexMap,edgeMap);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
@@ -1203,7 +1437,7 @@ void getValue_LINmenuMediumGraph(const std::string &filename){
     unordered_map<std::string, Edge<int>*> edgeMap;
     Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.linKernighan(graph);
+    std::vector<Vertex<int>*> tour = graph.linKernighan(graph,vertexMap,edgeMap);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
@@ -1227,7 +1461,7 @@ void display_Triangular2OPTmenu() {
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Simulated Annealing Algorithm Heuristic       \n";
+        cout << "     Welcome to Triangular 2OPT Exchange Algorithm Heuristic       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
@@ -1262,7 +1496,7 @@ void display_Triangular2OPTmenuSmallGraph(){
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Simulated Annealing Heuristic SmallGraph Menu       \n";
+        cout << "     Welcome to Triangular 2OPT Exchange Heuristic SmallGraph Menu       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the graph you want:\n";
         cout << "1. Stadium Graph\n";
@@ -1354,7 +1588,7 @@ void display_Triangular2OPTmenuMediumGraph() {
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
-        cout << "     Welcome to Simulated Annealing Medium Graph Menu       \n";
+        cout << "     Welcome to Triangular 2OPT Exchange Medium Graph Menu       \n";
         cout << "-----------------------------\n";
         cout << "How many edges does the graph have:\n";
         cout << "1. 25\n";
@@ -1492,32 +1726,40 @@ void getValue_Triangular2OPTmenuMediumGraph(const std::string& filename) {
     unordered_map<int, Vertex<int>*> vertexMap;
     unordered_map<std::string, Edge<int>*> edgeMap;
     Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
+    Vertex<int>* startVertexPtr = graph.findVertex(0);
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    // Generate initial tour using Nearest Neighbor heuristic
-    std::vector<Vertex<int>*> initialTour = graph.nearestNeighbour(graph);
-    std::vector<int> currentTour;
-    for (const auto& vertex : initialTour) {
-        currentTour.push_back(vertex->getInfo());
+    vector<Edge<int>*> mst = graph.primMSTMaps(startVertexPtr->getInfo(),vertexMap,edgeMap);
+
+    vector<int> preorderList = preOrderTraversal(startVertexPtr, mst);
+
+    vector<int> tspTour;
+    set<int> visited;
+    for (int vertex : preorderList) {
+        if (visited.insert(vertex).second) {
+            tspTour.push_back(vertex);
+        }
     }
+    tspTour.push_back(tspTour.front());
 
-    // Set parameters for simulated annealing
-    double initialTemperature = 1000.0;
-    double coolingRate = 0.99;
-    int iterations = 10000;
-
-    // Perform Simulated Annealing
-    std::vector<int> bestTour = simulatedAnnealing(graph, initialTemperature, coolingRate, iterations);
+    double totalDistance = 0;
+    int previous = tspTour.front();
+    for (size_t i = 1; i < tspTour.size(); i++) {
+        Edge<int> *edge = graph.findEdge(previous, tspTour[i]);
+        if (edge)
+            totalDistance += edge->getWeight();
+        previous = tspTour[i];
+    }
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
     // Output the best tour and its cost
-    double totalDistance = graph.computeTourLength(bestTour, graph);
+    totalDistance = graph.computeTourLength(tspTour, graph);
     std::cout << "TSP Tour: ";
-    for (size_t i = 0; i < bestTour.size(); ++i) {
-        std::cout << bestTour[i] << (i < bestTour.size() - 1 ? " -> " : "");
+    for (size_t i = 0; i < tspTour.size(); ++i) {
+        std::cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
     }
     std::cout << std::endl;
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
