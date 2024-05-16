@@ -9,6 +9,7 @@
 
 /**
  * @brief A class for reading and parsing various types of graph data.
+ *
  */
 class Reader {
 public:
@@ -41,6 +42,8 @@ public:
 
     /**
      * @brief Reads and parses a real-world graph from a file based on the specified graph number.
+     * In this specific parsing, we are using 2 unordered maps, one for vertex's and the other for edges, this prevent the exhaustive search that was being performed in the find vertex and addEgde, methods.
+     * We also discard those functions to meet the performance requirements, creating new ones, that are more efficient, receiving the objects instead of searching them.
      * @param graphNumber The number of the graph to read and parse.
      * @param vertexMap A map containing vertex IDs and pointers to vertex objects.
      * @param edgeMap A map containing edge keys and pointers to edge objects.
