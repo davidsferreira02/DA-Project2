@@ -407,7 +407,6 @@ Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_
             destVertex = vertexMap[dest];
         }
 
-        graph.addEdgeNew(sourceVertex, destVertex,dist);
         Edge<int>* edge = graph.addEdgeNew(sourceVertex, destVertex,dist);
 
         std::string nodes;
