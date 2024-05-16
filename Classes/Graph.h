@@ -309,59 +309,75 @@ public:
         return tour;
     }
 
-    std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph,  Vertex<int>* startVertex, std::unordered_map<int, Vertex<int>*> vertexMap, std::unordered_map<std::string, Edge<int>*> edgeMap) {
+    std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph, Vertex<int>* startVertex,
+                                                 std::unordered_map<int, Vertex<int>*> vertexMap,
+                                                 std::unordered_map<std::string, Edge<int>*> edgeMap) {
         std::vector<Vertex<T>*> tour;
-
         std::vector<Vertex<T>*> vertices = graph.getVertexSet();
 
         if (startVertex == nullptr) {
+            std::cout << "Start vertex is null." << std::endl;
             return tour;
         }
 
         tour.reserve(vertices.size() + 1);
-
         tour.push_back(startVertex);
-
         startVertex->setVisited(true);
 
-        int errors = 0;
-
-        while (tour.size() < vertices.size() || errors < 3) {
-            double minDistance = INF;
+        while (tour.size() < vertices.size()) {
+            double minDistance = std::numeric_limits<double>::infinity();
             Vertex<T>* nearestNeighbor = nullptr;
+
             for (auto vertex : vertices) {
                 if (!vertex->isVisited()) {
-                    auto srcNode = vertexMap[tour.back()->getInfo()];
-                    auto destNode = vertexMap[vertex->getInfo()];
+                    std::string nodes = std::to_string(tour.back()->getInfo()) + "_" + std::to_string(vertex->getInfo());
+                    auto edgeIt = edgeMap.find(nodes);
 
-                    std::string nodes;
-                    nodes += std::to_string(tour.back()->getInfo());
-                    nodes += "_";
-                    nodes += std::to_string(vertex->getInfo());
-
-                    auto edge = edgeMap[nodes];
-                    if(!edge)
-                    {
-                        continue;
+                    if (edgeIt == edgeMap.end()) {
+                        continue; // Edge does not exist
                     }
-                    double distance = edge->getWeight();
+
+                    double distance = edgeIt->second->getWeight();
                     if (distance < minDistance) {
                         minDistance = distance;
                         nearestNeighbor = vertex;
                     }
                 }
             }
-            if(nearestNeighbor != nullptr){
+
+            if (nearestNeighbor != nullptr) {
                 tour.push_back(nearestNeighbor);
                 nearestNeighbor->setVisited(true);
-
-            }else{
-                errors++;
+            } else {
+                break;  // No more reachable unvisited vertices
             }
         }
 
-        tour.push_back(startVertex);
+        // Check if all vertices were visited
+        bool allVisited = true;
+        for (auto vertex : vertices) {
+            if (!vertex->isVisited()) {
+                allVisited = false;
+                break;
+            }
+        }
 
+        // Check if there's an edge back to the start vertex
+        std::string returnEdgeKey = std::to_string(tour.back()->getInfo()) + "_" + std::to_string(startVertex->getInfo());
+        bool canReturnToStart = edgeMap.find(returnEdgeKey) != edgeMap.end();
+
+        if (!allVisited || !canReturnToStart) {
+            std::cout << "No feasible path exists that visits all nodes and returns to the origin." << std::endl;
+            // Reset the visited status of all vertices before returning
+            for (auto vertex : vertices) {
+                vertex->setVisited(false);
+            }
+            return std::vector<Vertex<T>*>{}; // Return an empty tour to indicate failure
+        }
+
+        tour.push_back(startVertex);  // Complete the tour by returning to the start
+
+        // Reset the visited status of all vertices
         for (auto vertex : vertices) {
             vertex->setVisited(false);
         }
