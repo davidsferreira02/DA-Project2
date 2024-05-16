@@ -2252,7 +2252,7 @@ void display_CLUSTERmenuMediumGraph(int clusterOption) {
  */
 void display_RWmenu() {
     string choice_str;
-    int choice;
+    char choice;
     bool exitMenu = false;
     while (!exitMenu) {
         cout << "\n-----------------------------\n";
@@ -2270,7 +2270,7 @@ void display_RWmenu() {
         try {
             choice = stoi(choice_str);
         } catch (const invalid_argument&) {
-            choice = 0;
+            choice = 'e';
         }
 
         int nodeID = 0;
@@ -2454,7 +2454,7 @@ void getValue_RWlargeGraph(int nodeID) {
     unordered_map<std::string, Edge<int>*> edgeMap;
 
     auto start1 = std::chrono::high_resolution_clock::now();
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs4_2(3, vertexMap, edgeMap);
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs(3, vertexMap, edgeMap);
     auto end1 = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double> duration1 = end1 - start1;
@@ -2486,6 +2486,7 @@ void getValue_RWlargeGraph(int nodeID) {
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
     std::cout << "Tour Size: " << tour.size() << "\n";
+    std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
 }
 
 void App::run() {
