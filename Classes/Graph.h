@@ -249,10 +249,11 @@ public:
             }
             if(nearestNeighbor != nullptr){
                 tour.push_back(nearestNeighbor);
+                nearestNeighbor->setVisited(true);
+
             }else{
                 errors++;
             }
-            nearestNeighbor->setVisited(true);
         }
 
         tour.push_back(startVertex);
