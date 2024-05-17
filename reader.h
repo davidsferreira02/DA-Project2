@@ -103,7 +103,7 @@ public:
     static std::vector<std::vector<int>> kMeansClustering(const Graph<int>& graph, int k, const std::unordered_map<int, Coordinates>& coordinates);
 
 
-    std::unordered_map<int, Reader::Coordinates> readCoordinatesRealWorldGraph(int type);
+    static std::unordered_map<int, Reader::Coordinates> readCoordinatesRealWorldGraph(int type);
 };
 
 #endif /* READER_H */

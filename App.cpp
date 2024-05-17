@@ -128,6 +128,86 @@ int mainMenu(){
     return 0;
 }
 
+
+
+void display4_1menuLarge(int type) {
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+    Reader reader;
+    Graph<int> graph= reader.readAndParseRealWorld_Graphs(type,vertexMap,edgeMap);
+    std::vector<int> bestPath;
+    double bestCost = std::numeric_limits<double>::infinity();
+    std::vector<int> path(1, 0);
+    graph.findVertex(0)->setVisited(true);
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> execTime = endTime - startTime;
+
+    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path: ";
+    for (int node : bestPath) {
+        std::cout << node << (node == 0 ? "\n" : " -> ");
+    }
+
+
+}
+
+void display4_1menuLargeGraph(){
+    string choice_str;
+    int choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to Backtracking for Large Graphs       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Graph1('Small')\n";
+        cout << "2. Graph2(Medium) \n";
+        cout << "3. Graph3(Large)  \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice_str;
+
+        try {
+            choice = stoi(choice_str);
+        } catch (const invalid_argument&) {
+            choice = 0;
+        }
+
+        int nodeID = 0;
+        string choiceNode;
+
+        switch (choice) {
+            case 1:
+
+
+                display4_1menuLarge(1);
+                break;
+
+
+            case 2:
+
+                display4_1menuLarge(2);
+
+                break;
+            case 3:
+                display4_1menuLarge(3);
+                break;
+
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+}
+
 /**
  * Displays the menu for the backtracking algorithm and allows the user to choose the size of the graph.
  *
@@ -143,6 +223,7 @@ void display4_1menu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
+        cout << "3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -158,6 +239,9 @@ void display4_1menu() {
                 break;
             case '2':
                 display4_1menuMediumGraph();
+
+            case '3':
+                display4_1menuLargeGraph();
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -397,6 +481,13 @@ void display4_1menuMediumGraph() {
         }
     }
 }
+
+
+
+
+
+
+
 
 /**
  * Displays the menu for the backtracking algorithm with a specific medium graph size option and applies the TSP algorithm.
@@ -775,6 +866,9 @@ void display4_2menuLargeGraph() {
         }
     }
 }
+
+
+
 
 /**
  * Displays the menu for the triangular approximation heuristic with the first large graph option and applies the TSP algorithm.
