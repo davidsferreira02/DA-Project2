@@ -30,6 +30,43 @@ std::unordered_map<int, Reader::Coordinates> Reader::readCoordinates() {
     return nodeCoordinates;
 }
 
+
+
+std::unordered_map<int, Reader::Coordinates> Reader::readCoordinatesRealWorldGraph(int type) {
+
+    std::ifstream file;
+
+    if(type==1){
+         file.open("../Data/Real-world Graphs/graph1/nodes.csv");
+    }
+    else if(type==2){
+        file.open("../Data/Real-world Graphs/graph2/nodes.csv");
+    }
+
+    else if(type==3){
+       file.open("../Data/Real-world Graphs/graph3/nodes.csv");
+    }
+
+    std::unordered_map<int, Coordinates> nodeCoordinates;
+    std::string line;
+    if (file.is_open()) {
+        std::getline(file, line);
+        while (std::getline(file, line)) {
+            std::istringstream iss(line);
+            std::string token;
+            std::getline(iss, token, ',');
+            int id = std::stoi(token);
+            std::getline(iss, token, ',');
+            double longitude = std::stod(token);
+            std::getline(iss, token, ',');
+            double latitude = std::stod(token);
+            nodeCoordinates[id] = {latitude, longitude};
+        }
+        file.close();
+    }
+    return nodeCoordinates;
+}
+
 double Reader::convert_to_radians(double coord) {
     return coord * 3.14 / 180.0;
 }
@@ -344,18 +381,21 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
 {
     Graph<int> graph;
     std::string line;
-    std::unordered_map<int, Coordinates> coordinates = readCoordinates();
+    std::unordered_map<int, Coordinates> coordinates ;
 
     std::string filePath;
     switch (graphNumber) {
         case 1:
             filePath = "../Data/Real-world Graphs/graph1/edges.csv";
+            coordinates=readCoordinatesRealWorldGraph(1);
             break;
         case 2:
             filePath = "../Data/Real-world Graphs/graph2/edges.csv";
+            coordinates=readCoordinatesRealWorldGraph(2);
             break;
         case 3:
             filePath = "../Data/Real-world Graphs/graph3/edges.csv";
+            coordinates=readCoordinatesRealWorldGraph(3);
             break;
         default:
             std::cerr << "Invalid graph number!" << std::endl;
@@ -416,6 +456,32 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
         nodes_otherWay += std::to_string(sourceVertex->getInfo());
 
         edgeMap[nodes_otherWay] = edge;
+
+        auto vertices = graph.getVertexSet();
+        for (auto& v : vertices) {
+            int vInfo = v->getInfo();
+            for (auto& w : vertices) {
+                int wInfo = w->getInfo();
+                if (vInfo != wInfo) {
+                    std::string edgeKey = std::to_string(vInfo) + "_" + std::to_string(wInfo);
+                    std::string reverseEdgeKey = std::to_string(wInfo) + "_" + std::to_string(vInfo);
+
+                    if (edgeMap.find(edgeKey) == edgeMap.end() && edgeMap.find(reverseEdgeKey) == edgeMap.end()) {
+                        double dist = Haversine(
+                                coordinates[vInfo].latitude, coordinates[vInfo].longitude,
+                                coordinates[wInfo].latitude, coordinates[wInfo].longitude
+                        );
+
+                        Edge<int>* edge = graph.addEdgeNew(vertexMap[vInfo], vertexMap[wInfo], dist);
+                        edgeMap[edgeKey] = edge;
+                        edgeMap[reverseEdgeKey] = edge;
+
+                        graph.addEdgeNew(vertexMap[wInfo], vertexMap[vInfo], dist);
+                    }
+                }
+            }
+        }
+
 
 
     }
