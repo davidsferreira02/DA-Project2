@@ -65,6 +65,11 @@ void getValue_CLUSTERmenuSmallGraphShipping(int clusterOption);
 void getValue_CLUSTERmenuSmallGraphTourism(int clusterOption);
 void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOption);
 
+void display_NNmenuLargeGraph();
+
+void getValue_NNsmallGraph(int nodeID);
+void getValue_NNmediumGraph(int nodeID);
+void getValue_NNlargeGraph(int nodeID);
 
 void display_RWmenu();
 
@@ -1177,6 +1182,7 @@ void display_NNmenu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
+        cout << "3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1193,6 +1199,9 @@ void display_NNmenu() {
             case '2':
                 display_NNmenuMediumGraph();
                 break;
+            case '3':
+                display_NNmenuLargeGraph();
+                break;
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -1201,6 +1210,261 @@ void display_NNmenu() {
                 cout << "Invalid input. Please choose a valid option.\n";
         }
     }
+}
+
+
+/**
+ * Displays the menu for selecting a real-world TSP instance to solve using various algorithms.
+ *
+ * This menu allows the user to choose between different graph instances and starting nodes.
+ *
+ * - Graph1('Small'): Small-sized graph instance.
+ * - Graph2(Medium): Medium-sized graph instance.
+ * - Graph3(Large): Large-sized graph instance.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes and algorithm selection.
+ */
+void display_NNmenuLargeGraph() {
+    string choice_str;
+    char choice;
+    bool exitMenu = false;
+    while (!exitMenu) {
+        cout << "\n-----------------------------\n";
+        cout << "     Welcome to NN for Large Graphs ( Fully connecting nodes with haversine )       \n";
+        cout << "-----------------------------\n";
+        cout << "Enter the number of the option of the size of the graph you want:\n";
+        cout << "1. Graph1('Small')\n";
+        cout << "2. Graph2(Medium) \n";
+        cout << "3. Graph3(Large)  \n";
+        cout << "e. Back to the main Menu\n";
+        cout << "-----------------------------\n";
+        cout << "Your choice: ";
+        cin >> choice_str;
+
+        try {
+            choice = stoi(choice_str);
+        } catch (const invalid_argument&) {
+            choice = 'e';
+        }
+
+        int nodeID = 0;
+        string choiceNode;
+
+        switch (choice) {
+            case 1:
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        getValue_NNsmallGraph(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
+                break;
+            case 2:
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        getValue_NNmediumGraph(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
+                break;
+            case 3:
+                while (true) {
+                    cout << "Input the starting node for the algorithm: ";
+                    cin >> choiceNode;
+                    try {
+                        nodeID = stoi(choiceNode);
+                        getValue_NNlargeGraph(nodeID);
+                        break;
+                    } catch (const invalid_argument&) {
+                        cout << "Invalid input. Please enter a valid integer.\n";
+                    } catch (const out_of_range&) {
+                        cout << "Input out of range. Please enter a valid integer within the range of int.\n";
+                    }
+                }
+                break;
+            case 'e':
+                cout << "Exiting menu system...\n";
+                exitMenu = true;
+                break;
+            default:
+                cout << "Invalid input. Please choose a valid option.\n";
+        }
+    }
+}
+
+/**
+ * Solves the real-world TSP problem for a large-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the large-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ *
+ * @remarks The time complexity of the nearest neighbor algorithm used in this function is O(n^2), where n is the number of vertices in the graph.
+ */
+void getValue_NNsmallGraph(int nodeID) {
+    Reader reader;
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+
+    auto start1 = std::chrono::high_resolution_clock::now();
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs4_2(1, vertexMap, edgeMap);
+    auto end1 = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> duration1 = end1 - start1;
+
+    cout << "Parsing time: " << duration1.count() << "\n";
+    Vertex<int>* startingVertex = vertexMap[nodeID];
+    if(!startingVertex){
+        return;
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex, vertexMap, edgeMap);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+
+    double totalDistance = 0;
+    cout << "TSP Tour: ";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        if (i > 0) {
+            Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
+            if (edge)
+                totalDistance += edge->getWeight();
+        }
+    }
+
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+    std::cout << "Tour Size: " << tour.size() << "\n";
+    std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
+}
+
+
+/**
+ * Solves the real-world TSP problem for a large-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the large-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ *
+ * @remarks The time complexity of the nearest neighbor algorithm used in this function is O(n^2), where n is the number of vertices in the graph.
+ */
+void getValue_NNmediumGraph(int nodeID) {
+    Reader reader;
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+
+    auto start1 = std::chrono::high_resolution_clock::now();
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs4_2(2, vertexMap, edgeMap);
+    auto end1 = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> duration1 = end1 - start1;
+
+    cout << "Parsing time: " << duration1.count() << "\n";
+    Vertex<int>* startingVertex = vertexMap[nodeID];
+    if(!startingVertex){
+        return;
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex, vertexMap, edgeMap);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+
+    double totalDistance = 0;
+    cout << "TSP Tour: ";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        if (i > 0) {
+            Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
+            if (edge)
+                totalDistance += edge->getWeight();
+        }
+    }
+
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+    std::cout << "Tour Size: " << tour.size() << "\n";
+    std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
+}
+
+
+/**
+ * Solves the real-world TSP problem for a large-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the large-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ *
+ * @remarks The time complexity of the nearest neighbor algorithm used in this function is O(n^2), where n is the number of vertices in the graph.
+ */
+void getValue_NNlargeGraph(int nodeID) {
+    Reader reader;
+    unordered_map<int, Vertex<int>*> vertexMap;
+    unordered_map<std::string, Edge<int>*> edgeMap;
+
+    auto start1 = std::chrono::high_resolution_clock::now();
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs4_2(3, vertexMap, edgeMap);
+    auto end1 = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> duration1 = end1 - start1;
+
+    cout << "Parsing time: " << duration1.count() << "\n";
+    Vertex<int>* startingVertex = vertexMap[nodeID];
+    if(!startingVertex){
+        return;
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<Vertex<int>*> tour = graph.nearestNeighbourNode(graph,startingVertex, vertexMap, edgeMap);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+
+    double totalDistance = 0;
+    cout << "TSP Tour: ";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        cout << tour[i]->getInfo() << (i < tour.size() - 1 ? " -> " : "");
+        if (i > 0) {
+            Edge<int>* edge = graph.findEdge(tour[i - 1]->getInfo(), tour[i]->getInfo());
+            if (edge)
+                totalDistance += edge->getWeight();
+        }
+    }
+
+    std::cout << std::endl;
+    std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Time: " << duration.count() << "\n";
+    std::cout << "Tour Size: " << tour.size() << "\n";
+    std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
 }
 
 /**
@@ -2411,7 +2675,6 @@ void getValue_RWsmallGraph(int nodeID){
     }
 
     std::cout << std::endl;
-    std::cout << "No feasible path exists that visits all nodes and returns to the origin." << std::endl;
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 

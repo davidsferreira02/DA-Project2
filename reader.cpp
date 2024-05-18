@@ -409,7 +409,7 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
         return graph;
     }
 
-    std::getline(file, line); // Skip header
+    std::getline(file, line);
     while (std::getline(file, line)) {
         std::replace(line.begin(), line.end(), ',', ' ');
         if(line.empty()) {
@@ -425,7 +425,6 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
             continue;
         }
 
-        // Add vertices if not already present
         Vertex<int>* sourceVertex;
         if (vertexMap.find(source) == vertexMap.end()) {
             sourceVertex = graph.addVertexNew(source);
@@ -434,7 +433,6 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
             sourceVertex = vertexMap[source];
         }
 
-        // Add vertices if not already present
         Vertex<int>* destVertex;
         if (vertexMap.find(dest) == vertexMap.end()) {
             destVertex = graph.addVertexNew(dest);
@@ -443,13 +441,11 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
             destVertex = vertexMap[dest];
         }
 
-        // Calculate distance using Haversine on demand
         dist = Haversine(
                 coordinates[source].latitude, coordinates[source].longitude,
                 coordinates[dest].latitude, coordinates[dest].longitude
         );
 
-        // Add edge between vertices
         Edge<int>* edge = graph.addEdgeNew(sourceVertex, destVertex, dist);
         edgeMap[std::to_string(source) + "_" + std::to_string(dest)] = edge;
         edgeMap[std::to_string(dest) + "_" + std::to_string(source)] = edge;
