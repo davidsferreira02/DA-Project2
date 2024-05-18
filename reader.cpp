@@ -381,6 +381,7 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
 {
     Graph<int> graph;
     std::string line;
+    double dist = 0;
     std::unordered_map<int, Coordinates> coordinates ;
 
     std::string filePath;
@@ -407,12 +408,14 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
         std::cerr << "Failed to open file: " << filePath << std::endl;
         return graph;
     }
-    std::getline(file, line);
+
+    std::getline(file, line); // Skip header
     while (std::getline(file, line)) {
         std::replace(line.begin(), line.end(), ',', ' ');
-        if(line.empty()){
+        if(line.empty()) {
             return graph;
         }
+
         std::istringstream iss(line);
         int source, dest;
         double dist;
@@ -421,94 +424,35 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
             std::cerr << "Error parsing line: " << line << std::endl;
             continue;
         }
-        Vertex<int>* sourceVertex;
-        Vertex<int>* destVertex;
 
+        // Add vertices if not already present
+        Vertex<int>* sourceVertex;
         if (vertexMap.find(source) == vertexMap.end()) {
             sourceVertex = graph.addVertexNew(source);
             vertexMap[source] = sourceVertex;
-
-        }else{
+        } else {
             sourceVertex = vertexMap[source];
-
         }
 
+        // Add vertices if not already present
+        Vertex<int>* destVertex;
         if (vertexMap.find(dest) == vertexMap.end()) {
             destVertex = graph.addVertexNew(dest);
             vertexMap[dest] = destVertex;
-
-        }else{
+        } else {
             destVertex = vertexMap[dest];
         }
 
-        Edge<int>* edge = graph.addEdgeNew(sourceVertex, destVertex,dist);
+        // Calculate distance using Haversine on demand
+        dist = Haversine(
+                coordinates[source].latitude, coordinates[source].longitude,
+                coordinates[dest].latitude, coordinates[dest].longitude
+        );
 
-        std::string nodes;
-        nodes += std::to_string(sourceVertex->getInfo());
-        nodes += "_";
-        nodes += std::to_string(destVertex->getInfo());
-
-        edgeMap[nodes] = edge;
-
-        std::string nodes_otherWay;
-        nodes_otherWay += std::to_string(destVertex->getInfo());
-        nodes_otherWay += "_";
-        nodes_otherWay += std::to_string(sourceVertex->getInfo());
-
-        edgeMap[nodes_otherWay] = edge;
-
-        auto vertices = graph.getVertexSet();
-        for (auto& v : vertices) {
-            int vInfo = v->getInfo();
-            for (auto& w : vertices) {
-                int wInfo = w->getInfo();
-                if (vInfo != wInfo) {
-                    std::string edgeKey = std::to_string(vInfo) + "_" + std::to_string(wInfo);
-                    std::string reverseEdgeKey = std::to_string(wInfo) + "_" + std::to_string(vInfo);
-
-                    if (edgeMap.find(edgeKey) == edgeMap.end() && edgeMap.find(reverseEdgeKey) == edgeMap.end()) {
-                        double dist = Haversine(
-                                coordinates[vInfo].latitude, coordinates[vInfo].longitude,
-                                coordinates[wInfo].latitude, coordinates[wInfo].longitude
-                        );
-
-                        Edge<int>* edge = graph.addEdgeNew(vertexMap[vInfo], vertexMap[wInfo], dist);
-                        edgeMap[edgeKey] = edge;
-                        edgeMap[reverseEdgeKey] = edge;
-
-                        graph.addEdgeNew(vertexMap[wInfo], vertexMap[vInfo], dist);
-                    }
-                }
-            }
-        }
-
-
-
-    }
-
-    auto vertices = graph.getVertexSet();
-    for (auto& v : vertices) {
-        int vInfo = v->getInfo();
-        for (auto& w : vertices) {
-            int wInfo = w->getInfo();
-            if (vInfo != wInfo) {
-                std::string edgeKey = std::to_string(vInfo) + "_" + std::to_string(wInfo);
-                std::string reverseEdgeKey = std::to_string(wInfo) + "_" + std::to_string(vInfo);
-
-                if (edgeMap.find(edgeKey) == edgeMap.end() && edgeMap.find(reverseEdgeKey) == edgeMap.end()) {
-                    double dist = Haversine(
-                            coordinates[vInfo].latitude, coordinates[vInfo].longitude,
-                            coordinates[wInfo].latitude, coordinates[wInfo].longitude
-                    );
-
-                    Edge<int>* edge = graph.addEdgeNew(vertexMap[vInfo], vertexMap[wInfo], dist);
-                    edgeMap[edgeKey] = edge;
-                    edgeMap[reverseEdgeKey] = edge;
-
-                    graph.addEdgeNew(vertexMap[wInfo], vertexMap[vInfo], dist);
-                }
-            }
-        }
+        // Add edge between vertices
+        Edge<int>* edge = graph.addEdgeNew(sourceVertex, destVertex, dist);
+        edgeMap[std::to_string(source) + "_" + std::to_string(dest)] = edge;
+        edgeMap[std::to_string(dest) + "_" + std::to_string(source)] = edge;
     }
 
     return graph;
