@@ -93,7 +93,7 @@ int mainMenu(){
         cout << "Enter the number of the option that suits your needs:\n";
         cout << "1. Backtracking Algorithm\n";
         cout << "2. Triangular Approximation Heuristic \n";
-        cout <<"3. Other Heuristics \n";
+        cout <<"3. Other Heuristics / ALgorithms \n";
         cout << "4 Tsp in the Real World\n";
         cout << "e. Exit\n";
         cout << "-----------------------------\n";
@@ -128,86 +128,6 @@ int mainMenu(){
     return 0;
 }
 
-
-
-void display4_1menuLarge(int type) {
-    unordered_map<int, Vertex<int>*> vertexMap;
-    unordered_map<std::string, Edge<int>*> edgeMap;
-    Reader reader;
-    Graph<int> graph= reader.readAndParseRealWorld_Graphs(type,vertexMap,edgeMap);
-    std::vector<int> bestPath;
-    double bestCost = std::numeric_limits<double>::infinity();
-    std::vector<int> path(1, 0);
-    graph.findVertex(0)->setVisited(true);
-
-    auto startTime = std::chrono::high_resolution_clock::now();
-    tsp(0, path, 0.0, 1, graph, bestPath, bestCost);
-    auto endTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> execTime = endTime - startTime;
-
-    std::cout << "Execution Time: " << execTime.count() << " seconds\n";
-    std::cout << "Best Path Cost: " << bestCost << "\n";
-    std::cout << "Best Path: ";
-    for (int node : bestPath) {
-        std::cout << node << (node == 0 ? "\n" : " -> ");
-    }
-
-
-}
-
-void display4_1menuLargeGraph(){
-    string choice_str;
-    int choice;
-    bool exitMenu = false;
-    while (!exitMenu) {
-        cout << "\n-----------------------------\n";
-        cout << "     Welcome to Backtracking for Large Graphs       \n";
-        cout << "-----------------------------\n";
-        cout << "Enter the number of the option of the size of the graph you want:\n";
-        cout << "1. Graph1('Small')\n";
-        cout << "2. Graph2(Medium) \n";
-        cout << "3. Graph3(Large)  \n";
-        cout << "e. Back to the main Menu\n";
-        cout << "-----------------------------\n";
-        cout << "Your choice: ";
-        cin >> choice_str;
-
-        try {
-            choice = stoi(choice_str);
-        } catch (const invalid_argument&) {
-            choice = 0;
-        }
-
-        int nodeID = 0;
-        string choiceNode;
-
-        switch (choice) {
-            case 1:
-
-
-                display4_1menuLarge(1);
-                break;
-
-
-            case 2:
-
-                display4_1menuLarge(2);
-
-                break;
-            case 3:
-                display4_1menuLarge(3);
-                break;
-
-            case 'e':
-                cout << "Exiting menu system...\n";
-                exitMenu = true;
-                break;
-            default:
-                cout << "Invalid input. Please choose a valid option.\n";
-        }
-    }
-}
-
 /**
  * Displays the menu for the backtracking algorithm and allows the user to choose the size of the graph.
  *
@@ -223,7 +143,6 @@ void display4_1menu() {
         cout << "Enter the number of the option of the size of the graph you want:\n";
         cout << "1. Small Graph\n";
         cout << "2. Medium Graph \n";
-        cout << "3. Large Graph \n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -239,9 +158,7 @@ void display4_1menu() {
                 break;
             case '2':
                 display4_1menuMediumGraph();
-
-            case '3':
-                display4_1menuLargeGraph();
+                break;
             case 'e':
                 cout << "Exiting menu system...\n";
                 exitMenu = true;
@@ -297,10 +214,10 @@ void display4_2menu() {
 }
 
 /**
- * Displays the menu for the backtracking algorithm with small graph options and applies the TSP algorithm.
+ * Displays the menu for the backtracking algorithm with small graph options and applies the TSP backtracking algorithm.
  *
  * @param readAndParseFunc A function object that reads and parses the graph data.
- * @remarks This function interacts with the user to obtain input for graph selection and then applies the TSP algorithm.
+ * @remarks This function interacts with the user to obtain input for graph selection and then applies the TSP backtracking algorithm.
  */
 void display4_1menuSmallGraph(){
     string choice;
@@ -341,10 +258,11 @@ void display4_1menuSmallGraph(){
 }
 
 /**
- * Displays the menu for the backtracking algorithm with small graph options and applies the TSP algorithm.
+ * Displays the menu for the backtracking algorithm with small graph options and applies the TSP backtracking algorithm.
  *
  * @param readAndParseFunc A function object that reads and parses the graph data.
  * @remarks This function interacts with the user to obtain input for graph selection and then applies the TSP algorithm.
+ * @timecomplexity O(n!)
  */
 void display4_1menuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
     Reader reader;
@@ -404,7 +322,7 @@ void display4_1menuSmallGraphTourism() {
 }
 
 /**
- * Displays the menu for the backtracking algorithm with medium graph options and applies the TSP algorithm.
+ * Displays the menu for the backtracking algorithm with medium graph options and applies the TSP backtracking algorithm.
  *
  * @remarks This function interacts with the user to obtain input for selecting the size of the graph and then applies the TSP algorithm.
  */
@@ -482,18 +400,12 @@ void display4_1menuMediumGraph() {
     }
 }
 
-
-
-
-
-
-
-
 /**
- * Displays the menu for the backtracking algorithm with a specific medium graph size option and applies the TSP algorithm.
+ * Displays the menu for the backtracking algorithm with a specific medium graph size option and applies the TSP backtracking algorithm.
  *
  * @param filename The filename of the medium-sized graph data to be processed.
  * @remarks This function reads and processes the specified medium-sized graph data before invoking the TSP algorithm.
+ * @timecomplexity O(n!).
  */
 void display4_1menuMedium(const std::string &filename){
     Reader reader;
@@ -521,7 +433,7 @@ void display4_1menuMedium(const std::string &filename){
 }
 
 /**
- * Displays the menu for the triangular approximation heuristic with small graph options and applies the TSP algorithm.
+ * Displays the menu for the triangular approximation heuristic with small graph options and applies the TSP Triangular approach algorithm.
  *
  * @remarks This function interacts with the user to obtain input for selecting the size of the graph and then applies the TSP algorithm.
  */
@@ -569,6 +481,7 @@ void display4_2menuSmallGraph(){
  *
  * @param readAndParseFunc The function used to read and parse the small-sized graph data.
  * @remarks This function reads and processes the specified small-sized graph data before applying the TSP algorithm.
+ * @timecomplexity O(V^2(logV))
  */
 void display4_2menuSmall(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
 
@@ -722,11 +635,12 @@ void display4_2menuMediumGraph() {
 }
 
 /**
- * Displays the menu for the triangular approximation heuristic with a specific medium-sized graph option and applies the TSP algorithm.
+ * Displays the menu for the triangular approximation heuristic with a specific medium-sized graph option and applies the TSP Triangular approach algorithm.
  *
  * @param filename The filename of the medium-sized graph data.
  *
  * This function reads and processes the specified medium-sized graph data before applying the TSP algorithm.
+ * @timecomplexity O(V^2(logV))
  */
 void display4_2menuMedium(const std::string &filename){
     Reader reader;
@@ -781,7 +695,7 @@ void display4_2menuMedium(const std::string &filename){
 }
 
 /**
- * Displays the menu for the triangular approximation heuristic with large graph options and applies the TSP algorithm.
+ * Displays the menu for the triangular approximation heuristic with large graph options and applies the TSP Triangular approach algorithm after fully connecting the graph.
  *
  * This function interacts with the user to obtain input for selecting the size of the large graph and the starting node, then applies the TSP algorithm.
  */
@@ -871,10 +785,11 @@ void display4_2menuLargeGraph() {
 
 
 /**
- * Displays the menu for the triangular approximation heuristic with the first large graph option and applies the TSP algorithm.
+ * Displays the menu for the triangular approximation heuristic with the first large graph option and applies the TSP Triangular approach algorithm after fully connecting the graph.
  *
  * @param nodeID The ID of the starting node for the TSP algorithm.
  *
+ * @timecomplexity O(V^2(logV))
  * This function reads and parses the first large graph data, computes the TSP tour, and prints the results.
  */
 void display4_2menuLarge1(int nodeID) {
@@ -929,10 +844,11 @@ void display4_2menuLarge1(int nodeID) {
 }
 
 /**
- * Displays the menu for the triangular approximation heuristic with the second large graph option and applies the TSP algorithm.
+ * Displays the menu for the triangular approximation heuristic with the second large graph option and applies the TSP algorithm after fully connecting the graph.
  *
  * @param nodeID The ID of the starting node for the TSP algorithm.
  *
+ * @timecomplexity O(V^2(logV))
  * This function reads and parses the second large graph data, computes the TSP tour, and prints the results.
  */
 void display4_2menuLarge2(int nodeID) {
@@ -987,10 +903,11 @@ void display4_2menuLarge2(int nodeID) {
 }
 
 /**
- * Displays the menu for the triangular approximation heuristic with the third large graph option and applies the TSP algorithm.
+ * Displays the menu for the triangular approximation heuristic with the third large graph option and applies the TSP algorithm after fully connecting the graph.
  *
  * @param nodeID The ID of the starting node for the TSP algorithm.
  *
+ * @timecomplexity O(V^2(logV))
  * This function reads and parses the third large graph data, computes the TSP tour, and prints the results.
  */
 void display4_2menuLarge3(int nodeID) {
@@ -1086,8 +1003,7 @@ std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int
  * @param bestPath The best path found so far.
  * @param bestCost The cost of the best path found so far.
  * @details This function recursively explores possible paths using a backtracking algorithm and updates the best path and cost found.
- * @timecomplexity The time complexity of this function depends on the size of the graph and the efficiency of the backtracking algorithm used.
- * In the worst case, it has an exponential time complexity.
+ * @timecomplexity O(n!).
  */
 void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost) {
     if (level == graph.getNumVertex()) {
@@ -1181,8 +1097,9 @@ void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestC
     }
 }
 
-
-
+/**
+ * Displays a menu for selecting other heuristics and algorithms to apply to the TSP.
+ */
 void display_OHmenu(){
     string choice;
     bool exitMenu = false;
@@ -1191,10 +1108,10 @@ void display_OHmenu(){
         cout << "     Welcome to Other Heuristics Menu       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the approach you want:\n";
-        cout << "1. NearestNeighbour\n";
-        cout << "2. K-means Clustering NearestNeighbour\n";
-        cout << "3. LinKernighan\n";
-        cout << "4. HeldKarp (Optimal solution but feasible only on toy graphs)";
+        cout << "1. NearestNeighbour ( The best balance of performance and efficiency !!!) (The algo we tailored for 2.3) \n";
+        cout << "2. K-means Clustering NearestNeighbour ( This algorithm depends on the number of clusters created needs to be tuned)\n";
+        cout << "3. LinKernighan ( Gets the best results but only feasible on small and the 3 smallest medium graphs ) \n";
+        cout << "4. HeldKarp (This algo gets Optimal solution but feasible only on toy graphs)";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1247,6 +1164,9 @@ void display_OHmenu(){
 
 }
 
+/**
+ * Displays a menu for selecting small graph instances and applying the Nearest Neighbor algorithm.
+ */
 void display_NNmenu() {
     string choice;
     bool exitMenu = false;
@@ -1579,6 +1499,7 @@ void display_LINmenuSmallGraph(){
  *                         It should return a Graph<int> object.
  * @remarks The time complexity of the Lin-Kernighan algorithm O(n^3), where n is the number of vertices in the graph.
  * The algorithm has a better approximation than the NearestNeighbour heuristics but scales worse
+ * @timecomplexity O(n^2log(n))
  */
 void getValue_LINmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
     Reader reader;
@@ -1640,6 +1561,10 @@ void getValue_LINmenuSmallGraphTourism() {
     getValue_LINmenuSmallGraph(readAndParseTourism);
 }
 
+/**
+ * Displays a menu for selecting medium graph instances and applying the LinKernighan heuristic algorithm.
+ * The user can choose the number of edges in the graph and apply the LinKernighan heuristic accordingly.
+ */
 void display_LINmenuMediumGraph() {
     string choice;
     bool exitMenu = false;
@@ -1721,6 +1646,7 @@ void display_LINmenuMediumGraph() {
  *                 This should include the path to the file.
  * @remarks The time complexity of the Lin-Kernighan algorithm O(n^3), where n is the number of vertices in the graph.
  * The algorithm has a better approximation than the NearestNeighbour heuristics but scales worse
+ *  * @timecomplexity O(n^2log(n))
  */
 
 void getValue_LINmenuMediumGraph(const std::string &filename){
@@ -1748,6 +1674,11 @@ void getValue_LINmenuMediumGraph(const std::string &filename){
     std::cout << "Time: " << duration.count() << "\n";
 }
 
+/**
+ * @brief Displays the main menu for selecting the size of the graph for the Held-Karp algorithm.
+ *
+ * This function provides a menu interface for the user to select between a small graph, medium graph, or exit to the main menu.
+ */
 void display_HeldKarp_menu() {
     string choice;
     bool exitMenu = false;
@@ -1783,6 +1714,13 @@ void display_HeldKarp_menu() {
         }
     }
 }
+
+/**
+ * @brief Displays the menu for selecting a specific small graph for the Held-Karp algorithm.
+ *
+ * This function provides a menu interface for the user to select between different predefined small graphs
+ * or to exit back to the main Held-Karp menu.
+ */
 void display_HeldKarp_menuSmallGraph(){
     string choice;
     bool exitMenu = false;
@@ -1827,8 +1765,7 @@ void display_HeldKarp_menuSmallGraph(){
  *
  * @param readAndParseFunc A function that reads and parses the graph data.
  *                         It should return a Graph<int> object.
- * @remarks The time complexity of the Held-Karp algorithm for the Traveling Salesman Problem
- *           is O(n^2 * 2^n), where 'n' is the number of vertices in the graph.
+ * @timecomplexity The time complexity is O(n^2 * 2^n), where 'n' is the number of vertices in the graph.
  *           The space complexity is O(n * 2^n).
  */
 void getValue_HeldKarp_menuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc) {
@@ -1895,8 +1832,7 @@ void getValue_HeldKarp_menuSmallGraphTourism() {
  *
  * @param filename The filename of the graph data to be read and parsed.
  *                 This should include the path to the file.
- * @remarks The time complexity of the Held-Karp algorithm for the Traveling Salesman Problem
- *           is O(n^2 * 2^n), where 'n' is the number of vertices in the graph.
+ * @timecomplexity The time complexity is O(n^2 * 2^n), where 'n' is the number of vertices in the graph.
  *           The space complexity is O(n * 2^n).
  */
 void getValue_HeldKarp_menuMediumGraph(const std::string &filename){
@@ -2049,7 +1985,7 @@ void display_CLUSTERmenu(int clusterOption) {
  *
  * @param readAndParseFunc A function to read and parse the graph data.
  * @param clusterOption The number of clusters for K-means clustering.
- * @note The time complexity of this algorithm largely depends on the K-means clustering and the Nearest Neighbor algorithm complexities.
+ * @timecomplexity O(n^2)
  */
 void display_CLUSTERmenuSmallGraph(int clusterOption) {
     string choice;
@@ -2096,7 +2032,7 @@ void display_CLUSTERmenuSmallGraph(int clusterOption) {
  *
  * @param readAndParseFunc A function to read and parse the graph data.
  * @param clusterOption The number of clusters for K-means clustering.
- * @note The time complexity of this algorithm largely depends on the K-means clustering and the Nearest Neighbor algorithm complexities.
+ * @timecomplexity O(n^2)
  */
 void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc, int clusterOption)  {
     auto start = std::chrono::high_resolution_clock::now();
@@ -2190,7 +2126,7 @@ void getValue_CLUSTERmenuSmallGraphTourism(int clusterOption) {
  *
  * @param filename The filename of the graph data.
  * @param clusterOption The number of clusters for K-means clustering.
- * @note The time complexity of this algorithm largely depends on the K-means clustering and the Nearest Neighbor algorithm complexities.
+ * @timecomplexity O(n^2)
  */
 void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOption) {
     auto start = std::chrono::high_resolution_clock::now(); // Start timing
@@ -2434,6 +2370,8 @@ void display_RWmenu() {
  *
  * @param nodeID The ID of the starting node for the TSP algorithm.
  *
+ * @timecomplexity O(n^2)
+ *
  * @note This function interacts with the user to obtain input for starting nodes.
  */
 void getValue_RWsmallGraph(int nodeID){
@@ -2486,6 +2424,8 @@ void getValue_RWsmallGraph(int nodeID){
  * and prints the resulting tour along with its total distance and execution time.
  *
  * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @timecomplexity O(n^2)
  *
  * @note This function interacts with the user to obtain input for starting nodes.
  */

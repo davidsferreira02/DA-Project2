@@ -295,141 +295,86 @@ Graph<int> Reader::readAndParseTourism() {
     return graph;
 }
 
-Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_map<int, Vertex<int>*> &vertexMap, std::unordered_map<std::string, Edge<int>*> &edgeMap) {
-    {
-        Graph<int> graph;
-        std::string line;
-        std::unordered_map<int, Coordinates> coordinates;
+Graph<int> Reader::readAndParseRealWorld_Graphs(int graphNumber, std::unordered_map<int, Vertex<int>*> &vertexMap, std::unordered_map<std::string, Edge<int>*> &edgeMap)
+{
+    Graph<int> graph;
+    std::string line;
 
-        std::string filePath;
-        switch (graphNumber) {
-            case 1:
-                filePath = "../Data/Real-world Graphs/graph1/edges.csv";
-                coordinates = readCoordinatesRealWorldGraph(1);
-                break;
-            case 2:
-                filePath = "../Data/Real-world Graphs/graph2/edges.csv";
-                coordinates = readCoordinatesRealWorldGraph(2);
-                break;
-            case 3:
-                filePath = "../Data/Real-world Graphs/graph3/edges.csv";
-                coordinates = readCoordinatesRealWorldGraph(3);
-                break;
-            default:
-                std::cerr << "Invalid graph number!" << std::endl;
-                return graph;
-        }
-
-        std::ifstream file(filePath);
-        if (!file.is_open()) {
-            std::cerr << "Failed to open file: " << filePath << std::endl;
+    std::string filePath;
+    switch (graphNumber) {
+        case 1:
+            filePath = "../Data/Real-world Graphs/graph1/edges.csv";
+            break;
+        case 2:
+            filePath = "../Data/Real-world Graphs/graph2/edges.csv";
+            break;
+        case 3:
+            filePath = "../Data/Real-world Graphs/graph3/edges.csv";
+            break;
+        default:
+            std::cerr << "Invalid graph number!" << std::endl;
             return graph;
-        }
-        std::getline(file, line);
-        while (std::getline(file, line)) {
-            std::replace(line.begin(), line.end(), ',', ' ');
-            if (line.empty()) {
-                return graph;
-            }
-            std::istringstream iss(line);
-            int source, dest;
-            double dist;
+    }
 
-            if (!(iss >> source >> dest >> dist)) {
-                std::cerr << "Error parsing line: " << line << std::endl;
-                continue;
-            }
-            Vertex<int> *sourceVertex;
-            Vertex<int> *destVertex;
-
-            if (vertexMap.find(source) == vertexMap.end()) {
-                sourceVertex = graph.addVertexNew(source);
-                vertexMap[source] = sourceVertex;
-
-            } else {
-                sourceVertex = vertexMap[source];
-
-            }
-
-            if (vertexMap.find(dest) == vertexMap.end()) {
-                destVertex = graph.addVertexNew(dest);
-                vertexMap[dest] = destVertex;
-
-            } else {
-                destVertex = vertexMap[dest];
-            }
-
-            Edge<int> *edge = graph.addEdgeNew(sourceVertex, destVertex, dist);
-
-            std::string nodes;
-            nodes += std::to_string(sourceVertex->getInfo());
-            nodes += "_";
-            nodes += std::to_string(destVertex->getInfo());
-
-            edgeMap[nodes] = edge;
-
-            std::string nodes_otherWay;
-            nodes_otherWay += std::to_string(destVertex->getInfo());
-            nodes_otherWay += "_";
-            nodes_otherWay += std::to_string(sourceVertex->getInfo());
-
-            edgeMap[nodes_otherWay] = edge;
-
-            auto vertices = graph.getVertexSet();
-            for (auto &v: vertices) {
-                int vInfo = v->getInfo();
-                for (auto &w: vertices) {
-                    int wInfo = w->getInfo();
-                    if (vInfo != wInfo) {
-                        std::string edgeKey = std::to_string(vInfo) + "_" + std::to_string(wInfo);
-                        std::string reverseEdgeKey = std::to_string(wInfo) + "_" + std::to_string(vInfo);
-
-                        if (edgeMap.find(edgeKey) == edgeMap.end() && edgeMap.find(reverseEdgeKey) == edgeMap.end()) {
-                            double dist = Haversine(
-                                    coordinates[vInfo].latitude, coordinates[vInfo].longitude,
-                                    coordinates[wInfo].latitude, coordinates[wInfo].longitude
-                            );
-
-                            Edge<int> *edge = graph.addEdgeNew(vertexMap[vInfo], vertexMap[wInfo], dist);
-                            edgeMap[edgeKey] = edge;
-                            edgeMap[reverseEdgeKey] = edge;
-
-                            graph.addEdgeNew(vertexMap[wInfo], vertexMap[vInfo], dist);
-                        }
-                    }
-                }
-            }
-
-
-        }
-
-        auto vertices = graph.getVertexSet();
-        for (auto &v: vertices) {
-            int vInfo = v->getInfo();
-            for (auto &w: vertices) {
-                int wInfo = w->getInfo();
-                if (vInfo != wInfo) {
-                    std::string edgeKey = std::to_string(vInfo) + "_" + std::to_string(wInfo);
-                    std::string reverseEdgeKey = std::to_string(wInfo) + "_" + std::to_string(vInfo);
-
-                    if (edgeMap.find(edgeKey) == edgeMap.end() && edgeMap.find(reverseEdgeKey) == edgeMap.end()) {
-                        double dist = Haversine(
-                                coordinates[vInfo].latitude, coordinates[vInfo].longitude,
-                                coordinates[wInfo].latitude, coordinates[wInfo].longitude
-                        );
-
-                        Edge<int> *edge = graph.addEdgeNew(vertexMap[vInfo], vertexMap[wInfo], dist);
-                        edgeMap[edgeKey] = edge;
-                        edgeMap[reverseEdgeKey] = edge;
-
-                        graph.addEdgeNew(vertexMap[wInfo], vertexMap[vInfo], dist);
-                    }
-                }
-            }
-        }
-
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filePath << std::endl;
         return graph;
     }
+    std::getline(file, line);
+    while (std::getline(file, line)) {
+        std::replace(line.begin(), line.end(), ',', ' ');
+        if(line.empty()){
+            return graph;
+        }
+        std::istringstream iss(line);
+        int source, dest;
+        double dist;
+
+        if (!(iss >> source >> dest >> dist)) {
+            std::cerr << "Error parsing line: " << line << std::endl;
+            continue;
+        }
+        Vertex<int>* sourceVertex;
+        Vertex<int>* destVertex;
+
+        if (vertexMap.find(source) == vertexMap.end()) {
+            sourceVertex = graph.addVertexNew(source);
+            vertexMap[source] = sourceVertex;
+
+        }else{
+            sourceVertex = vertexMap[source];
+
+        }
+
+        if (vertexMap.find(dest) == vertexMap.end()) {
+            destVertex = graph.addVertexNew(dest);
+            vertexMap[dest] = destVertex;
+
+        }else{
+            destVertex = vertexMap[dest];
+        }
+
+        Edge<int>* edge = graph.addEdgeNew(sourceVertex, destVertex,dist);
+
+        std::string nodes;
+        nodes += std::to_string(sourceVertex->getInfo());
+        nodes += "_";
+        nodes += std::to_string(destVertex->getInfo());
+
+        edgeMap[nodes] = edge;
+
+        std::string nodes_otherWay;
+        nodes_otherWay += std::to_string(destVertex->getInfo());
+        nodes_otherWay += "_";
+        nodes_otherWay += std::to_string(sourceVertex->getInfo());
+
+        edgeMap[nodes_otherWay] = edge;
+
+
+    }
+
+    return graph;
 }
 
 Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unordered_map<int, Vertex<int>*> &vertexMap, std::unordered_map<std::string, Edge<int>*> &edgeMap)
