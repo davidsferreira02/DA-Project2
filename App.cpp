@@ -1108,10 +1108,10 @@ void display_OHmenu(){
         cout << "     Welcome to Other Heuristics Menu       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the approach you want:\n";
-        cout << "1. NearestNeighbour ( The best balance of performance and efficiency !!!) (The algo we tailored for 2.3) \n";
-        cout << "2. K-means Clustering NearestNeighbour ( This algorithm depends on the number of clusters created needs to be tuned)\n";
+        cout << "1. NearestNeighbour ( The best balance of performance and efficiency !!! ) (The algo we tailored for 2.3) \n";
+        cout << "2. K-means Clustering NearestNeighbour ( This algorithm depends on the number of clusters created needs to be tuned )\n";
         cout << "3. LinKernighan ( Gets the best results but only feasible on small and the 3 smallest medium graphs ) \n";
-        cout << "4. HeldKarp (This algo gets Optimal solution but feasible only on toy graphs)";
+        cout << "4. HeldKarp ( This algo gets Optimal solution like the backtracking but is feasible only on toy graphs )";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1255,7 +1255,7 @@ void getValue_NNmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAnd
     Graph<int> graph;
     graph = readAndParseFunc(reader);
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.nearestNeighbour(graph);
+    std::vector<Vertex<int>*> tour = graph.findOptimalTour(graph);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
@@ -1390,7 +1390,7 @@ void getValue_NNmenuMediumGraph(const std::string &filename){
     unordered_map<std::string, Edge<int>*> edgeMap;
     Graph<int> graph = reader.readAndParse4_2Extra_Fully_Connected_Graphs(filename,vertexMap,edgeMap);
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<Vertex<int>*> tour = graph.nearestNeighbourMedium(graph,vertexMap,edgeMap);
+    std::vector<Vertex<int>*> tour = graph.findOptimalTourMedium(graph,vertexMap,edgeMap);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
