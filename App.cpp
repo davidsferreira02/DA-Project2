@@ -1530,10 +1530,10 @@ void display_OHmenu(){
         cout << "     Welcome to Other Heuristics Menu       \n";
         cout << "-----------------------------\n";
         cout << "Enter the number of the approach you want:\n";
-        cout << "1. NearestNeighbour ( The best balance of performance and efficiency !!! ) (The algo we tailored for 2.3) \n";
-        cout << "2. K-means Clustering NearestNeighbour ( This algorithm depends on the number of clusters created needs to be tuned )\n";
-        cout << "3. LinKernighan ( Gets the best results but only feasible on small and the 3 smallest medium graphs ) \n";
-        cout << "4. HeldKarp ( This algo gets Optimal solution like the backtracking but is feasible only on toy graphs )\n";
+        cout << "1. NearestNeighbour ( The best balance of performance and efficiency !!! ) (The algo we tailored for the entire project and the one with the better results ) \n";
+        cout << "2. K-means Clustering NearestNeighbour ( Extra !!! )\n";
+        cout << "3. LinKernighan ( Gets the best results but only feasible on small and the 3 smallest medium graphs Another Extra !!! ) \n";
+        cout << "4. HeldKarp ( This algo gets Optimal solution like the backtracking but is feasible only on toy graphs. Extra !!! )\n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
