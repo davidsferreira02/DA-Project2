@@ -904,7 +904,7 @@ void display4_2menuSmall(const std::function<Graph<int>(Reader&)>& readAndParseF
     Graph<int> graph = readAndParseFunc(reader);
     Vertex<int>* startVertexPtr = graph.findVertex(0);
 
-    auto start = std::chrono::high_resolution_clock::now(); // Start timing
+    auto start = std::chrono::high_resolution_clock::now();
 
     vector<Edge<int>*> mst = graph.primMST(startVertexPtr->getInfo());
 
@@ -2812,7 +2812,7 @@ void getValue_CLUSTERmenuSmallGraphTourism(int clusterOption) {
  * @timecomplexity O(n^2)
  */
 void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOption) {
-    auto start = std::chrono::high_resolution_clock::now(); // Start timing
+    auto start = std::chrono::high_resolution_clock::now();
 
     Reader reader;
     unordered_map<int, Vertex<int>*> vertexMap;
