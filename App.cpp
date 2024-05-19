@@ -6,9 +6,6 @@
 #include <chrono>
 #include "reader.h"
 
-
-
-
 void display4_1menu();
 void display4_2menu();
 void display4_1menuSmallGraph();
@@ -285,6 +282,7 @@ void display4_1menuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndP
 
     std::cout << "Execution Time: " << execTime.count() << " seconds\n";
     std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path Size: " << bestPath.size() << "\n";
     std::cout << "Best Path: ";
     for (size_t i = 0; i < bestPath.size(); ++i) {
         std::cout << bestPath[i];
@@ -294,6 +292,7 @@ void display4_1menuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndP
     }
     std::cout << "\n";
 }
+
 
 /**
  * Displays the menu for the backtracking algorithm with the stadium graph option and applies the TSP algorithm.
@@ -430,6 +429,7 @@ void display4_1menuMedium(const std::string &filename){
 
     std::cout << "Execution Time: " << execTime.count() << " seconds\n";
     std::cout << "Best Path Cost: " << bestCost << "\n";
+    std::cout << "Best Path Size: " << bestPath.size() << "\n";
     std::cout << "Best Path: ";
     for (int node : bestPath) {
         std::cout << node << (node == 0 ? "\n" : " -> ");
@@ -526,6 +526,7 @@ void display4_2menuSmall(const std::function<Graph<int>(Reader&)>& readAndParseF
         cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
     }
     cout << endl;
+    cout << "Tour Size: " << tspTour.size() << "\n";
     cout << "Total Approximation Distance: " << totalDistance << "\n";
     cout << "Execution Time: " << execTime.count() << " seconds\n";
 }
@@ -694,6 +695,7 @@ void display4_2menuMedium(const std::string &filename){
         cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
     }
     cout << endl;
+    cout << "Tour Size: " << tspTour.size() << "\n";
     cout << "Total Approximation Distance: " << totalDistance << "\n";
     cout << "Execution Time: " << execTime.count() << " seconds\n";
 
@@ -720,6 +722,12 @@ void display4_2menuLargeGraph() {
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice_str;
+
+        if (choice_str == "e" || choice_str == "E") {
+            cout << "Exiting menu system...\n";
+            exitMenu = true;
+            continue;
+        }
 
         try {
             choice = stoi(choice_str);
@@ -775,10 +783,6 @@ void display4_2menuLargeGraph() {
                         cout << "Input out of range. Please enter a valid integer within the range of int.\n";
                     }
                 }
-                break;
-            case 'e':
-                cout << "Exiting menu system...\n";
-                exitMenu = true;
                 break;
             default:
                 cout << "Invalid input. Please choose a valid option.\n";
@@ -844,6 +848,7 @@ void display4_2menuLarge1(int nodeID) {
         std::cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
     }
     std::cout << std::endl;
+    cout << "Tour Size: " << tspTour.size() << "\n";
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 }
@@ -860,7 +865,7 @@ void display4_2menuLarge2(int nodeID) {
     Reader reader;
     unordered_map<int, Vertex<int>*> vertexMap;
     unordered_map<std::string, Edge<int>*> edgeMap;
-    Graph<int> graph = reader.readAndParseRealWorld_Graphs(2,vertexMap,edgeMap);
+    Graph<int> graph = reader.readAndParseRealWorld_Graphs4_2(2,vertexMap,edgeMap);
     Vertex<int>* startVertexPtr = nullptr;
     auto vertexIter = vertexMap.find(nodeID);
     if (vertexIter != vertexMap.end()) {
@@ -903,6 +908,7 @@ void display4_2menuLarge2(int nodeID) {
         std::cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
     }
     std::cout << std::endl;
+    cout << "Tour Size: " << tspTour.size() << "\n";
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 }
@@ -962,6 +968,7 @@ void display4_2menuLarge3(int nodeID) {
         std::cout << tspTour[i] << (i < tspTour.size() - 1 ? " -> " : "");
     }
     std::cout << std::endl;
+    cout << "Tour Size: " << tspTour.size() << "\n";
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 }
@@ -1116,7 +1123,7 @@ void display_OHmenu(){
         cout << "1. NearestNeighbour ( The best balance of performance and efficiency !!! ) (The algo we tailored for 2.3) \n";
         cout << "2. K-means Clustering NearestNeighbour ( This algorithm depends on the number of clusters created needs to be tuned )\n";
         cout << "3. LinKernighan ( Gets the best results but only feasible on small and the 3 smallest medium graphs ) \n";
-        cout << "4. HeldKarp ( This algo gets Optimal solution like the backtracking but is feasible only on toy graphs )";
+        cout << "4. HeldKarp ( This algo gets Optimal solution like the backtracking but is feasible only on toy graphs )\n";
         cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
@@ -1356,7 +1363,6 @@ void getValue_NNsmallGraph(int nodeID) {
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
     std::cout << "Tour Size: " << tour.size() << "\n";
-    std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
 }
 
 
@@ -1410,7 +1416,6 @@ void getValue_NNmediumGraph(int nodeID) {
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
     std::cout << "Tour Size: " << tour.size() << "\n";
-    std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
 }
 
 
@@ -1464,7 +1469,6 @@ void getValue_NNlargeGraph(int nodeID) {
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
     std::cout << "Tour Size: " << tour.size() << "\n";
-    std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
 }
 
 /**
@@ -1534,6 +1538,7 @@ void getValue_NNmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAnd
         }
     }
     std::cout << std::endl;
+    cout << "Tour Size: " << tour.size() << "\n";
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 
@@ -1669,6 +1674,7 @@ void getValue_NNmenuMediumGraph(const std::string &filename){
         }
     }
     std::cout << std::endl;
+    cout << "Tour Size: " << tour.size() << "\n";
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 }
@@ -1787,6 +1793,7 @@ void getValue_LINmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAn
         }
     }
     std::cout << std::endl;
+    cout << "Tour Size: " << tour.size() << "\n";
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 
@@ -1934,6 +1941,7 @@ void getValue_LINmenuMediumGraph(const std::string &filename){
         }
     }
     std::cout << std::endl;
+    cout << "Tour Size: " << tour.size() << "\n";
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 }
@@ -2047,6 +2055,7 @@ void getValue_HeldKarp_menuSmallGraph(const std::function<Graph<int>(Reader&)>& 
     std::chrono::duration<double> execTime = endTime - startTime;
 
     std::cout << "Execution Time: " << execTime.count() << " seconds\n";
+    cout << "Tour Size: " << bestPath.size() << "\n";
     std::cout << "Best Path Cost: " << bestCost << "\n";
     std::cout << "Best Path: ";
     for (size_t i = 0; i < bestPath.size(); ++i) {
@@ -2348,6 +2357,7 @@ void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& re
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> execTime = end - start;
 
+    cout << "Tour Size: " << combinedTour.size() << "\n";
     std::cout << "TSP Tour: ";
     for (size_t i = 0; i < combinedTour.size(); ++i) {
         std::cout << combinedTour[i] << (i < combinedTour.size() - 1 ? " -> " : "");
@@ -2449,6 +2459,7 @@ void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOpt
         std::cout << combinedTour[i] << (i < combinedTour.size() - 1 ? " -> " : "");
     }
     std::cout << std::endl;
+    cout << "Tour Size: " << combinedTour.size() << "\n";
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Execution Time: " << execTime.count() << " seconds\n";
 
@@ -2676,6 +2687,7 @@ void getValue_RWsmallGraph(int nodeID){
 
     std::cout << std::endl;
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
+    std::cout << "Tour Size: " << tour.size() << "\n";
     std::cout << "Time: " << duration.count() << "\n";
 
 }
@@ -2731,6 +2743,7 @@ void getValue_RWmediumGraph(int nodeID) {
     std::cout << "Total Approximation Distance: " << totalDistance << "\n";
     std::cout << "Time: " << duration.count() << "\n";
     std::cout << "Tour Size: " << tour.size() << "\n";
+    std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
 }
 
 /**

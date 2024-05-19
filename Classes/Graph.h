@@ -200,68 +200,6 @@ public:
     }
 
     /**
- * @brief Applies the 2-opt optimization to improve the tour.
- * @param tour The initial tour to be optimized.
- * @param graph The graph containing the vertices and edges.
- * @return The optimized tour.
- * @timecomplexity O(V^2), where V is the number of vertices.
- */
-    std::vector<Vertex<T>*> twoOptSwap(const std::vector<Vertex<T>*>& tour, Graph<T>& graph) {
-        std::vector<Vertex<T>*> newTour = tour;
-        bool improved = true;
-
-        while (improved) {
-            improved = false;
-            double bestDistance = calculateTourDistance(newTour, graph);
-
-            for (size_t i = 1; i < newTour.size() - 2; ++i) {
-                for (size_t j = i + 1; j < newTour.size() - 1; ++j) {
-                    std::vector<Vertex<T>*> newRoute = newTour;
-                    std::reverse(newRoute.begin() + i, newRoute.begin() + j);
-
-                    double newDistance = calculateTourDistance(newRoute, graph);
-                    if (newDistance < bestDistance) {
-                        newTour = newRoute;
-                        bestDistance = newDistance;
-                        improved = true;
-                    }
-                }
-            }
-        }
-
-        return newTour;
-    }
-
-/**
- * @brief Calculates the total distance of a tour.
- * @param tour The tour for which to calculate the total distance.
- * @param graph The graph containing the vertices and edges.
- * @return The total distance of the tour.
- */
-    double calculateTourDistance(const std::vector<Vertex<T>*>& tour, Graph<T>& graph) {
-        double totalDistance = 0.0;
-        for (size_t i = 0; i < tour.size() - 1; ++i) {
-            totalDistance += graph.findEdge(tour[i]->getInfo(), tour[i + 1]->getInfo())->getWeight();
-        }
-        return totalDistance;
-    }
-
-/**
- * @brief Main function to execute the nearest neighbor heuristic followed by 2-opt optimization.
- * @param graph The graph on which to perform the TSP algorithm.
- * @return The optimized TSP tour.
- */
-    std::vector<Vertex<T>*> findOptimalTour(Graph<T>& graph) {
-        // Step 1: Construct the initial tour using the nearest neighbor heuristic.
-        std::vector<Vertex<T>*> initialTour = nearestNeighbour(graph);
-
-        // Step 2: Apply 2-opt optimization to the initial tour.
-        std::vector<Vertex<T>*> optimizedTour = twoOptSwap(initialTour, graph);
-
-        return optimizedTour;
-    }
-
-    /**
      * @brief Constructs a tour using the nearest neighbor heuristic with medium complexity.
      * @param graph The graph on which to perform the nearest neighbor search.
      * @param vertexMap A map containing vertex IDs and pointers to vertex objects.
@@ -324,79 +262,14 @@ public:
     }
 
     /**
- * @brief Calculates the total distance of a tour.
- * @param tour The tour for which to calculate the total distance.
- * @param edgeMap A map containing edge keys and pointers to edge objects.
- * @return The total distance of the tour.
- */
-    double calculateTourDistanceMedium(const std::vector<Vertex<T>*>& tour, const std::unordered_map<std::string, Edge<int>*>& edgeMap) {
-        double totalDistance = 0.0;
-        for (size_t i = 0; i < tour.size() - 1; ++i) {
-            std::string edgeKey = std::to_string(tour[i]->getInfo()) + "_" + std::to_string(tour[i + 1]->getInfo());
-            totalDistance += edgeMap.at(edgeKey)->getWeight();
-        }
-        return totalDistance;
-    }
-
-    /**
-* @brief Applies the 2-opt optimization to improve the tour.
-* @param tour The initial tour to be optimized.
-* @param graph The graph containing the vertices and edges.
-* @return The optimized tour.
-* @timecomplexity O(V^2), where V is the number of vertices.
-*/
-    std::vector<Vertex<T>*> twoOptSwapMedium(const std::vector<Vertex<T>*>& tour, const std::unordered_map<std::string, Edge<int>*>& edgeMap) {
-        std::vector<Vertex<T>*> newTour = tour;
-        bool improved = true;
-
-        while (improved) {
-            improved = false;
-            double bestDistance = calculateTourDistanceMedium(newTour, edgeMap);
-
-            for (size_t i = 1; i < newTour.size() - 2; ++i) {
-                for (size_t j = i + 1; j < newTour.size() - 1; ++j) {
-                    std::vector<Vertex<T>*> newRoute = newTour;
-                    std::reverse(newRoute.begin() + i, newRoute.begin() + j);
-
-                    double newDistance = calculateTourDistanceMedium(newRoute, edgeMap);
-                    if (newDistance < bestDistance) {
-                        newTour = newRoute;
-                        bestDistance = newDistance;
-                        improved = true;
-                    }
-                }
-            }
-        }
-
-        return newTour;
-    }
-
-/**
- * @brief Main function to execute the nearest neighbor heuristic followed by 2-opt optimization.
- * @param graph The graph on which to perform the TSP algorithm.
- * @param vertexMap A map containing vertex IDs and pointers to vertex objects.
- * @param edgeMap A map containing edge keys and pointers to edge objects.
- * @return The optimized TSP tour.
- */
-    std::vector<Vertex<T>*> findOptimalTourMedium(Graph<T>& graph, std::unordered_map<int, Vertex<int>*> vertexMap, std::unordered_map<std::string, Edge<int>*> edgeMap) {
-        // Step 1: Construct the initial tour using the nearest neighbor heuristic.
-        std::vector<Vertex<T>*> initialTour = nearestNeighbourMedium(graph, vertexMap, edgeMap);
-
-        // Step 2: Apply 2-opt optimization to the initial tour.
-        std::vector<Vertex<T>*> optimizedTour = twoOptSwapMedium(initialTour, edgeMap);
-
-        return optimizedTour;
-    }
-
-    /**
- * @brief Constructs a tour starting from a specified vertex using the nearest neighbor heuristic.
- * @param graph The graph on which to perform the nearest neighbor search.
- * @param startVertex The starting vertex of the tour.
- * @param vertexMap A map containing vertex IDs and pointers to vertex objects.
- * @param edgeMap A map containing edge keys and pointers to edge objects.
- * @return A vector of vertices representing the tour.
- * @timecomplexity O(V^2), where V is the number of vertices.
- */
+     * @brief Constructs a tour starting from a specified vertex using the nearest neighbor heuristic.
+     * @param graph The graph on which to perform the nearest neighbor search.
+     * @param startVertex The starting vertex of the tour.
+     * @param vertexMap A map containing vertex IDs and pointers to vertex objects.
+     * @param edgeMap A map containing edge keys and pointers to edge objects.
+     * @return A vector of vertices representing the tour.
+     * @timecomplexity O(V^2), where V is the number of vertices.
+     */
     std::vector<Vertex<T>*> nearestNeighbourNode(Graph<T>& graph, Vertex<int>* startVertex,
                                                  std::unordered_map<int, Vertex<int>*> vertexMap,
                                                  std::unordered_map<std::string, Edge<int>*> edgeMap) {

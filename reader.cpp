@@ -381,22 +381,21 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
 {
     Graph<int> graph;
     std::string line;
-    double dist = 0;
-    std::unordered_map<int, Coordinates> coordinates ;
+    std::unordered_map<int, Coordinates> coordinates;
 
     std::string filePath;
     switch (graphNumber) {
         case 1:
             filePath = "../Data/Real-world Graphs/graph1/edges.csv";
-            coordinates=readCoordinatesRealWorldGraph(1);
+            coordinates = readCoordinatesRealWorldGraph(1);
             break;
         case 2:
             filePath = "../Data/Real-world Graphs/graph2/edges.csv";
-            coordinates=readCoordinatesRealWorldGraph(2);
+            coordinates = readCoordinatesRealWorldGraph(2);
             break;
         case 3:
             filePath = "../Data/Real-world Graphs/graph3/edges.csv";
-            coordinates=readCoordinatesRealWorldGraph(3);
+            coordinates = readCoordinatesRealWorldGraph(3);
             break;
         default:
             std::cerr << "Invalid graph number!" << std::endl;
@@ -412,8 +411,8 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
     std::getline(file, line);
     while (std::getline(file, line)) {
         std::replace(line.begin(), line.end(), ',', ' ');
-        if(line.empty()) {
-            return graph;
+        if (line.empty()) {
+            continue;
         }
 
         std::istringstream iss(line);
@@ -441,14 +440,29 @@ Graph<int> Reader::readAndParseRealWorld_Graphs4_2(int graphNumber, std::unorder
             destVertex = vertexMap[dest];
         }
 
-        dist = Haversine(
-                coordinates[source].latitude, coordinates[source].longitude,
-                coordinates[dest].latitude, coordinates[dest].longitude
-        );
-
         Edge<int>* edge = graph.addEdgeNew(sourceVertex, destVertex, dist);
         edgeMap[std::to_string(source) + "_" + std::to_string(dest)] = edge;
         edgeMap[std::to_string(dest) + "_" + std::to_string(source)] = edge;
+    }
+
+    for (auto& sourceEntry : vertexMap) {
+        for (auto& destEntry : vertexMap) {
+            if (sourceEntry.first != destEntry.first) {
+                double haversineDist = Haversine(
+                        coordinates[sourceEntry.first].latitude, coordinates[sourceEntry.first].longitude,
+                        coordinates[destEntry.first].latitude, coordinates[destEntry.first].longitude
+                );
+
+                std::string edgeId1 = std::to_string(sourceEntry.first) + "_" + std::to_string(destEntry.first);
+                std::string edgeId2 = std::to_string(destEntry.first) + "_" + std::to_string(sourceEntry.first);
+
+                if (edgeMap.find(edgeId1) == edgeMap.end() && edgeMap.find(edgeId2) == edgeMap.end()) {
+                    Edge<int>* edge = graph.addEdgeNew(sourceEntry.second, destEntry.second, haversineDist);
+                    edgeMap[edgeId1] = edge;
+                    edgeMap[edgeId2] = edge;
+                }
+            }
+        }
     }
 
     return graph;
