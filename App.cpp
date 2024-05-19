@@ -760,7 +760,7 @@ void display4_1menuMediumGraph() {
         cout << "10. 700\n";
         cout << "11. 800\n";
         cout << "12. 900\n";
-        cout << "e. Back to the backtracing Menu\n";
+        cout << "e. Back to the main Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
@@ -863,7 +863,7 @@ void display4_2menuSmallGraph(){
         cout << "1. Stadium Graph\n";
         cout << "2. Shipping Graph \n";
         cout <<"3. Tourism Graph \n";
-        cout << "e. Back to the backtracing Menu\n";
+        cout << "e. Back to the triangular approximation heuristic  Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
@@ -997,7 +997,7 @@ void display4_2menuMediumGraph() {
         cout << "10. 700\n";
         cout << "11. 800\n";
         cout << "12. 900\n";
-        cout << "e. Back to the backtracing Menu\n";
+        cout << "e. Back to the Triangular Approximation Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice;
@@ -1129,7 +1129,7 @@ void display4_2menuLargeGraph() {
         cout << "1. Graph1('Small')\n";
         cout << "2. Graph2(Medium) \n";
         cout << "3. Graph3(Large)  \n";
-        cout << "e. Back to the main Menu\n";
+        cout << "e. Back to the Triangular Approximation Menu\n";
         cout << "-----------------------------\n";
         cout << "Your choice: ";
         cin >> choice_str;
@@ -1195,6 +1195,7 @@ void display4_2menuLargeGraph() {
                     }
                 }
                 break;
+
             default:
                 cout << "Invalid input. Please choose a valid option.\n";
         }
