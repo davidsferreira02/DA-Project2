@@ -6,77 +6,488 @@
 #include <chrono>
 #include "reader.h"
 
+/**
+ * Displays the menu for the backtracking algorithm and allows the user to choose the size of the graph.
+ *
+ * @remarks This function interacts with the user to obtain input for graph size selection.
+ */
 void display4_1menu();
+/**
+ * Displays the menu for the triangular approximation heuristic and allows the user to choose the size of the graph.
+ *
+ * @remarks This function interacts with the user to obtain input for graph size selection.
+ */
 void display4_2menu();
-void display4_1menuSmallGraph();
-void display4_1menuSmallGraphStadium();
-void display4_1menuSmallGraphShipping();
-void display4_1menuSmallGraphTourism();
-void display4_1menuMediumGraph();
-void display4_1menuMedium(const std::string &filename);
-void display4_2menuSmallGraph();
-void display4_2menuMediumGraph();
-void display4_2menuLargeGraph();
-void display4_2menuSmallGraphStadium();
-void display4_2menuSmallGraphShipping();
-void display4_2menuSmallGraphTourism();
-void display4_2menuMedium(const std::string &filename);
-void display4_2menuLarge1(int nodeID);
-void display4_2menuLarge2(int nodeID);
-void display4_2menuLarge3(int nodeID);
 
+/**
+ * Displays the menu for the backtracking algorithm with small graph options and applies the TSP backtracking algorithm.
+ *
+ * @param readAndParseFunc A function object that reads and parses the graph data.
+ * @remarks This function interacts with the user to obtain input for graph selection and then applies the TSP backtracking algorithm.
+ */
+void display4_1menuSmallGraph();
+/**
+ * Displays the menu for the backtracking algorithm with the stadium graph option and applies the TSP algorithm.
+ *
+ * @remarks This function reads and parses the stadium graph data before invoking the main menu for the backtracking algorithm.
+ */
+void display4_1menuSmallGraphStadium();
+/**
+ * Displays the menu for the backtracking algorithm with the shipping graph option and applies the TSP algorithm.
+ *
+ * @remarks This function reads and parses the shipping graph data before invoking the main menu for the backtracking algorithm.
+ */
+void display4_1menuSmallGraphShipping();
+/**
+ * Displays the menu for the backtracking algorithm with the tourism graph option and applies the TSP algorithm.
+ *
+ * @remarks This function reads and parses the tourism graph data before invoking the main menu for the backtracking algorithm.
+ */
+void display4_1menuSmallGraphTourism();
+/**
+ * Displays the menu for the backtracking algorithm with medium graph options and applies the TSP backtracking algorithm.
+ *
+ * @remarks This function interacts with the user to obtain input for selecting the size of the graph and then applies the TSP algorithm.
+ */
+void display4_1menuMediumGraph();
+/**
+ * Displays the menu for the backtracking algorithm with a specific medium graph size option and applies the TSP backtracking algorithm.
+ *
+ * @param filename The filename of the medium-sized graph data to be processed.
+ * @remarks This function reads and processes the specified medium-sized graph data before invoking the TSP algorithm.
+ * @timecomplexity O(n!).
+ */
+void display4_1menuMedium(const std::string &filename);
+/**
+ * Displays the menu for the triangular approximation heuristic with small graph options and applies the TSP Triangular approach algorithm.
+ *
+ * @remarks This function interacts with the user to obtain input for selecting the size of the graph and then applies the TSP algorithm.
+ */
+void display4_2menuSmallGraph();
+/**
+ * Displays the menu for the triangular approximation heuristic with medium graph options and applies the TSP algorithm.
+ *
+ * This function interacts with the user to obtain input for selecting the size of the graph and then applies the TSP algorithm.
+ */
+void display4_2menuMediumGraph();
+/**
+ * Displays the menu for the triangular approximation heuristic with large graph options and applies the TSP Triangular approach algorithm after fully connecting the graph.
+ *
+ * This function interacts with the user to obtain input for selecting the size of the large graph and the starting node, then applies the TSP algorithm.
+ */
+void display4_2menuLargeGraph();
+/**
+ * Displays the menu for the triangular approximation heuristic with the stadium graph option and applies the TSP algorithm.
+ *
+ * @remarks This function reads and processes the stadium graph data before applying the TSP algorithm.
+ */
+void display4_2menuSmallGraphStadium();
+/**
+ * Displays the menu for the triangular approximation heuristic with the shipping graph option and applies the TSP algorithm.
+ *
+ * @remarks This function reads and processes the shipping graph data before applying the TSP algorithm.
+ */
+void display4_2menuSmallGraphShipping();
+/**
+ * Displays the menu for the triangular approximation heuristic with the tourism graph option and applies the TSP algorithm.
+ *
+ * @remarks This function reads and processes the tourism graph data before applying the TSP algorithm.
+ */
+void display4_2menuSmallGraphTourism();
+
+/**
+ * Displays the menu for the triangular approximation heuristic with a specific medium-sized graph option and applies the TSP Triangular approach algorithm.
+ *
+ * @param filename The filename of the medium-sized graph data.
+ *
+ * This function reads and processes the specified medium-sized graph data before applying the TSP algorithm.
+ * @timecomplexity O(V^2(logV))
+ */
+void display4_2menuMedium(const std::string &filename);
+/**
+ * Displays the menu for the triangular approximation heuristic with the first large graph option and applies the TSP Triangular approach algorithm after fully connecting the graph.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @timecomplexity O(V^2(logV))
+ * This function reads and parses the first large graph data, computes the TSP tour, and prints the results.
+ */
+void display4_2menuLarge1(int nodeID);
+/**
+ * Displays the menu for the triangular approximation heuristic with the second large graph option and applies the TSP algorithm after fully connecting the graph.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @timecomplexity O(V^2(logV))
+ * This function reads and parses the second large graph data, computes the TSP tour, and prints the results.
+ */
+void display4_2menuLarge2(int nodeID);
+/**
+ * Displays the menu for the triangular approximation heuristic with the third large graph option and applies the TSP algorithm after fully connecting the graph.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @timecomplexity O(V^2(logV))
+ * This function reads and parses the third large graph data, computes the TSP tour, and prints the results.
+ */
+void display4_2menuLarge3(int nodeID);
+/**
+ * Displays a menu for selecting other heuristics and algorithms to apply to the TSP.
+ */
 void display_OHmenu();
+/**
+ * Displays a menu for selecting small graph instances and applying the Nearest Neighbor algorithm.
+ */
 void display_NNmenu();
+/**
+ * Displays a menu for selecting small graph instances and applying the Nearest Neighbor algorithm.
+ */
 void display_NNmenuSmallGraph();
+/**
+ * Displays a menu for selecting medium graph instances and applying the Nearest Neighbor heuristic algorithm.
+ * The user can choose the number of edges in the graph and apply the Nearest Neighbor algorithm accordingly.
+ */
 void display_NNmenuMediumGraph();
+/**
+ * Applies the Nearest Neighbor algorithm to the stadium graph instance.
+ * Time Complexity: O(n^2), where 'n' is the number of vertices in the graph.
+ */
 void getValue_NNmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
+/**
+ * Applies the Nearest Neighbor algorithm to the shipping graph instance.
+ */
 void getValue_NNmenuSmallGraphStadium();
+/**
+ * Applies the Nearest Neighbor algorithm to the tourism graph instance.
+ */
 void getValue_NNmenuSmallGraphShipping();
+/**
+ * Applies the Nearest Neighbor algorithm to the tourism graph instance.
+ */
 void getValue_NNmenuSmallGraphTourism();
+/**
+ * Applies the Nearest Neighbor algorithm to a medium graph instance.
+ *
+ * @param filename The filename of the graph data to be read and parsed.
+ *                 This should include the path to the file.
+ * Time Complexity: O(n^2), where 'n' is the number of vertices in the graph.
+ */
 void getValue_NNmenuMediumGraph(const std::string &filename);
 
+/**
+ * Displays a menu for selecting the Lin-Kernighan Algorithm heuristic and the size of the graph.
+ * Users can choose between small and medium graphs to apply the Lin-Kernighan Algorithm.
+ */
 void display_LINmenu();
+/**
+ * Displays a menu for selecting small graph instances and applying the Lin-Kernighan Algorithm heuristic.
+ * Users can choose between different types of small graphs, such as stadium, shipping, and tourism graphs.
+ */
 void display_LINmenuSmallGraph();
+/**
+ * Displays a menu for selecting medium graph instances and applying the LinKernighan heuristic algorithm.
+ * The user can choose the number of edges in the graph and apply the LinKernighan heuristic accordingly.
+ */
 void display_LINmenuMediumGraph();
+/**
+ * Applies the Lin-Kernighan algorithm to a small graph instance using the provided reader function.
+ *
+ * @param readAndParseFunc A function that reads and parses the graph data.
+ *                         It should return a Graph<int> object.
+ * @remarks The time complexity of the Lin-Kernighan algorithm O(n^3), where n is the number of vertices in the graph.
+ * The algorithm has a better approximation than the NearestNeighbour heuristics but scales worse
+ * @timecomplexity O(n^2log(n))
+ */
 void getValue_LINmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
+/**
+ * Applies the Lin-Kernighan Algorithm heuristic to a stadium graph instance.
+ *
+ * @param readAndParseStadium A lambda function that reads and parses the stadium graph data.
+ *                            It should take a reference to a Reader object and return a Graph<int> object.
+ */
 void getValue_LINmenuSmallGraphStadium();
+/**
+ * Applies the Lin-Kernighan Algorithm heuristic to a shipping graph instance.
+ *
+ * @param readAndParseShipping A lambda function that reads and parses the shipping graph data.
+ *                             It should take a reference to a Reader object and return a Graph<int> object.
+ */
 void getValue_LINmenuSmallGraphShipping();
+/**
+ * Applies the Lin-Kernighan Algorithm heuristic to a tourism graph instance.
+ *
+ * @param readAndParseTourism A lambda function that reads and parses the tourism graph data.
+ *                            It should take a reference to a Reader object and return a Graph<int> object.
+ */
 void getValue_LINmenuSmallGraphTourism();
+
+/**
+ * Applies the Lin-Kernighan Algorithm heuristic to a medium graph instance.
+ *
+ * @param filename The filename of the graph data to be read and parsed.
+ *                 This should include the path to the file.
+ * @remarks The time complexity of the Lin-Kernighan algorithm O(n^3), where n is the number of vertices in the graph.
+ * The algorithm has a better approximation than the NearestNeighbour heuristics but scales worse
+ *  * @timecomplexity O(n^2log(n))
+ */
+
 void getValue_LINmenuMediumGraph(const std::string &filename);
 
+/**
+ * @brief Displays the main menu for selecting the size of the graph for the Held-Karp algorithm.
+ *
+ * This function provides a menu interface for the user to select between a small graph, medium graph, or exit to the main menu.
+ */
 void display_HeldKarp_menu();
+
+/**
+ * @brief Displays the menu for selecting a specific small graph for the Held-Karp algorithm.
+ *
+ * This function provides a menu interface for the user to select between different predefined small graphs
+ * or to exit back to the main Held-Karp menu.
+ */
 void display_HeldKarp_menuSmallGraph();
+/**
+ * Displays a menu for selecting medium graph instances and applying the Held-Karp Algorithm heuristic.
+ * Users can choose the number of edges in the graph to apply the Held-Karp Algorithm.
+ */
 void display_HeldKarp_menuMediumGraph();
+/**
+ * Applies the Held-Karp algorithm to a small graph instance using the provided reader function.
+ *
+ * @param readAndParseFunc A function that reads and parses the graph data.
+ *                         It should return a Graph<int> object.
+ * @timecomplexity The time complexity is O(n^2 * 2^n), where 'n' is the number of vertices in the graph.
+ *           The space complexity is O(n * 2^n).
+ */
 void getValue_HeldKarp_menuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc);
+/**
+ * Applies the Held-Karp algorithm to a stadium graph instance.
+ *
+ * @param readAndParseStadium A lambda function that reads and parses the stadium graph data.
+ *                            It should take a reference to a Reader object and return a Graph<int> object.
+ */
 void getValue_HeldKarp_menuSmallGraphStadium();
+/**
+ * Applies the Held-Karp algorithm to a shipping graph instance.
+ *
+ * @param readAndParseShipping A lambda function that reads and parses the shipping graph data.
+ *                             It should take a reference to a Reader object and return a Graph<int> object.
+ */
 void getValue_HeldKarp_menuSmallGraphShipping();
+/**
+ * Applies the Held-Karp algorithm to a tourism graph instance.
+ *
+ * @param readAndParseTourism A lambda function that reads and parses the tourism graph data.
+ *                            It should take a reference to a Reader object and return a Graph<int> object.
+ */
 void getValue_HeldKarp_menuSmallGraphTourism();
+/**
+ * Applies the Held-Karp algorithm to a medium graph instance.
+ *
+ * @param filename The filename of the graph data to be read and parsed.
+ *                 This should include the path to the file.
+ * @timecomplexity The time complexity is O(n^2 * 2^n), where 'n' is the number of vertices in the graph.
+ *           The space complexity is O(n * 2^n).
+ */
 void getValue_HeldKarp_menuMediumGraph(const std::string &filename);
 
+/**
+ * Displays a menu for selecting graph instances and applying the K-means Clustering Nearest Neighbor Algorithm heuristic.
+ * Users can choose between small and medium graph sizes or return to the main menu.
+ *
+ * @param clusterOption The number of clusters for K-means clustering.
+ */
 void display_CLUSTERmenu(int clusterOption);
+/**
+ * Applies the K-means Clustering Nearest Neighbor Algorithm heuristic to a small graph instance.
+ *
+ * @param readAndParseFunc A function to read and parse the graph data.
+ * @param clusterOption The number of clusters for K-means clustering.
+ * @timecomplexity O(n^2)
+ */
 void display_CLUSTERmenuSmallGraph(int clusterOption);
+/**
+ * Displays the menu for selecting a medium graph instance for applying the K-means Clustering Nearest Neighbor Algorithm heuristic.
+ *
+ * @param clusterOption The number of clusters for K-means clustering.
+ */
 void display_CLUSTERmenuMediumGraph(int clusterOption);
+/**
+ * Applies the K-means Clustering Nearest Neighbor Algorithm heuristic to a small graph instance.
+ *
+ * @param readAndParseFunc A function to read and parse the graph data.
+ * @param clusterOption The number of clusters for K-means clustering.
+ * @timecomplexity O(n^2)
+ */
 void getValue_CLUSTERmenuSmallGraph(const std::function<Graph<int>(Reader&)>& readAndParseFunc, int clusterOption);
+/**
+ * Applies the K-means Clustering Nearest Neighbor Algorithm heuristic to a small stadium graph instance.
+ *
+ * @param clusterOption The number of clusters for K-means clustering.
+ */
 void getValue_CLUSTERmenuSmallGraphStadium(int clusterOption);
+/**
+ * Applies the K-means Clustering Nearest Neighbor Algorithm heuristic to a small shipping graph instance.
+ *
+ * @param clusterOption The number of clusters for K-means clustering.
+ */
 void getValue_CLUSTERmenuSmallGraphShipping(int clusterOption);
+/**
+ * Applies the K-means Clustering Nearest Neighbor Algorithm heuristic to a small tourism graph instance.
+ *
+ * @param clusterOption The number of clusters for K-means clustering.
+ */
 void getValue_CLUSTERmenuSmallGraphTourism(int clusterOption);
+/**
+ * Applies the K-means Clustering Nearest Neighbor Algorithm heuristic to a medium graph instance.
+ *
+ * @param filename The filename of the graph data.
+ * @param clusterOption The number of clusters for K-means clustering.
+ * @timecomplexity O(n^2)
+ */
 void getValue_CLUSTERmenuMediumGraph(const std::string &filename, int clusterOption);
 
+/**
+ * Displays the menu for selecting a real-world TSP instance to solve using various algorithms.
+ *
+ * This menu allows the user to choose between different graph instances and starting nodes.
+ *
+ * - Graph1('Small'): Small-sized graph instance.
+ * - Graph2(Medium): Medium-sized graph instance.
+ * - Graph3(Large): Large-sized graph instance.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes and algorithm selection.
+ */
 void display_NNmenuLargeGraph();
 
+/**
+ * Solves the real-world TSP problem for a large-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the large-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ *
+ * @remarks The time complexity of the nearest neighbor algorithm used in this function is O(n^2), where n is the number of vertices in the graph.
+ */
 void getValue_NNsmallGraph(int nodeID);
+/**
+ * Solves the real-world TSP problem for a large-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the large-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ *
+ * @remarks The time complexity of the nearest neighbor algorithm used in this function is O(n^2), where n is the number of vertices in the graph.
+ */
 void getValue_NNmediumGraph(int nodeID);
+/**
+ * Solves the real-world TSP problem for a large-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the large-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ *
+ * @remarks The time complexity of the nearest neighbor algorithm used in this function is O(n^2), where n is the number of vertices in the graph.
+ */
 void getValue_NNlargeGraph(int nodeID);
 
+/**
+ * Displays the menu for selecting a real-world TSP instance to solve using various algorithms.
+ *
+ * This menu allows the user to choose between different graph instances and starting nodes.
+ *
+ * - Graph1('Small'): Small-sized graph instance.
+ * - Graph2(Medium): Medium-sized graph instance.
+ * - Graph3(Large): Large-sized graph instance.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes and algorithm selection.
+ */
 void display_RWmenu();
 
+/**
+ * Solves the real-world TSP problem for a small-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the small-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @timecomplexity O(n^2)
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ */
 void getValue_RWsmallGraph(int nodeID);
+/**
+ * Solves the real-world TSP problem for a medium-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the medium-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @timecomplexity O(n^2)
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ */
 void getValue_RWmediumGraph(int nodeID);
+/**
+ * Solves the real-world TSP problem for a large-sized graph instance starting from the specified node.
+ *
+ * This function reads and parses the large-sized graph instance, performs the nearest neighbor algorithm starting from the given node,
+ * and prints the resulting tour along with its total distance and execution time.
+ *
+ * @param nodeID The ID of the starting node for the TSP algorithm.
+ *
+ * @note This function interacts with the user to obtain input for starting nodes.
+ *
+ * @remarks The time complexity of the nearest neighbor algorithm used in this function is O(n^2), where n is the number of vertices in the graph.
+ */
 void getValue_RWlargeGraph(int nodeID);
 
+/**
+ * @brief Performs a pre-order traversal of a tree represented by an MST.
+ * @param root The root vertex of the tree.
+ * @param mst The minimum spanning tree (MST) represented by a vector of edges.
+ * @return A vector containing the vertices visited in pre-order traversal.
+ * @timecomplexity The time complexity of this function depends on the size of the MST and the efficiency of the pre-order traversal algorithm.
+ * Typically, it has a time complexity of O(V + E), where V is the number of vertices and E is the number of edges in the MST.
+ */
 std::vector<int> preOrderTraversal(Vertex<int>* root, const std::vector<Edge<int>*>& mst);
+/**
+ * @brief Solves the Traveling Salesman Problem (TSP) using a backtracking algorithm.
+ * @param currentNode The current node being visited.
+ * @param path The current path being explored.
+ * @param currentCost The current cost of the path.
+ * @param level The level of recursion.
+ * @param graph The graph representing the TSP problem.
+ * @param bestPath The best path found so far.
+ * @param bestCost The cost of the best path found so far.
+ * @details This function recursively explores possible paths using a backtracking algorithm and updates the best path and cost found.
+ * @timecomplexity O(n!).
+ */
 void tsp(int currentNode, std::vector<int>& path, double currentCost, int level, Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
+/**
+ * @brief Solves the Traveling Salesman Problem (TSP) using the Held-Karp algorithm.
+ * @param graph The graph representing the TSP problem.
+ * @param bestPath The best path found by the algorithm.
+ * @param bestCost The cost of the best path found.
+ * @details This function applies the Held-Karp algorithm to find the optimal solution for the TSP.
+ * @timecomplexity The time complexity of this function is O(2^n * n^2), where n is the number of vertices in the graph.
+ * @remarks Pros: Guarantees the optimal solution for the TSP. Suitable for small to medium-sized graphs.
+ * Cons: High time complexity, impractical for large graphs due to exponential growth.
+ */
 void heldKarp(const Graph<int>& graph, std::vector<int>& bestPath, double& bestCost);
+
 
 /**
  * Displays the main menu and handles user interaction to choose between different TSP algorithms and heuristics.
@@ -319,7 +730,6 @@ void display4_1menuSmallGraphShipping() {
  *
  * @remarks This function reads and parses the tourism graph data before invoking the main menu for the backtracking algorithm.
  */
-
 void display4_1menuSmallGraphTourism() {
     auto readAndParseTourism = [](Reader& reader) { return reader.readAndParseTourism(); };
     display4_1menuSmallGraph(readAndParseTourism);
@@ -1919,7 +2329,6 @@ void display_LINmenuMediumGraph() {
  * The algorithm has a better approximation than the NearestNeighbour heuristics but scales worse
  *  * @timecomplexity O(n^2log(n))
  */
-
 void getValue_LINmenuMediumGraph(const std::string &filename){
     Reader reader;
     unordered_map<int, Vertex<int>*> vertexMap;
@@ -2799,6 +3208,9 @@ void getValue_RWlargeGraph(int nodeID) {
     std::cout << "!!! Unfeasible Path doesn´t cover all vertices !!!\n";
 }
 
+/**
+ * @brief Runs the application by displaying the main menu.
+ */
 void App::run() {
     mainMenu();
 }
