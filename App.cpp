@@ -959,6 +959,7 @@ void display4_2menuSmallGraphStadium() {
 void display4_2menuSmallGraphShipping() {
     auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
     display4_2menuSmall(readAndParseShipping);
+    cout << "Graph is not fully connected value isn´t a good approximation";
 }
 
 /**
@@ -1968,6 +1969,7 @@ void getValue_NNmenuSmallGraphStadium(){
 void getValue_NNmenuSmallGraphShipping() {
     auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
     getValue_NNmenuSmallGraph(readAndParseShipping);
+    cout << "Graph is not fully connected value isn´t a good approximation";
 }
 
 /**
@@ -2229,6 +2231,7 @@ void getValue_LINmenuSmallGraphStadium(){
 void getValue_LINmenuSmallGraphShipping() {
     auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
     getValue_LINmenuSmallGraph(readAndParseShipping);
+    cout << "Graph is not fully connected value isn´t a good approximation";
 }
 
 /**
@@ -2793,6 +2796,7 @@ void getValue_CLUSTERmenuSmallGraphStadium(int clusterOption) {
 void getValue_CLUSTERmenuSmallGraphShipping(int clusterOption) {
     auto readAndParseShipping = [](Reader& reader) { return reader.readAndParseShipping(); };
     getValue_CLUSTERmenuSmallGraph(readAndParseShipping, clusterOption);
+    cout << "Graph is not fully connected value isn´t a good approximation";
 }
 /**
  * Applies the K-means Clustering Nearest Neighbor Algorithm heuristic to a small tourism graph instance.
